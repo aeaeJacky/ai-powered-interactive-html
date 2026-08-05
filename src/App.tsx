@@ -1,197 +1,222 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   BookOpen,
   Check,
+  ChevronLeft,
   ChevronRight,
+  CircleHelp,
   Clipboard,
+  Code2,
   Compass,
+  Copy,
+  FileText,
   FlaskConical,
   GraduationCap,
   Home,
   Lightbulb,
   Menu,
   MessageSquareText,
+  Music2,
+  Palette,
   PanelLeftClose,
   PanelLeftOpen,
   Play,
+  Plus,
+  Rocket,
+  Route,
+  Search,
   Sparkles,
-  WandSparkles,
+  Target,
+  Users,
   X,
+  Zap,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 type Subject = {
-  key: string;
   name: string;
+  slug: string;
   short: string;
   color: string;
-  tint: string;
+  soft: string;
 };
 
 type Activity = {
   title: string;
   description: string;
   format: string;
-  url?: string;
+  url: string;
 };
 
 const subjects: Subject[] = [
-  { key: "chinese", name: "Chinese", short: "中", color: "#c84d4d", tint: "#fff0f0" },
-  { key: "english", name: "English", short: "EN", color: "#3979b9", tint: "#edf5ff" },
-  { key: "mathematics", name: "Mathematics", short: "∑", color: "#7862b8", tint: "#f2efff" },
-  { key: "civic-education", name: "Civic Education", short: "CE", color: "#198f83", tint: "#e9faf7" },
-  { key: "physics", name: "Physics", short: "ϕ", color: "#d07838", tint: "#fff5ec" },
-  { key: "chemistry", name: "Chemistry", short: "⚗", color: "#407a91", tint: "#edf8fb" },
-  { key: "biology", name: "Biology", short: "✣", color: "#4f9862", tint: "#eff9f0" },
-  { key: "bafs", name: "BAFS", short: "B", color: "#967226", tint: "#fff8e8" },
-  { key: "ths", name: "THS", short: "T", color: "#a05279", tint: "#fff0f7" },
-  { key: "geography", name: "Geography", short: "◎", color: "#328b8b", tint: "#eafafa" },
-  { key: "ict", name: "ICT", short: "</>", color: "#3c6db5", tint: "#edf3ff" },
-  { key: "dat", name: "DAT", short: "D", color: "#7c5a9d", tint: "#f6efff" },
-  { key: "va", name: "VA", short: "V", color: "#ba6548", tint: "#fff1ed" },
-  { key: "music", name: "Music", short: "♫", color: "#576fa5", tint: "#f0f3ff" },
+  { name: "Chinese", slug: "chinese", short: "中", color: "#d97965", soft: "#fbeceb" },
+  { name: "English", slug: "english", short: "EN", color: "#4c83b5", soft: "#eaf3fc" },
+  { name: "Mathematics", slug: "mathematics", short: "∑", color: "#5a9a82", soft: "#e9f6ef" },
+  { name: "Civic Education", slug: "civic-education", short: "CE", color: "#9077b4", soft: "#f1ecf8" },
+  { name: "Physics", slug: "physics", short: "Φ", color: "#c78344", soft: "#fbf0e4" },
+  { name: "Chemistry", slug: "chemistry", short: "⚗", color: "#4c9d9a", soft: "#e7f5f4" },
+  { name: "Biology", slug: "biology", short: "♧", color: "#6d9f66", soft: "#edf6ea" },
+  { name: "BAFS", slug: "bafs", short: "BA", color: "#9a7b57", soft: "#f6f0e9" },
+  { name: "THS", slug: "ths", short: "TH", color: "#bd718c", soft: "#faedf2" },
+  { name: "Geography", slug: "geography", short: "GE", color: "#5c8d9f", soft: "#eaf4f6" },
+  { name: "ICT", slug: "ict", short: "</>", color: "#3979b9", soft: "#eaf3fc" },
+  { name: "DAT", slug: "dat", short: "DA", color: "#8277b8", soft: "#efedfa" },
+  { name: "VA", slug: "va", short: "VA", color: "#cb7660", soft: "#fbedeb" },
+  { name: "Music", slug: "music", short: "♫", color: "#a477ad", soft: "#f4edf7" },
 ];
 
-const subjectExamples: Record<string, Activity[]> = Object.fromEntries(
-  subjects.map((subject) => [subject.key, []]),
-);
+const subjectExamples: Record<string, Activity[]> = {
+  chinese: [], english: [], mathematics: [], "civic-education": [], physics: [], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [], dat: [], va: [], music: [],
+};
 
-const navItems = [
-  { key: "home", label: "Home", icon: Home },
-  { key: "getting-started", label: "Getting Started", icon: Compass },
-  { key: "prompt-builder", label: "Prompt Builder", icon: WandSparkles },
-];
+const activityTypes = ["Interactive quiz", "Matching activity", "Drag and drop", "Flashcards", "Simulation", "Timeline"];
+const levels = ["Primary", "Junior secondary", "Senior secondary", "Mixed ability"];
+const features = ["Instant feedback", "Progress tracking", "Hint system", "Randomised questions", "Accessible controls"];
 
-const activityTypes = [
-  "Interactive quiz",
-  "Drag-and-drop activity",
-  "Flashcards",
-  "Simulation",
-  "Matching activity",
-  "Interactive timeline",
-];
-
-function getSubject(key: string | null) {
-  return subjects.find((subject) => subject.key === key) ?? subjects[0];
+function subjectBySlug(slug: string) {
+  return subjects.find((subject) => subject.slug === slug);
 }
 
-export default function App() {
-  const location = useLocation();
+function AppContent() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [subject, setSubject] = useState("english");
+  const [topic, setTopic] = useState("");
+  const [activityType, setActivityType] = useState("Interactive quiz");
+  const [level, setLevel] = useState("Junior secondary");
+  const [selectedFeatures, setSelectedFeatures] = useState(["Instant feedback", "Hint system"]);
+  const [copied, setCopied] = useState(false);
 
-  const currentKey = location.pathname.split("/")[1] || "home";
-  const activeSubject = subjects.find((subject) => subject.key === currentKey);
+  const currentSlug = location.pathname.startsWith("/subject/") ? location.pathname.split("/")[2] : "";
+  const currentSubject = subjectBySlug(currentSlug);
+  const isBuilder = location.pathname === "/prompt-builder";
+  const isGettingStarted = location.pathname === "/getting-started";
+  const isHome = location.pathname === "/";
 
-  useEffect(() => {
+  const prompt = useMemo(() => {
+    const selectedSubject = subjectBySlug(subject)?.name ?? "English";
+    const goal = topic.trim() || "[insert your lesson topic or learning goal]";
+    const featureLine = selectedFeatures.length ? selectedFeatures.join(", ") : "clear instructions and responsive design";
+    return `Create a self-contained interactive HTML learning activity for ${selectedSubject}.\n\nLearning goal: ${goal}\nLearner level: ${level}\nActivity format: ${activityType}\nKey features: ${featureLine}\n\nRequirements:\n- Use a clear, professional classroom-friendly design.\n- Include concise instructions and meaningful learner feedback.\n- Make the page responsive for desktop and mobile screens.\n- Keep all HTML, CSS, and JavaScript in one file.\n- Do not use external libraries or images unless absolutely necessary.\n- Add a reset button and make keyboard interaction accessible.\n- Return the complete HTML file, followed by a short explanation of how to use it.`;
+  }, [subject, topic, activityType, level, selectedFeatures]);
+
+  const navigateTo = (path: string) => {
+    navigate(path);
     setMobileOpen(false);
-  }, [location.pathname]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  const go = (key: string) => navigate(key === "home" ? "/" : `/${key}`);
+  const toggleFeature = (feature: string) => {
+    setSelectedFeatures((current) => current.includes(feature) ? current.filter((item) => item !== feature) : [...current, feature]);
+  };
+
+  const copyPrompt = async () => {
+    await navigator.clipboard?.writeText(prompt);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
 
   return (
     <div className="app-shell">
-      <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
-        <Menu size={22} />
-      </button>
-      {mobileOpen && <button className="mobile-scrim" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}
+      {mobileOpen && <button className="mobile-scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
       <aside className={`sidebar ${collapsed ? "sidebar-collapsed" : ""} ${mobileOpen ? "sidebar-mobile-open" : ""}`}>
         <div className="sidebar-brand">
           <div className="brand-mark"><Sparkles size={17} /></div>
-          {!collapsed && <div><strong>AI-powered</strong><span>interactive html</span></div>}
-          <button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X size={19} /></button>
+          {!collapsed && <div><strong>ai-powered</strong><span>interactive html</span></div>}
+          {mobileOpen && <button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X size={18} /></button>}
         </div>
-        <div className="sidebar-section-label">Explore</div>
-        <nav className="primary-nav" aria-label="Primary navigation">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const selected = currentKey === item.key;
-            return <NavButton key={item.key} collapsed={collapsed} label={item.label} icon={<Icon size={18} />} selected={selected} onClick={() => go(item.key)} />;
-          })}
+        <div className="sidebar-section-label">Workspace</div>
+        <nav className="primary-nav">
+          <NavButton icon={<Home size={16} />} label="Home" selected={isHome} collapsed={collapsed} onClick={() => navigateTo("/")} />
+          <NavButton icon={<Route size={16} />} label="Getting Started" selected={isGettingStarted} collapsed={collapsed} onClick={() => navigateTo("/getting-started")} />
+          <NavButton icon={<MessageSquareText size={16} />} label="Prompt Builder" selected={isBuilder} collapsed={collapsed} onClick={() => navigateTo("/prompt-builder")} />
         </nav>
         <div className="sidebar-section-label subject-label">Subjects</div>
-        <nav className="subject-nav" aria-label="Subject navigation">
-          {subjects.map((subject) => (
-            <NavButton key={subject.key} collapsed={collapsed} label={subject.name} icon={<span className="subject-icon" style={{ background: subject.tint, color: subject.color }}>{subject.short}</span>} selected={currentKey === subject.key} onClick={() => go(subject.key)} />
-          ))}
+        <nav className="subject-nav">
+          {subjects.map((item) => <NavButton key={item.slug} subject={item} label={item.name} selected={currentSlug === item.slug} collapsed={collapsed} onClick={() => navigateTo(`/subject/${item.slug}`)} />)}
         </nav>
         <button className="collapse-button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
-          {collapsed ? <PanelLeftOpen size={18} /> : <><PanelLeftClose size={18} /><span>Collapse sidebar</span><ArrowLeft size={14} /></>}
+          {collapsed ? <PanelLeftOpen size={15} /> : <><PanelLeftClose size={15} /><span>Collapse sidebar</span><ChevronLeft size={14} /></>}
         </button>
       </aside>
-      <main className={`main-content ${collapsed ? "main-expanded" : ""}`}>
-        {activeSubject ? <SubjectPage subject={activeSubject} activities={subjectExamples[activeSubject.key]} onBack={() => go("home")} /> : currentKey === "getting-started" ? <GettingStarted onBuild={() => go("prompt-builder")} /> : currentKey === "prompt-builder" ? <PromptBuilder /> : <HomePage onNavigate={go} />}
+      <main className="main-content">
+        <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={19} /></button>
+        {isHome && <HomePage navigateTo={navigateTo} />}
+        {isGettingStarted && <GettingStartedPage navigateTo={navigateTo} />}
+        {isBuilder && <PromptBuilderPage subject={subject} setSubject={setSubject} topic={topic} setTopic={setTopic} activityType={activityType} setActivityType={setActivityType} level={level} setLevel={setLevel} selectedFeatures={selectedFeatures} toggleFeature={toggleFeature} prompt={prompt} copied={copied} copyPrompt={copyPrompt} />}
+        {currentSubject && <SubjectPage subject={currentSubject} activities={subjectExamples[currentSubject.slug] ?? []} navigateTo={navigateTo} />}
       </main>
     </div>
   );
 }
 
-function NavButton({ collapsed, label, icon, selected, onClick }: { collapsed: boolean; label: string; icon: React.ReactNode; selected: boolean; onClick: () => void }) {
-  return <button className={`nav-button ${selected ? "nav-selected" : ""}`} onClick={onClick} title={collapsed ? label : undefined}><span className="nav-icon">{icon}</span>{!collapsed && <span>{label}</span>}{!collapsed && selected && <ChevronRight size={15} className="nav-chevron" />}</button>;
+function NavButton({ icon, subject, label, selected, collapsed, onClick }: { icon?: React.ReactNode; subject?: Subject; label: string; selected: boolean; collapsed: boolean; onClick: () => void }) {
+  return <button className={`nav-button ${selected ? "nav-selected" : ""}`} onClick={onClick} title={collapsed ? label : undefined}>
+    {subject ? <span className="subject-icon" style={{ background: subject.soft, color: subject.color }}>{subject.short}</span> : <span className="nav-icon">{icon}</span>}
+    {!collapsed && <><span>{label}</span>{subject && selected && <ChevronRight className="nav-chevron" size={14} />}</>}
+  </button>;
 }
 
-function PageHeader({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: React.ReactNode }) {
-  return <header className="page-header"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{description}</p></div>{action}</header>;
+function PageHeader({ eyebrow, title, description, badge }: { eyebrow: string; title: string; description: string; badge?: string }) {
+  return <header className="page-header"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{description}</p></div>{badge && <div className="header-badge"><span className="status-dot" />{badge}</div>}</header>;
 }
 
-function HomePage({ onNavigate }: { onNavigate: (key: string) => void }) {
-  return <div className="page-wrap home-page">
-    <PageHeader eyebrow="A practical introduction for teachers" title="Make learning interactive with AI" description="A guided space for exploring how AI agents can help you create engaging, subject-specific HTML learning activities." action={<div className="header-badge"><Sparkles size={16} /> built for teacher demos</div>} />
+function HomePage({ navigateTo }: { navigateTo: (path: string) => void }) {
+  return <div className="page-wrap">
+    <PageHeader eyebrow="AI for teaching & learning" title="Make learning interactive." description="A practical space for teachers to explore how AI agents can turn a lesson idea into an engaging, browser-based learning experience." badge="Built for teacher demos" />
     <section className="hero-card">
-      <div className="hero-copy"><div className="hero-kicker"><span className="pulse-dot" /> AI-assisted lesson design</div><h2>From an idea to an<br /><em>interactive</em> learning page.</h2><p>Discover a simple workflow for turning your teaching ideas into activities that students can explore, practise, and enjoy.</p><div className="hero-actions"><button className="button-primary" onClick={() => onNavigate("getting-started")}>Get started <ArrowRight size={16} /></button><button className="button-secondary" onClick={() => onNavigate("prompt-builder")}><WandSparkles size={16} /> Build a prompt</button></div></div>
-      <div className="hero-visual"><div className="visual-window"><div className="window-bar"><span /><span /><span /><small>interactive-learning.html</small></div><div className="visual-body"><div className="code-line wide" /><div className="code-line medium" /><div className="code-line short" /><div className="demo-card"><div className="mini-icon"><Play size={15} fill="currentColor" /></div><div><strong>Try, explore, learn</strong><small>your activity is ready to share</small></div><Check size={18} className="demo-check" /></div><div className="code-line medium" /><div className="code-line wide" /></div></div><div className="floating-note"><Lightbulb size={15} /> <span><strong>small idea</strong><br />big learning moment</span></div></div>
+      <div className="hero-copy"><div className="hero-kicker"><span className="pulse-dot" /> A new way to build</div><h2>From lesson idea<br />to <em>interactive HTML.</em></h2><p>Use an AI agent as your creative partner. Describe what students need to learn, then refine the generated activity until it works for your classroom.</p><div className="hero-actions"><button className="button-primary" onClick={() => navigateTo("/getting-started")}>See how it works <ArrowRight size={15} /></button><button className="button-secondary" onClick={() => navigateTo("/prompt-builder")}><MessageSquareText size={14} /> Build a prompt</button></div></div>
+      <div className="hero-visual"><div className="visual-window"><div className="window-bar"><span /><span /><span /><small>interactive-lesson.html</small></div><div className="visual-body"><div className="code-line wide" /><div className="code-line medium" /><div className="demo-card"><div className="mini-icon"><Play size={12} fill="currentColor" /></div><div><strong>Explore the water cycle</strong><small>Interactive simulation</small></div><Check className="demo-check" size={15} /></div><div className="code-line short" /><div className="code-line wide" /></div></div><div className="floating-note"><Lightbulb size={15} /><div><strong>Ready to learn</strong><br />Activity generated with AI</div></div></div>
     </section>
-    <section className="home-section"><div className="section-heading"><div><div className="eyebrow">Choose your starting point</div><h2>Everything you need for the demo</h2></div><span className="section-count">03 resources</span></div><div className="resource-grid"><ResourceCard number="01" icon={<BookOpen size={20} />} title="Getting Started" text="Follow the complete workflow from teaching idea to tested HTML activity." action="View workflow" onClick={() => onNavigate("getting-started")} /><ResourceCard number="02" icon={<WandSparkles size={20} />} title="Prompt Builder" text="Create a clear, detailed prompt ready to give to your AI agent." action="Build a prompt" onClick={() => onNavigate("prompt-builder")} /><ResourceCard number="03" icon={<GraduationCap size={20} />} title="Subject examples" text="Browse the subject areas and add your own interactive activity examples." action="Browse subjects" onClick={() => document.getElementById("subjects")?.scrollIntoView({ behavior: "smooth" })} /></div></section>
-    <section className="home-section subject-overview" id="subjects"><div className="section-heading"><div><div className="eyebrow">Your curriculum, your ideas</div><h2>Explore subject areas</h2></div><span className="section-count">{subjects.length} subjects</span></div><div className="subject-grid">{subjects.map((subject) => <button className="subject-tile" key={subject.key} onClick={() => onNavigate(subject.key)}><span className="subject-tile-icon" style={{ background: subject.tint, color: subject.color }}>{subject.short}</span><span>{subject.name}</span><ChevronRight size={16} /></button>)}</div></section>
-    <footer className="site-footer"><span>AI-powered interactive HTML</span><span>Designed for sharing ideas between teachers</span></footer>
+    <section className="home-section"><div className="section-heading"><div><div className="eyebrow">Your starting point</div><h2>Explore the workflow</h2></div><span className="section-count">3 resources</span></div><div className="resource-grid">
+      <ResourceCard number="01" icon={<Compass size={17} />} title="Getting Started" description="Understand the simple workflow from a teaching goal to a tested interactive page." action="View the guide" onClick={() => navigateTo("/getting-started")} />
+      <ResourceCard number="02" icon={<MessageSquareText size={17} />} title="Prompt Builder" description="Shape a clear, detailed request that gives your AI agent the context it needs." action="Build a prompt" onClick={() => navigateTo("/prompt-builder")} />
+      <ResourceCard number="03" icon={<BookOpen size={17} />} title="Activity Gallery" description="Browse subject areas and see how a growing collection of activities can be organised." action="Browse subjects" onClick={() => document.getElementById("subjects")?.scrollIntoView({ behavior: "smooth" })} />
+    </div></section>
+    <section className="home-section" id="subjects"><div className="section-heading"><div><div className="eyebrow">Teaching areas</div><h2>Browse by subject</h2></div><span className="section-count">14 subjects</span></div><div className="subject-grid">{subjects.map((subject) => <button className="subject-tile" key={subject.slug} onClick={() => navigateTo(`/subject/${subject.slug}`)}><span className="subject-tile-icon" style={{ background: subject.soft, color: subject.color }}>{subject.short}</span>{subject.name}<ArrowUpRight size={14} /></button>)}</div></section>
+    <footer className="site-footer"><span>AI-Powered Interactive HTML · Teacher demonstration toolkit</span><span>Designed for exploration and iteration</span></footer>
   </div>;
 }
 
-function ResourceCard({ number, icon, title, text, action, onClick }: { number: string; icon: React.ReactNode; title: string; text: string; action: string; onClick: () => void }) {
-  return <article className="resource-card"><div className="resource-top"><span className="resource-number">{number}</span><span className="resource-icon">{icon}</span></div><h3>{title}</h3><p>{text}</p><button className="text-link" onClick={onClick}>{action} <ArrowRight size={14} /></button></article>;
+function ResourceCard({ number, icon, title, description, action, onClick }: { number: string; icon: React.ReactNode; title: string; description: string; action: string; onClick: () => void }) {
+  return <article className="resource-card"><div className="resource-top"><span className="resource-number">{number}</span><span className="resource-icon">{icon}</span></div><h3>{title}</h3><p>{description}</p><button className="text-link" onClick={onClick}>{action}<ArrowRight size={13} /></button></article>;
 }
 
-function SubjectPage({ subject, activities, onBack }: { subject: Subject; activities: Activity[]; onBack: () => void }) {
-  return <div className="page-wrap"><button className="back-link" onClick={onBack}><ArrowLeft size={15} /> Back to home</button><PageHeader eyebrow={`Subject area · ${subject.name}`} title={subject.name} description={`Explore interactive HTML activities for ${subject.name}. New examples can be added here as your collection grows.`} action={<span className="subject-header-icon" style={{ background: subject.tint, color: subject.color }}>{subject.short}</span>} />
-    <section className="subject-intro" style={{ borderColor: subject.color }}><div><div className="eyebrow">Activity gallery</div><h2>Ideas to explore and share</h2><p>Use this space to showcase interactive examples made with an AI agent. Select an activity to preview it, then open the full page when you are ready to demonstrate.</p></div><div className="gallery-status"><span className="status-dot" /> {activities.length ? `${activities.length} examples` : "Ready for your first example"}</div></section>
-    {activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} />)}</div> : <div className="empty-gallery"><div className="empty-icon"><FlaskConical size={24} /></div><h3>Your first activity starts here</h3><p>No examples have been added to {subject.name} yet. Add one manually in <code>src/App.tsx</code> when you are ready.</p><button className="button-secondary" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}><Lightbulb size={16} /> See the structure</button></div>}
-    <section className="add-note"><div className="note-icon"><MessageSquareText size={19} /></div><div><strong>Adding examples later</strong><p>Keep each activity focused: give it a clear title, a short description, and a link to its full interactive HTML page.</p></div><ArrowRight size={17} /></section>
-  </div>;
+function SubjectPage({ subject, activities, navigateTo }: { subject: Subject; activities: Activity[]; navigateTo: (path: string) => void }) {
+  return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}. Use these activities as inspiration for your own classroom ideas.`} badge={`${activities.length} examples`} /><div className="subject-intro" style={{ borderLeftColor: subject.color }}><div><h2>Interactive activities for {subject.name}</h2><p>Examples will be added here as they are created. Each activity can include a preview and a link to open the complete HTML experience.</p></div><div className="gallery-status"><span className="status-dot" /> Ready for examples</div></div>{activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} />)}</div> : <EmptyGallery subject={subject} navigateTo={navigateTo} />}<div className="add-note"><span className="note-icon"><Plus size={16} /></span><div><strong>Adding a new example</strong><p>Activities are added manually in the site code, so the gallery stays easy to curate for demonstrations.</p></div><Code2 size={17} /></div></div>;
+}
+
+function EmptyGallery({ subject, navigateTo }: { subject: Subject; navigateTo: (path: string) => void }) {
+  return <div className="empty-gallery"><div className="empty-icon" style={{ color: subject.color, background: subject.soft }}><FileText size={22} /></div><h3>The gallery is ready for its first activity</h3><p>When you create an example for {subject.name}, add it to the <code>subjectExamples</code> collection and it will appear here.</p><button className="button-secondary" onClick={() => navigateTo("/prompt-builder")}><Sparkles size={14} /> Create a prompt for {subject.name}</button></div>;
 }
 
 function ActivityCard({ activity }: { activity: Activity }) {
-  return <article className="activity-card"><div className="activity-preview"><div className="preview-label"><span className="pulse-dot" /> live preview</div><div className="preview-placeholder"><Play size={22} fill="currentColor" /><span>interactive preview</span></div></div><div className="activity-info"><span className="activity-format">{activity.format}</span><h3>{activity.title}</h3><p>{activity.description}</p>{activity.url ? <a className="button-primary" href={activity.url} target="_blank" rel="noreferrer">Open full activity <ArrowRight size={15} /></a> : <button className="button-secondary" disabled>Full activity coming soon</button>}</div></article>;
+  return <article className="activity-card"><div className="activity-preview"><div className="preview-label"><Play size={11} /> Live preview</div><div className="preview-placeholder"><Sparkles size={22} /><span>Interactive preview</span></div></div><div className="activity-info"><div className="activity-format">{activity.format}</div><h3>{activity.title}</h3><p>{activity.description}</p><a className="button-primary" href={activity.url} target="_blank" rel="noreferrer">Open full activity <ArrowUpRight size={14} /></a></div></article>;
 }
 
-function GettingStarted({ onBuild }: { onBuild: () => void }) {
+function GettingStartedPage({ navigateTo }: { navigateTo: (path: string) => void }) {
   const steps = [
-    ["01", "Choose a subject", "Start with the curriculum area and the learning goal you want students to practise."],
-    ["02", "Describe the activity", "Tell your AI agent what students should do, what content to include, and how success should look."],
-    ["03", "Generate a prompt", "Use the Prompt Builder to turn your idea into a precise brief with useful implementation details."],
-    ["04", "Create with an AI agent", "Give the prompt to your preferred AI agent and ask it to produce a self-contained interactive HTML page."],
-    ["05", "Test and improve", "Open the page, check the interaction and content, then ask the agent for focused improvements."],
+    ["01", "Choose a subject and learning goal", "Start with the curriculum idea, concept, or skill your students need to practise."],
+    ["02", "Describe the learner experience", "Tell the AI agent what students should do: answer, sort, match, explore, or create."],
+    ["03", "Generate and test the HTML", "Ask for a self-contained page, open it in a browser, and try the activity as a learner."],
+    ["04", "Improve through feedback", "Point out what needs changing. AI agents are especially useful for fast, focused iterations."],
   ];
-  return <div className="page-wrap"><PageHeader eyebrow="A simple five-step workflow" title="Getting Started" description="You do not need to be a web developer. Start with your teaching idea, then let an AI agent help shape the first version." action={<div className="header-badge"><Compass size={16} /> your first activity</div>} /><section className="workflow-card"><div className="workflow-list">{steps.map(([number, title, text], index) => <div className="workflow-step" key={number}><div className="step-number">{number}</div><div className="step-copy"><h3>{title}</h3><p>{text}</p></div>{index < steps.length - 1 && <div className="step-line" />}</div>)}</div><div className="workflow-aside"><div className="aside-kicker"><Lightbulb size={16} /> keep it focused</div><h3>One clear learning goal is enough for a great first activity.</h3><p>Begin with a small interaction. You can always add more questions, feedback, or visual polish after the first version works.</p><button className="button-primary" onClick={onBuild}>Build your prompt <ArrowRight size={15} /></button></div></section><section className="tips-section"><div className="section-heading"><div><div className="eyebrow">Prompt-writing tips</div><h2>Help your AI agent help you</h2></div></div><div className="tip-grid"><Tip icon={<TargetIcon />} title="Be specific" text="Name the age group, topic, learning objective, number of questions, and expected interaction." /><Tip icon={<MessageSquareText size={19} />} title="Describe feedback" text="Ask for immediate feedback, a score, hints, or an explanation after each student response." /><Tip icon={<Play size={19} />} title="Ask for a complete page" text="Request a self-contained HTML file that works in a browser without extra setup." /></div></section></div>;
+  return <div className="page-wrap"><PageHeader eyebrow="A practical guide" title="Getting Started" description="A repeatable workflow for turning a teaching idea into an interactive HTML activity with an AI agent." badge="4 simple steps" /><section className="workflow-card"><div className="workflow-list">{steps.map(([number, title, copy], index) => <div className="workflow-step" key={number}><span className="step-number">{number}</span><div className="step-copy"><h3>{title}</h3><p>{copy}</p></div>{index < steps.length - 1 && <span className="step-line" />}</div>)}</div><aside className="workflow-aside"><div className="aside-kicker"><Zap size={14} /> Demo tip</div><h3>Start small, then make it better.</h3><p>Your first prompt does not need to be perfect. A working five-minute activity is a better starting point than a long specification.</p><button className="button-primary" onClick={() => navigateTo("/prompt-builder")}>Try the prompt builder <ArrowRight size={14} /></button></aside></section><section className="tips-section"><div className="section-heading"><div><div className="eyebrow">Prompt-writing tips</div><h2>Give your agent useful context</h2></div></div><div className="tip-grid"><TipCard icon={<Target size={17} />} title="Name the goal" text="Describe what students should know or be able to do at the end of the activity." /><TipCard icon={<Users size={17} />} title="Know your learners" text="Include age, level, language needs, and any accessibility requirements." /><TipCard icon={<Lightbulb size={17} />} title="Specify feedback" text="Ask for hints, explanations, scoring, reset controls, and a clear success state." /></div></section><section className="tips-section"><div className="section-heading"><div><div className="eyebrow">Example brief</div><h2>Make the request concrete</h2></div></div><div className="subject-intro"><div><h2>Example: a mathematics activity</h2><p>“Create a self-contained drag-and-drop activity for junior secondary students to match linear equations with their graphs. Include instant feedback, two hints, a progress counter, and a reset button. Use a calm, professional design and make it work on touch screens.”</p></div><Clipboard size={22} color="#3979b9" /></div></section></div>;
 }
 
-function TargetIcon() { return <span className="target-icon">◎</span>; }
+function TipCard({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+  return <article className="tip-card"><span className="tip-icon">{icon}</span><h3>{title}</h3><p>{text}</p></article>;
+}
 
-function Tip({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) { return <article className="tip-card"><span className="tip-icon">{icon}</span><h3>{title}</h3><p>{text}</p></article>; }
+function PromptBuilderPage({ subject, setSubject, topic, setTopic, activityType, setActivityType, level, setLevel, selectedFeatures, toggleFeature, prompt, copied, copyPrompt }: { subject: string; setSubject: (value: string) => void; topic: string; setTopic: (value: string) => void; activityType: string; setActivityType: (value: string) => void; level: string; setLevel: (value: string) => void; selectedFeatures: string[]; toggleFeature: (feature: string) => void; prompt: string; copied: boolean; copyPrompt: () => void }) {
+  return <div className="page-wrap"><PageHeader eyebrow="Your AI co-pilot" title="Prompt Builder" description="Choose a few details about your lesson. The builder will turn them into a clear starting prompt you can copy into your AI agent." badge="Copyable prompt" /><div className="builder-layout"><section className="builder-form"><div className="form-section"><div className="form-heading"><span>01</span><div><h3>Choose a subject</h3><p>Which curriculum area is this for?</p></div></div><div className="select-grid">{subjects.map((item) => <button key={item.slug} className={`select-chip ${subject === item.slug ? "chip-selected" : ""}`} onClick={() => setSubject(item.slug)}><span style={{ color: item.color }}>{item.short}</span>{item.name}</button>)}</div></div><div className="form-section"><div className="form-heading"><span>02</span><div><h3>Set the learning direction</h3><p>Give your agent the context to design around.</p></div></div><label className="field-label">Topic or learning goal<input value={topic} onChange={(event) => setTopic(event.target.value)} placeholder="e.g. identify renewable energy sources" /></label><div className="field-row"><label className="field-label">Activity format<select value={activityType} onChange={(event) => setActivityType(event.target.value)}>{activityTypes.map((item) => <option key={item}>{item}</option>)}</select></label><label className="field-label">Learner level<select value={level} onChange={(event) => setLevel(event.target.value)}>{levels.map((item) => <option key={item}>{item}</option>)}</select></label></div></div><div className="form-section"><div className="form-heading"><span>03</span><div><h3>Add useful features</h3><p>Select the details you want included.</p></div></div><div className="feature-list">{features.map((feature) => <button key={feature} className={`feature-toggle ${selectedFeatures.includes(feature) ? "feature-on" : ""}`} onClick={() => toggleFeature(feature)}><span className="checkbox">{selectedFeatures.includes(feature) && <Check size={11} />}</span>{feature}</button>)}</div></div></section><section className="prompt-output"><div className="output-top"><div><div className="eyebrow">Generated prompt</div><h2>Ready to copy</h2></div><div className="output-status"><span className="status-dot" /> Live</div></div><pre>{prompt}</pre><button className="button-primary copy-button" onClick={copyPrompt}>{copied ? <><Check size={15} /> Copied to clipboard</> : <><Copy size={15} /> Copy prompt</>}</button></section></div></div>;
+}
 
-function PromptBuilder() {
-  const [subjectKey, setSubjectKey] = useState("english");
-  const [topic, setTopic] = useState("");
-  const [activityType, setActivityType] = useState(activityTypes[0]);
-  const [level, setLevel] = useState("Secondary school");
-  const [features, setFeatures] = useState<string[]>(["instant feedback"]);
-  const [copied, setCopied] = useState(false);
-  const subject = getSubject(subjectKey);
-  const featureOptions = ["instant feedback", "score tracking", "hint button", "responsive layout"];
-  const prompt = useMemo(() => `Create a self-contained interactive HTML learning activity for ${subject.name}.\n\nTopic: ${topic || "[insert topic]"}\nActivity type: ${activityType}\nLearner level: ${level}\n\nRequirements:\n- Focus on one clear learning objective.\n- Use accurate, age-appropriate ${subject.name} content.\n- Include ${features.length ? features.join(", ") : "clear instructions and a simple completion state"}.\n- Make the page accessible, responsive, and easy to use on a classroom projector.\n- Give immediate, helpful feedback after each interaction.\n- Return one complete HTML file with embedded CSS and JavaScript; do not require external libraries.\n\nBefore finishing, test the interactions and make the visual hierarchy clear for students.`, [subject.name, topic, activityType, level, features]);
-  const toggleFeature = (feature: string) => setFeatures((current) => current.includes(feature) ? current.filter((item) => item !== feature) : [...current, feature]);
-  const copyPrompt = async () => { await navigator.clipboard?.writeText(prompt); setCopied(true); setTimeout(() => setCopied(false), 1800); };
-  return <div className="page-wrap"><PageHeader eyebrow="Turn an idea into a clear brief" title="Prompt Builder" description="Choose a few details about your activity. We will assemble a practical prompt you can copy into your AI agent." action={<div className="header-badge"><WandSparkles size={16} /> copy-ready output</div>} /><div className="builder-layout"><section className="builder-form"><div className="form-section"><div className="form-heading"><span>01</span><div><h3>Subject</h3><p>Which curriculum area is this for?</p></div></div><div className="select-grid">{subjects.map((item) => <button className={`select-chip ${subjectKey === item.key ? "chip-selected" : ""}`} key={item.key} onClick={() => setSubjectKey(item.key)}><span style={{ color: item.color }}>{item.short}</span>{item.name}</button>)}</div></div><div className="form-section"><div className="form-heading"><span>02</span><div><h3>Activity details</h3><p>Give the agent enough context to make a useful first version.</p></div></div><label className="field-label">Topic or learning goal<input value={topic} onChange={(event) => setTopic(event.target.value)} placeholder="e.g. identifying persuasive techniques" /></label><div className="field-row"><label className="field-label">Activity type<select value={activityType} onChange={(event) => setActivityType(event.target.value)}>{activityTypes.map((type) => <option key={type}>{type}</option>)}</select></label><label className="field-label">Learner level<select value={level} onChange={(event) => setLevel(event.target.value)}><option>Primary school</option><option>Secondary school</option><option>Senior secondary</option><option>Mixed ability</option></select></label></div></div><div className="form-section"><div className="form-heading"><span>03</span><div><h3>Useful features</h3><p>Select what you would like the page to include.</p></div></div><div className="feature-list">{featureOptions.map((feature) => <button className={`feature-toggle ${features.includes(feature) ? "feature-on" : ""}`} key={feature} onClick={() => toggleFeature(feature)}><span className="checkbox">{features.includes(feature) && <Check size={13} />}</span>{feature}</button>)}</div></div></section><aside className="prompt-output"><div className="output-top"><div><span className="eyebrow">Your generated prompt</span><h2>Ready to copy</h2></div><span className="output-status"><span className="status-dot" /> live</span></div><pre>{prompt}</pre><button className="button-primary copy-button" onClick={copyPrompt}>{copied ? <Check size={16} /> : <Clipboard size={16} />}{copied ? "Copied to clipboard" : "Copy prompt"}</button></aside></div></div>;
+export default function App() {
+  return <BrowserRouter><AppContent /></BrowserRouter>;
 }
