@@ -100,17 +100,13 @@ async function configureDevelopment(app: Hono): Promise<ViteDevServer> {
         }
       }
 
-      let result;
-      try {
-        result = await vite.transformRequest(url);
-      } catch {
-        result = null;
-      }
+      const result = await vite.transformRequest(url);
 
       if (result) {
+        const contentType = result.moduleType === "css" ? "text/css" : "application/javascript";
         return new Response(result.code, {
           headers: {
-            "Content-Type": "application/javascript",
+            "Content-Type": contentType,
             "Cache-Control": "no-store, must-revalidate",
           },
         });
