@@ -146,6 +146,7 @@ function AppContent() {
       </aside>
       <main className="main-content">
         <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={19} /></button>
+        <button className={`sidebar-reopen ${collapsed ? "is-visible" : ""}`} onClick={() => setCollapsed(false)} aria-label="Expand sidebar"><PanelLeftOpen size={18} /></button>
         {isHome && <HomePage navigateTo={navigateTo} />}
         {isGettingStarted && <GettingStartedPage navigateTo={navigateTo} />}
         {isBuilder && <PromptBuilderPage subject={subject} setSubject={setSubject} topic={topic} setTopic={setTopic} activityType={activityType} setActivityType={setActivityType} level={level} setLevel={setLevel} selectedFeatures={selectedFeatures} toggleFeature={toggleFeature} prompt={prompt} copied={copied} copyPrompt={copyPrompt} />}
