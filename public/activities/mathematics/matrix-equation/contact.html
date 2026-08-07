@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Education Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="has-subject-sidebar">
+  <aside class="subject-sidebar" aria-label="Subjects">
+    <div class="subject-sidebar-header">
+      <button class="sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-expanded="true">‹</button>
+    </div>
+    <nav class="subject-nav">
+      <div class="nav-section-header">課程</div>
+      <a href="index.html" class="subject-link" title="Chinese"><span class="subject-icon">文</span><span class="subject-name">Chinese</span></a>
+      <a href="index.html" class="subject-link" title="English"><span class="subject-icon">A</span><span class="subject-name">English</span></a>
+      <a href="maths-question.html" class="subject-link" title="Maths"><span class="subject-icon">∑</span><span class="subject-name">Maths</span></a>
+    </nav>
+  </aside>
+  <button class="sidebar-mobile-toggle" type="button" aria-label="Open subject navigation">☰</button>
+  <button class="sidebar-overlay" type="button" aria-label="Close subject navigation"></button>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-placeholder">ED</div>
+        <div>
+          <h1>Education Demo</h1>
+          <p>Learn with purpose. Grow with confidence.</p>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h2>Contact Us</h2>
+      </div>
+    </section>
+
+    <section class="container content">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h3>Get in Touch</h3>
+          <p><strong>Address:</strong> 123 Education Lane, Springfield</p>
+          <p><strong>Phone:</strong> (555) 123-4567</p>
+          <p><strong>Email:</strong> info@riversideacademy.edu</p>
+          <p><strong>Office Hours:</strong> Mon - Fri, 8:00 AM - 4:00 PM</p>
+        </div>
+
+        <form class="contact-form" action="#" method="post">
+          <h3>Send a Message</h3>
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required>
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+
+          <button type="submit" class="btn">Send</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Education Demo. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="navigation.js?v=4"></script>
+</body>
+</html>

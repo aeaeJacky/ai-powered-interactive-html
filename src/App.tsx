@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
+import MatrixEquationActivity from "./components/MatrixEquationActivity";
 import {
   ArrowLeft,
   ArrowRight,
@@ -69,7 +70,12 @@ const subjects: Subject[] = [
 ];
 
 const subjectExamples: Record<string, Activity[]> = {
-  chinese: [], english: [], mathematics: [], "civic-education": [], physics: [], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [], dat: [], va: [], music: [],
+  chinese: [], english: [], mathematics: [{
+    title: "Solving a Matrix Equation Step by Step",
+    description: "An animated, self-contained activity that matches corresponding matrix entries and reveals the solution one step at a time.",
+    format: "Interactive walkthrough",
+    url: "/activities/mathematics/matrix-equation/maths-question.html",
+  }], "civic-education": [], physics: [], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [], dat: [], va: [], music: [],
 };
 
 const activityTypes = ["Interactive quiz", "Matching activity", "Drag and drop", "Flashcards", "Simulation", "Timeline"];
@@ -97,6 +103,7 @@ function AppContent() {
   const isBuilder = location.pathname === "/prompt-builder";
   const isGettingStarted = location.pathname === "/getting-started";
   const isHome = location.pathname === "/";
+  const isMatrixActivity = location.pathname === "/activities/mathematics/matrix-equation" || location.pathname === "/activities/mathematics/matrix-equation/";
 
   const prompt = useMemo(() => {
     const selectedSubject = subjectBySlug(subject)?.name ?? "English";
@@ -127,7 +134,7 @@ function AppContent() {
       <aside className={`sidebar ${collapsed ? "sidebar-collapsed" : ""} ${mobileOpen ? "sidebar-mobile-open" : ""}`}>
         <div className="sidebar-brand">
           <div className="brand-mark"><Sparkles size={17} /></div>
-          {!collapsed && <div><strong>ai-powered</strong><span>interactive html</span></div>}
+          <div className="sidebar-brand-copy"><strong>ai-powered</strong><span>interactive html</span></div>
           {mobileOpen && <button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X size={18} /></button>}
         </div>
         <div className="sidebar-section-label">Workspace</div>
@@ -140,17 +147,19 @@ function AppContent() {
         <nav className="subject-nav">
           {subjects.map((item) => <NavButton key={item.slug} subject={item} label={item.name} selected={currentSlug === item.slug} collapsed={collapsed} onClick={() => navigateTo(`/subject/${item.slug}`)} />)}
         </nav>
-        <button className="collapse-button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+        <button className="collapse-button" onClick={() => setCollapsed((value) => !value)} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
           {collapsed ? <PanelLeftOpen size={15} /> : <><PanelLeftClose size={15} /><span>Collapse sidebar</span><ChevronLeft size={14} /></>}
         </button>
       </aside>
-      <main className="main-content">
-        <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={19} /></button>
-        <button className={`sidebar-reopen ${collapsed ? "is-visible" : ""}`} onClick={() => setCollapsed(false)} aria-label="Expand sidebar"><PanelLeftOpen size={18} /></button>
-        {isHome && <HomePage navigateTo={navigateTo} />}
-        {isGettingStarted && <GettingStartedPage navigateTo={navigateTo} />}
-        {isBuilder && <PromptBuilderPage subject={subject} setSubject={setSubject} topic={topic} setTopic={setTopic} activityType={activityType} setActivityType={setActivityType} level={level} setLevel={setLevel} selectedFeatures={selectedFeatures} toggleFeature={toggleFeature} prompt={prompt} copied={copied} copyPrompt={copyPrompt} />}
-        {currentSubject && <SubjectPage subject={currentSubject} activities={subjectExamples[currentSubject.slug] ?? []} navigateTo={navigateTo} />}
+      <main className={`main-content ${isMatrixActivity ? "activity-main-content" : ""}`}>
+        {isMatrixActivity ? <MatrixEquationActivity onBack={() => navigateTo("/subject/mathematics")} /> : <>
+          <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={19} /></button>
+          <button className={`sidebar-reopen ${collapsed ? "is-visible" : ""}`} onClick={() => setCollapsed(false)} aria-label="Expand sidebar"><PanelLeftOpen size={18} /></button>
+          {!isMatrixActivity && isHome && <HomePage navigateTo={navigateTo} />}
+          {isGettingStarted && <GettingStartedPage navigateTo={navigateTo} />}
+          {isBuilder && <PromptBuilderPage subject={subject} setSubject={setSubject} topic={topic} setTopic={setTopic} activityType={activityType} setActivityType={setActivityType} level={level} setLevel={setLevel} selectedFeatures={selectedFeatures} toggleFeature={toggleFeature} prompt={prompt} copied={copied} copyPrompt={copyPrompt} />}
+          {currentSubject && <SubjectPage subject={currentSubject} activities={subjectExamples[currentSubject.slug] ?? []} navigateTo={navigateTo} />}
+        </>}
       </main>
     </div>
   );
@@ -159,7 +168,7 @@ function AppContent() {
 function NavButton({ icon, subject, label, selected, collapsed, onClick }: { icon?: React.ReactNode; subject?: Subject; label: string; selected: boolean; collapsed: boolean; onClick: () => void }) {
   return <button className={`nav-button ${selected ? "nav-selected" : ""}`} onClick={onClick} title={collapsed ? label : undefined}>
     {subject ? <span className="subject-icon" style={{ background: subject.soft, color: subject.color }}>{subject.short}</span> : <span className="nav-icon">{icon}</span>}
-    {!collapsed && <><span>{label}</span>{subject && selected && <ChevronRight className="nav-chevron" size={14} />}</>}
+    <span className="nav-label">{label}</span>{subject && selected && <ChevronRight className="nav-chevron" size={14} />}
   </button>;
 }
 
@@ -189,7 +198,7 @@ function ResourceCard({ number, icon, title, description, action, onClick }: { n
 }
 
 function SubjectPage({ subject, activities, navigateTo }: { subject: Subject; activities: Activity[]; navigateTo: (path: string) => void }) {
-  return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}. Use these activities as inspiration for your own classroom ideas.`} badge={`${activities.length} examples`} /><div className="subject-intro" style={{ borderLeftColor: subject.color }}><div><h2>Interactive activities for {subject.name}</h2><p>Examples will be added here as they are created. Each activity can include a preview and a link to open the complete HTML experience.</p></div><div className="gallery-status"><span className="status-dot" /> Ready for examples</div></div>{activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} />)}</div> : <EmptyGallery subject={subject} navigateTo={navigateTo} />}<div className="add-note"><span className="note-icon"><Plus size={16} /></span><div><strong>Adding a new example</strong><p>Activities are added manually in the site code, so the gallery stays easy to curate for demonstrations.</p></div><Code2 size={17} /></div></div>;
+  return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}. Use these activities as inspiration for your own classroom ideas.`} badge={`${activities.length} examples`} /><div className="subject-intro" style={{ borderLeftColor: subject.color }}><div><h2>Interactive activities for {subject.name}</h2><p>Examples will be added here as they are created. Each activity can include a preview and a link to open the complete HTML experience.</p></div><div className="gallery-status"><span className="status-dot" /> Ready for examples</div></div>{activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} navigateTo={navigateTo} />)}</div> : <EmptyGallery subject={subject} navigateTo={navigateTo} />}<div className="add-note"><span className="note-icon"><Plus size={16} /></span><div><strong>Adding a new example</strong><p>Activities are added manually in the site code, so the gallery stays easy to curate for demonstrations.</p></div><Code2 size={17} /></div></div>;
 }
 
 function EmptyGallery({ subject, navigateTo }: { subject: Subject; navigateTo: (path: string) => void }) {
@@ -197,7 +206,8 @@ function EmptyGallery({ subject, navigateTo }: { subject: Subject; navigateTo: (
 }
 
 function ActivityCard({ activity }: { activity: Activity }) {
-  return <article className="activity-card"><div className="activity-preview"><div className="preview-label"><Play size={11} /> Live preview</div><div className="preview-placeholder"><Sparkles size={22} /><span>Interactive preview</span></div></div><div className="activity-info"><div className="activity-format">{activity.format}</div><h3>{activity.title}</h3><p>{activity.description}</p><a className="button-primary" href={activity.url} target="_blank" rel="noreferrer">Open full activity <ArrowUpRight size={14} /></a></div></article>;
+  const internalActivity = activity.url === "/activities/mathematics/matrix-equation/maths-question.html";
+  return <article className="activity-card"><div className="activity-preview"><div className="preview-label"><Play size={11} /> Live preview</div><div className="preview-placeholder"><Sparkles size={22} /><span>Interactive preview</span></div></div><div className="activity-info"><div className="activity-format">{activity.format}</div><h3>{activity.title}</h3><p>{activity.description}</p><a className="button-primary" href={internalActivity ? "/activities/mathematics/matrix-equation" : activity.url}>{internalActivity ? "View full activity" : "Open full activity"} <ArrowUpRight size={14} /></a></div></article>;
 }
 
 function GettingStartedPage({ navigateTo }: { navigateTo: (path: string) => void }) {

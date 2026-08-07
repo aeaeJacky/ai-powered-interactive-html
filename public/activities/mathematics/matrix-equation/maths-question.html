@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathematics · Education Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --ink: #17263b;
+      --muted: #607089;
+      --blue: #0b3d91;
+      --blue-soft: #eaf1ff;
+      --gold: #f3b642;
+      --green: #16794c;
+      --green-soft: #e6f6ed;
+      --line: #d6e1f2;
+      --paper: #ffffff;
+      --background: #f4f7fb;
+    }
+
+    .maths-page {
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 90% 5%, rgba(243, 182, 66, 0.18), transparent 24rem),
+        var(--background);
+    }
+
+    .maths-hero {
+      padding: 3.5rem 0 2.5rem;
+      color: #ffffff;
+      background: linear-gradient(135deg, #082d6d, #2361c4);
+    }
+
+    .maths-kicker {
+      margin: 0 0 0.7rem;
+      color: #ffd477;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .maths-hero h2 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1.08;
+    }
+
+    .maths-hero p {
+      max-width: 680px;
+      margin: 1rem 0 0;
+      color: #e6efff;
+      font-size: 1.08rem;
+    }
+
+    .maths-main {
+      padding: 2rem 0 4rem;
+    }
+
+    .maths-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .maths-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(27, 57, 103, 0.09);
+    }
+
+    .question-card {
+      padding: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .question-card h3,
+    .steps-card h3,
+    .method-card h3 {
+      margin: 0;
+      color: var(--blue);
+      font-size: 1.25rem;
+    }
+
+    .question-card h3 {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .question-label {
+      display: inline-flex;
+      padding: 0.35rem 0.65rem;
+      color: #805400;
+      background: #fff5d9;
+      border: 1px solid #f5d98d;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .question-text {
+      margin: 1.5rem 0 0;
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      line-height: 1.9;
+    }
+
+    .matrix-line {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.5rem, 1.4vw, 1rem);
+      margin: 1.5rem 0;
+      padding: 1.5rem 1rem;
+      overflow-x: auto;
+      color: var(--ink);
+      background: #f8fbff;
+      border: 1px solid #e0eaf8;
+      border-radius: 14px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.1rem, 3vw, 1.65rem);
+    }
+
+    .matrix-group {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .matrix-name {
+      flex: 0 0 auto;
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .matrix {
+      display: inline-grid;
+      grid-template-columns: repeat(2, minmax(5rem, auto));
+      gap: 0.6rem 1.2rem;
+      position: relative;
+      padding: 0.55rem 1.1rem;
+      text-align: center;
+    }
+
+    .matrix::before,
+    .matrix::after {
+      content: "";
+      position: absolute;
+      top: 0.15rem;
+      bottom: 0.15rem;
+      width: 0.7rem;
+      border-top: 0.16rem solid var(--blue);
+      border-bottom: 0.16rem solid var(--blue);
+    }
+
+    .matrix::before {
+      left: 0;
+      border-left: 0.16rem solid var(--blue);
+    }
+
+    .matrix::after {
+      right: 0;
+      border-right: 0.16rem solid var(--blue);
+    }
+
+    .matrix-cell {
+      padding: 0.2rem 0.4rem;
+      border-radius: 8px;
+      transition: background 0.35s ease, color 0.35s ease, transform 0.35s ease;
+    }
+
+    .matrix-cell.active {
+      color: #744900;
+      background: #ffe29b;
+      transform: scale(1.08);
+    }
+
+    @keyframes pairPulse {
+      0%, 100% { transform: scale(1.08); }
+      50% { transform: scale(1.15); }
+    }
+
+    .matrix-cell.pair-1 {
+      background: #ffe29b; color: #744900;
+      transform: scale(1.08);
+      animation: pairPulse 0.9s ease-in-out infinite;
+    }
+    .matrix-cell.pair-2 {
+      background: #d4f0ff; color: #0b3d91;
+      transform: scale(1.08);
+      animation: pairPulse 0.9s ease-in-out 0.22s infinite;
+    }
+    .matrix-cell.pair-3 {
+      background: #e6f6ed; color: #16794c;
+      transform: scale(1.08);
+      animation: pairPulse 0.9s ease-in-out 0.44s infinite;
+    }
+    .matrix-cell.pair-4 {
+      background: #f3e6ff; color: #6a0dad;
+      transform: scale(1.08);
+      animation: pairPulse 0.9s ease-in-out 0.66s infinite;
+    }
+
+    .equals {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .step-progress {
+      height: 0.55rem;
+      margin: 1.75rem 0 0.65rem;
+      overflow: hidden;
+      background: #e9eff8;
+      border-radius: 999px;
+    }
+
+    .step-progress-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #f07a45);
+      border-radius: inherit;
+      transition: width 0.45s ease;
+    }
+
+    .progress-caption {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.5rem;
+    }
+
+    .control-button {
+      padding: 0.7rem 1rem;
+      color: var(--blue);
+      background: #ffffff;
+      border: 1px solid #b9cbe7;
+      border-radius: 10px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .control-button:hover:not(:disabled) {
+      color: #ffffff;
+      background: var(--blue);
+      transform: translateY(-2px);
+    }
+
+    .control-button.primary {
+      color: #ffffff;
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .control-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+    }
+
+    .steps-card {
+      padding: 1.5rem;
+    }
+
+    .steps-list {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1.2rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      gap: 0.75rem;
+      align-items: start;
+      padding: 0.85rem;
+      color: var(--muted);
+      border: 1px solid #e1e9f5;
+      border-radius: 12px;
+      opacity: 0.52;
+      transform: translateX(8px);
+      transition: opacity 0.35s ease, transform 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+    }
+
+    .step-item.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .step-item.current {
+      color: var(--ink);
+      background: var(--blue-soft);
+      border-color: #9db9ed;
+    }
+
+    .step-number {
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      color: #ffffff;
+      background: #9db2d1;
+      border-radius: 50%;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .step-item.visible .step-number {
+      background: var(--blue);
+    }
+
+    .step-item.current .step-number {
+      color: #724900;
+      background: var(--gold);
+    }
+
+    .step-item strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      color: var(--blue);
+    }
+
+    .equation {
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.08rem;
+    }
+
+    .method-card {
+      grid-column: 1 / -1;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #f0fbf5, #ffffff);
+      border-color: #bde4cd;
+    }
+
+    .method-card p {
+      margin: 0.65rem 0 0;
+      color: #416451;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .answer {
+      padding: 0.9rem 0.5rem;
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid #bde4cd;
+      border-radius: 12px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .answer.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: #d9e7ff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 800px) {
+      .maths-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .method-card {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .matrix-line {
+        gap: 0.45rem;
+        padding: 1rem 0.4rem;
+      }
+
+      .matrix {
+        grid-template-columns: repeat(2, minmax(3.8rem, auto));
+        gap: 0.45rem 0.6rem;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+      }
+
+      .matrix::before,
+      .matrix::after {
+        width: 0.55rem;
+        border-width: 0.13rem;
+      }
+
+      .answer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body class="has-subject-sidebar">
+  <aside class="subject-sidebar" aria-label="Subjects">
+    <div class="subject-sidebar-header">
+      <button class="sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-expanded="true">‹</button>
+    </div>
+    <nav class="subject-nav">
+      <div class="nav-section-header">課程</div>
+      <a href="index.html" class="subject-link" title="Chinese"><span class="subject-icon">文</span><span class="subject-name">Chinese</span></a>
+      <a href="index.html" class="subject-link" title="English"><span class="subject-icon">A</span><span class="subject-name">English</span></a>
+      <a href="maths-question.html" class="subject-link active" title="Maths"><span class="subject-icon">∑</span><span class="subject-name">Maths</span></a>
+    </nav>
+  </aside>
+  <button class="sidebar-mobile-toggle" type="button" aria-label="Open subject navigation">☰</button>
+  <button class="sidebar-overlay" type="button" aria-label="Close subject navigation"></button>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-placeholder">ED</div>
+        <div>
+          <h1>Education Demo</h1>
+          <p>Learn with purpose. Grow with confidence.</p>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="maths-question.html" class="active">Maths</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <div class="maths-page">
+    <header class="maths-hero">
+      <div class="container">
+        <p class="maths-kicker">interactive mathematics · matrix equations</p>
+        <h2>solve the matrix question step by step</h2>
+        <p>match the entries in the same positions, then solve one simple equation at a time.</p>
+        <a class="back-link" href="index.html">← back to Education Demo</a>
+      </div>
+    </header>
+
+    <main class="maths-main">
+      <div class="container maths-layout">
+        <section class="maths-card question-card" aria-labelledby="question-title">
+          <h3 id="question-title">
+            <span>教學例題 15.1</span>
+            <span class="question-label">15A001</span>
+          </h3>
+
+          <p class="question-text">設 <em>A</em> 及 <em>B</em> 為下列矩陣。若 <em>A = B</em>，求 <em>a</em>、<em>b</em>、<em>c</em> 和 <em>d</em>。</p>
+
+          <div class="matrix-line" aria-label="A equals matrix B">
+            <span class="matrix-group">
+              <span class="matrix-name">A =</span>
+              <span class="matrix" aria-label="matrix A">
+                <span class="matrix-cell" data-cell="a1">2a</span>
+                <span class="matrix-cell" data-cell="a2">a + 2b</span>
+                <span class="matrix-cell" data-cell="a3">b − c</span>
+                <span class="matrix-cell" data-cell="a4">d + a</span>
+              </span>
+            </span>
+            <span class="equals">=</span>
+            <span class="matrix-group">
+              <span class="matrix-name">B =</span>
+              <span class="matrix" aria-label="matrix B">
+                <span class="matrix-cell" data-cell="b1">6</span>
+                <span class="matrix-cell" data-cell="b2">5</span>
+                <span class="matrix-cell" data-cell="b3">7</span>
+                <span class="matrix-cell" data-cell="b4">−3</span>
+              </span>
+            </span>
+          </div>
+
+          <div class="step-progress" aria-hidden="true">
+            <div class="step-progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-caption">
+            <span id="progressText">ready to begin</span>
+            <span id="stepCount">step 0 of 6</span>
+          </div>
+
+          <div class="controls" aria-label="solution controls">
+            <button class="control-button" id="previousButton" type="button">← previous</button>
+            <button class="control-button primary" id="playButton" type="button">▶ play solution</button>
+            <button class="control-button" id="nextButton" type="button">next →</button>
+            <button class="control-button" id="restartButton" type="button">↺ restart</button>
+          </div>
+        </section>
+
+        <aside class="maths-card steps-card" aria-labelledby="steps-title">
+          <h3 id="steps-title">solution steps</h3>
+          <ol class="steps-list">
+            <li class="step-item" data-step="1">
+              <span class="step-number">1</span>
+              <div><strong>compare positions</strong><span>equal matrices have equal entries in the same position.</span></div>
+            </li>
+            <li class="step-item" data-step="2">
+              <span class="step-number">2</span>
+              <div><strong>find a</strong><span class="equation">2a = 6 → a = 3</span></div>
+            </li>
+            <li class="step-item" data-step="3">
+              <span class="step-number">3</span>
+              <div><strong>find b</strong><span class="equation">a + 2b = 5 → 3 + 2b = 5 → b = 1</span></div>
+            </li>
+            <li class="step-item" data-step="4">
+              <span class="step-number">4</span>
+              <div><strong>find c</strong><span class="equation">b − c = 7 → 1 − c = 7 → c = −6</span></div>
+            </li>
+            <li class="step-item" data-step="5">
+              <span class="step-number">5</span>
+              <div><strong>find d</strong><span class="equation">d + a = −3 → d + 3 = −3 → d = −6</span></div>
+            </li>
+            <li class="step-item" data-step="6">
+              <span class="step-number">6</span>
+              <div><strong>check the answer</strong><span>substituting the values reproduces matrix B.</span></div>
+            </li>
+          </ol>
+        </aside>
+
+        <section class="maths-card method-card" aria-live="polite">
+          <h3 id="methodTitle">method: compare corresponding entries</h3>
+          <p id="methodText">press “play solution” or “next” to reveal the working.</p>
+          <div class="answer-grid" id="answerGrid" aria-label="final answers">
+            <div class="answer">a = 3</div>
+            <div class="answer">b = 1</div>
+            <div class="answer">c = −6</div>
+            <div class="answer">d = −6</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const steps = [
+      {
+        title: "method: compare corresponding entries",
+        text: "because A = B, the entries in matching positions are equal. we can solve four small equations.",
+        cells: [],
+        pairCells: true
+      },
+      {
+        title: "step 1: compare the top-left entries",
+        text: "the top-left entries give 2a = 6. divide both sides by 2: a = 3.",
+        cells: ["a1", "b1"]
+      },
+      {
+        title: "step 2: compare the top-right entries",
+        text: "a + 2b = 5. replace a with 3: 3 + 2b = 5, so 2b = 2 and b = 1.",
+        cells: ["a2", "b2"]
+      },
+      {
+        title: "step 3: compare the bottom-left entries",
+        text: "b − c = 7. replace b with 1: 1 − c = 7, so −c = 6 and c = −6.",
+        cells: ["a3", "b3"]
+      },
+      {
+        title: "step 4: compare the bottom-right entries",
+        text: "d + a = −3. replace a with 3: d + 3 = −3, so d = −6.",
+        cells: ["a4", "b4"]
+      },
+      {
+        title: "step 5: check all four values",
+        text: "a = 3, b = 1, c = −6 and d = −6. every corresponding entry now matches.",
+        cells: [],
+        pairCells: true
+      }
+    ];
+
+    let currentStep = 0;
+    let playTimer = null;
+
+    const methodTitle = document.getElementById("methodTitle");
+    const methodText = document.getElementById("methodText");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+    const stepCount = document.getElementById("stepCount");
+    const previousButton = document.getElementById("previousButton");
+    const nextButton = document.getElementById("nextButton");
+    const playButton = document.getElementById("playButton");
+    const restartButton = document.getElementById("restartButton");
+    const stepItems = [...document.querySelectorAll(".step-item")];
+    const answers = [...document.querySelectorAll(".answer")];
+    const cells = [...document.querySelectorAll(".matrix-cell")];
+
+    function renderStep() {
+      const step = steps[currentStep];
+      methodTitle.textContent = step.title;
+      methodText.textContent = step.text;
+      progressFill.style.width = `${(currentStep / (steps.length - 1)) * 100}%`;
+      progressText.textContent = currentStep === 0 ? "ready to begin" : currentStep === steps.length - 1 ? "solution complete" : "working through the equation";
+      stepCount.textContent = `step ${currentStep} of ${steps.length - 1}`;
+      previousButton.disabled = currentStep === 0;
+      nextButton.disabled = currentStep === steps.length - 1;
+
+      const pairMap = {
+        "a1": "pair-1", "b1": "pair-1",
+        "a2": "pair-2", "b2": "pair-2",
+        "a3": "pair-3", "b3": "pair-3",
+        "a4": "pair-4", "b4": "pair-4"
+      };
+      cells.forEach((cell) => {
+        cell.classList.remove("active", "pair-1", "pair-2", "pair-3", "pair-4");
+        if (step.pairCells) {
+          const cls = pairMap[cell.dataset.cell];
+          if (cls) cell.classList.add(cls);
+        } else if (step.cells.includes(cell.dataset.cell)) {
+          cell.classList.add("active");
+        }
+      });
+      stepItems.forEach((item) => {
+        const itemStep = Number(item.dataset.step);
+        item.classList.toggle("visible", itemStep <= currentStep + 1);
+        item.classList.toggle("current", itemStep === currentStep + 1);
+      });
+      answers.forEach((answer) => answer.classList.toggle("show", currentStep === steps.length - 1));
+    }
+
+    function stopPlaying() {
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+      }
+      playButton.textContent = "▶ play solution";
+    }
+
+    function goToStep(step) {
+      currentStep = Math.max(0, Math.min(steps.length - 1, step));
+      renderStep();
+      if (currentStep === steps.length - 1) stopPlaying();
+    }
+
+    previousButton.addEventListener("click", () => {
+      stopPlaying();
+      goToStep(currentStep - 1);
+    });
+
+    nextButton.addEventListener("click", () => {
+      stopPlaying();
+      goToStep(currentStep + 1);
+    });
+
+    restartButton.addEventListener("click", () => {
+      stopPlaying();
+      goToStep(0);
+    });
+
+    playButton.addEventListener("click", () => {
+      if (playTimer) {
+        stopPlaying();
+        return;
+      }
+      if (currentStep === steps.length - 1) goToStep(0);
+      playButton.textContent = "Ⅱ pause solution";
+      playTimer = setInterval(() => goToStep(currentStep + 1), 2300);
+    });
+
+    renderStep();
+  </script>
+  <script src="navigation.js?v=4"></script>
+</body>
+</html>
