@@ -74,7 +74,7 @@ const subjectExamples: Record<string, Activity[]> = {
     title: "Matilda: Find the Words",
     description: "A classroom-friendly word-search game based on Chapters 1 and 2 of Matilda. Students find five hidden vocabulary words across and down the grid.",
     format: "Interactive word search",
-    url: "/activities/english/matilda/",
+    url: "/activities/english/matilda/index.html",
   }], mathematics: [{
     title: "Solving a Matrix Equation Step by Step",
     description: "An animated, self-contained activity that matches corresponding matrix entries and reveals the solution one step at a time.",

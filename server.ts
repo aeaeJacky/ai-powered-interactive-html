@@ -51,7 +51,8 @@ function configureProduction(app: Hono) {
     const path = c.req.path;
     if (path.startsWith("/api/") || path.startsWith("/assets/")) return next();
 
-    const file = Bun.file(`./dist${path}`);
+    const filePath = path.endsWith("/") ? `${path}index.html` : path;
+    const file = Bun.file(`./dist${filePath}`);
     if (await file.exists()) {
       const stat = await file.stat();
       if (stat && !stat.isDirectory()) {
@@ -90,7 +91,8 @@ async function configureDevelopment(app: Hono): Promise<ViteDevServer> {
         });
       }
 
-      const publicFile = Bun.file(`./public${url}`);
+      const publicPath = url.endsWith("/") ? `${url}index.html` : url;
+      const publicFile = Bun.file(`./public${publicPath}`);
       if (await publicFile.exists()) {
         const stat = await publicFile.stat();
         if (stat && !stat.isDirectory()) {
