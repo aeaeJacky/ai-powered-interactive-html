@@ -70,7 +70,12 @@ const subjects: Subject[] = [
 ];
 
 const subjectExamples: Record<string, Activity[]> = {
-  chinese: [], english: [], mathematics: [{
+  chinese: [], english: [{
+    title: "Matilda: Find the Words",
+    description: "A classroom-friendly word-search game based on Chapters 1 and 2 of Matilda. Students find five hidden vocabulary words across and down the grid.",
+    format: "Interactive word search",
+    url: "/activities/english/matilda/",
+  }], mathematics: [{
     title: "Solving a Matrix Equation Step by Step",
     description: "An animated, self-contained activity that matches corresponding matrix entries and reveals the solution one step at a time.",
     format: "Interactive walkthrough",
@@ -198,7 +203,7 @@ function ResourceCard({ number, icon, title, description, action, onClick }: { n
 }
 
 function SubjectPage({ subject, activities, navigateTo }: { subject: Subject; activities: Activity[]; navigateTo: (path: string) => void }) {
-  return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}. Use these activities as inspiration for your own classroom ideas.`} badge={`${activities.length} examples`} /><div className="subject-intro" style={{ borderLeftColor: subject.color }}><div><h2>Interactive activities for {subject.name}</h2><p>Examples will be added here as they are created. Each activity can include a preview and a link to open the complete HTML experience.</p></div><div className="gallery-status"><span className="status-dot" /> Ready for examples</div></div>{activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} navigateTo={navigateTo} />)}</div> : <EmptyGallery subject={subject} navigateTo={navigateTo} />}<div className="add-note"><span className="note-icon"><Plus size={16} /></span><div><strong>Adding a new example</strong><p>Activities are added manually in the site code, so the gallery stays easy to curate for demonstrations.</p></div><Code2 size={17} /></div></div>;
+  return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}. Use these activities as inspiration for your own classroom ideas.`} badge={`${activities.length} examples`} /><div className="subject-intro" style={{ borderLeftColor: subject.color }}><div><h2>Interactive activities for {subject.name}</h2><p>Examples will be added here as they are created. Each activity can include a preview and a link to open the complete HTML experience.</p></div><div className="gallery-status"><span className="status-dot" /> Ready for examples</div></div>{activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} />)}</div> : <EmptyGallery subject={subject} navigateTo={navigateTo} />}<div className="add-note"><span className="note-icon"><Plus size={16} /></span><div><strong>Adding a new example</strong><p>Activities are added manually in the site code, so the gallery stays easy to curate for demonstrations.</p></div><Code2 size={17} /></div></div>;
 }
 
 function EmptyGallery({ subject, navigateTo }: { subject: Subject; navigateTo: (path: string) => void }) {
