@@ -19,6 +19,14 @@ const targets = {
   OIL: [[6, 9], [7, 9], [8, 9]]
 };
 
+const wordColors = {
+  BRAIN: '#f3a6a6',
+  SAWDUST: '#a9d99a',
+  BINGO: '#c6b5ee',
+  GARAGE: '#f1cf68',
+  OIL: '#9ed8e6'
+};
+
 const gridEl = document.querySelector('#grid');
 const wordsEl = document.querySelector('#words');
 const statusEl = document.querySelector('#status');
@@ -40,7 +48,7 @@ function updateStatus() {
   completeEl.classList.toggle('show', count === Object.keys(targets).length);
 }
 function renderWords() {
-  wordsEl.innerHTML = Object.keys(targets).map(word => `<li class="word${found.has(word) ? ' found' : ''}" data-word="${word}">${word.toLowerCase()}</li>`).join('');
+  wordsEl.innerHTML = Object.keys(targets).map(word => `<li class="word${found.has(word) ? ' found' : ''}" data-word="${word}" style="--word-color: ${wordColors[word]}">${word.toLowerCase()}</li>`).join('');
 }
 function renderGrid() {
   gridLetters.forEach((row, rowIndex) => [...row].forEach((letter, colIndex) => {
@@ -86,7 +94,10 @@ function chooseCell(row, col) {
   const match = Object.keys(targets).find(word => !found.has(word) && (selection.join('|') === cellsFor(word).join('|') || reversed.join('|') === cellsFor(word).join('|')));
   if (match) {
     found.add(match);
-    selection.forEach(cellKey => cells.get(cellKey).classList.add('found'));
+    selection.forEach(cellKey => {
+      const cell = cells.get(cellKey);
+      cell.classList.add('found', `found-${match.toLowerCase()}`);
+    });
     renderWords();
     updateStatus();
     hintEl.hidden = true;
@@ -111,6 +122,10 @@ function reset() {
   firstCell = null;
   hintIndex = 0;
   clearSelection();
+  gridEl.querySelectorAll('.found').forEach(cell => {
+    cell.classList.remove('found');
+    Object.keys(targets).forEach(word => cell.classList.remove(`found-${word.toLowerCase()}`));
+  });
   hintEl.hidden = true;
   renderWords();
   updateStatus();
