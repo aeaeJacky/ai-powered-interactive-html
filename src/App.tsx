@@ -70,17 +70,27 @@ const subjects: Subject[] = [
 ];
 
 const subjectExamples: Record<string, Activity[]> = {
-  chinese: [], english: [{
+  chinese: [],   english: [{
     title: "Matilda: Find the Words",
     description: "A classroom-friendly word-search game based on Chapters 1 and 2 of Matilda. Students find five hidden vocabulary words across and down the grid.",
     format: "Interactive word search",
     url: "/activities/english/matilda/index.html",
+  }, {
+    title: "Matilda: What Can You Remember? (p.48)",
+    description: "A two-part review activity for Chapters 5 and 6. Students match compound-word pairs in a colour-coded column game, then complete fill-in-the-blank sentences about the story.",
+    format: "Matching + fill-in-the-blank",
+    url: "/activities/english/matilda/page-48/index.html",
   }], mathematics: [{
     title: "Solving a Matrix Equation Step by Step",
     description: "An animated, self-contained activity that matches corresponding matrix entries and reveals the solution one step at a time.",
     format: "Interactive walkthrough",
     url: "/activities/mathematics/matrix-equation/maths-question.html",
-  }], "civic-education": [], physics: [], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [], dat: [], va: [], music: [],
+  }], "civic-education": [], physics: [{
+    title: "Two Projectiles, One Starting Point",
+    description: "An interactive HKAL-style question on resolving velocity components and comparing the horizontal and vertical motion of two launched balls.",
+    format: "Interactive multiple choice",
+    url: "/activities/physics/projectile-motion/index.html",
+  }], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [], dat: [], va: [], music: [],
 };
 
 const activityTypes = ["Interactive quiz", "Matching activity", "Drag and drop", "Flashcards", "Simulation", "Timeline"];

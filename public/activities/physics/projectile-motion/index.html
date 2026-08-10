@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physics · Two Projectiles</title>
+  <style>
+    :root {
+      --ink: #17263b;
+      --muted: #64758a;
+      --blue: #2868b2;
+      --blue-dark: #123b72;
+      --blue-soft: #eaf3fc;
+      --orange: #d17c37;
+      --orange-soft: #fff1e4;
+      --green: #20794e;
+      --green-soft: #e7f6ed;
+      --red: #b94242;
+      --red-soft: #fff0f0;
+      --line: #d9e4ef;
+      --paper: #ffffff;
+      --canvas: #f5f8fc;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; color: var(--ink); background: var(--canvas); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #8fc2ec; outline-offset: 3px; }
+    .page { min-height: 100vh; }
+    .hero { color: #fff; background: linear-gradient(135deg, #0d356b 0%, #2166b6 72%, #3c86c7 100%); }
+    .hero-inner, .main { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .hero-inner { padding: 42px 0 38px; }
+    .back { display: inline-flex; align-items: center; gap: 7px; padding: 0; border: 0; color: #dcecff; background: transparent; font-size: 12px; }
+    .back:hover { color: #fff; text-decoration: underline; }
+    .eyebrow { margin: 30px 0 10px; color: #ffd788; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { max-width: 800px; margin: 0; font-size: clamp(32px, 5vw, 56px); line-height: 1.04; letter-spacing: -.045em; }
+    .hero p { max-width: 760px; margin: 17px 0 0; color: #e6f0ff; font-size: 16px; line-height: 1.65; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 25px; }
+    .meta { padding: 7px 10px; border: 1px solid #ffffff30; border-radius: 999px; color: #e9f3ff; background: #ffffff12; font-size: 11px; }
+    .main { padding: 28px 0 65px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); gap: 20px; align-items: start; }
+    .card { border: 1px solid var(--line); border-radius: 17px; background: var(--paper); box-shadow: 0 14px 35px #173e6610; }
+    .question-card { padding: clamp(20px, 4vw, 34px); }
+    .card-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--blue); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .question-card h2 { margin: 19px 0 12px; color: var(--ink); font-size: clamp(21px, 3vw, 29px); line-height: 1.24; letter-spacing: -.03em; }
+    .question-card .lead { margin: 0 0 25px; color: var(--muted); font-size: 15px; line-height: 1.72; }
+    .scenario { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin: 0 0 26px; }
+    .scenario-item { padding: 14px; border-radius: 11px; background: var(--blue-soft); }
+    .scenario-item.b { background: var(--orange-soft); }
+    .scenario-title { display: flex; align-items: center; gap: 8px; color: var(--blue-dark); font-size: 13px; font-weight: 800; }
+    .scenario-item.b .scenario-title { color: #9b511f; }
+    .ball-chip { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--blue); font-size: 12px; font-weight: 800; }
+    .scenario-item.b .ball-chip { background: var(--orange); }
+    .scenario-item p { margin: 9px 0 0; color: #5f7286; font-size: 12px; line-height: 1.55; }
+    .statements { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .statement { display: grid; grid-template-columns: 29px 1fr; gap: 11px; align-items: start; color: #3c5268; font-size: 14px; line-height: 1.55; }
+    .statement-number { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid #c8d8e8; border-radius: 8px; color: var(--blue); background: #f4f8fc; font-size: 12px; font-weight: 800; }
+    .answer-label { display: block; margin: 27px 0 10px; color: var(--ink); font-size: 13px; font-weight: 800; }
+    .answers { display: grid; gap: 9px; }
+    .answer { width: 100%; display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #cfdeeb; border-radius: 10px; color: #40566c; background: #fff; text-align: left; transition: border-color .18s, background .18s, transform .18s; }
+    .answer:hover { border-color: #8bb5d8; background: #f8fbfe; transform: translateY(-1px); }
+    .answer[aria-pressed="true"] { border-color: var(--blue); color: var(--blue-dark); background: var(--blue-soft); box-shadow: 0 0 0 2px #2868b21a; }
+    .answer-letter { width: 27px; height: 27px; display: grid; place-items: center; flex: 0 0 27px; border-radius: 7px; color: var(--blue); background: #edf4fb; font-size: 12px; font-weight: 850; }
+    .answer[aria-pressed="true"] .answer-letter { color: #fff; background: var(--blue); }
+    .check-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .primary, .secondary { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 15px; border-radius: 9px; font-size: 12px; font-weight: 800; }
+    .primary { border: 1px solid var(--blue); color: #fff; background: var(--blue); box-shadow: 0 7px 15px #2868b22b; }
+    .primary:hover { background: #1e579a; }
+    .secondary { border: 1px solid #cfdeeb; color: #536a80; background: #fff; }
+    .secondary:hover { border-color: #9ebdd7; color: var(--blue); background: #f7fbff; }
+    .feedback { min-height: 0; margin-top: 17px; padding: 0; border-radius: 11px; font-size: 13px; line-height: 1.6; }
+    .feedback.visible { padding: 14px 15px; }
+    .feedback.correct { color: var(--green); background: var(--green-soft); }
+    .feedback.incorrect { color: var(--red); background: var(--red-soft); }
+    .feedback strong { display: block; margin-bottom: 3px; }
+    .side { display: grid; gap: 20px; }
+    .visual-card { overflow: hidden; }
+    .visual-heading { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .visual-heading h2 { margin: 0; font-size: 15px; letter-spacing: -.02em; }
+    .visual-heading span { color: var(--muted); font-size: 10px; }
+    .simulation { padding: 12px 12px 0; background: linear-gradient(180deg, #f8fbff, #eef5fc); }
+    canvas { display: block; width: 100%; height: auto; }
+    .sim-caption { padding: 15px 19px 19px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .sim-caption strong { color: var(--ink); }
+    .hint-card { padding: 20px; }
+    .hint-title { display: flex; align-items: center; gap: 8px; color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .hint-card h2 { margin: 13px 0 8px; font-size: 18px; letter-spacing: -.025em; }
+    .hint-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .hint-content { margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--line); color: #51677b; font-size: 13px; line-height: 1.7; }
+    .hint-content[hidden] { display: none; }
+    .hint-content code { padding: 2px 5px; border-radius: 4px; color: var(--blue-dark); background: var(--blue-soft); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+    .solution { display: none; margin-top: 20px; padding: 23px; border: 1px solid #c9e7d5; border-radius: 14px; background: #f4fcf7; }
+    .solution.visible { display: block; }
+    .solution h2 { margin: 0 0 15px; color: var(--green); font-size: 18px; }
+    .steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+    .steps li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; color: #47645a; font-size: 13px; line-height: 1.62; counter-increment: step; }
+    .steps li::before { content: counter(step); width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-size: 11px; font-weight: 800; }
+    .steps strong { color: #20583b; }
+    .footer-note { margin-top: 22px; color: #8090a0; font-size: 11px; text-align: center; }
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { grid-template-columns: 1fr 1fr; align-items: start; }
+    }
+    @media (max-width: 580px) {
+      .hero-inner, .main { width: min(100% - 28px, 1120px); }
+      .hero-inner { padding: 27px 0 29px; }
+      .eyebrow { margin-top: 25px; }
+      .hero p { font-size: 14px; }
+      .scenario { grid-template-columns: 1fr; }
+      .side { grid-template-columns: 1fr; }
+      .question-card { padding: 20px 17px; }
+      .question-card .lead { font-size: 14px; }
+      .answer { padding: 12px 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero-inner">
+        <button class="back" type="button" onclick="history.back()" aria-label="Return to the activity gallery">← Back to Physics gallery</button>
+        <div class="eyebrow">HKAL 1981 · Paper 1 · Question 34</div>
+        <h1>Two projectiles, one starting point</h1>
+        <p>Use velocity components to decide which statements about balls A and B are correct while they are travelling through the air.</p>
+        <div class="hero-meta"><span class="meta">Senior secondary</span><span class="meta">Projectile motion</span><span class="meta">Multiple choice</span></div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="layout">
+        <section class="card question-card" aria-labelledby="question-title">
+          <div class="card-label"><span>Question</span><span>Choose one answer</span></div>
+          <h2 id="question-title">Which of the following statements is/are correct?</h2>
+          <p class="lead">Two small balls <strong>A</strong> and <strong>B</strong> are launched simultaneously from the top of a building. Air resistance is negligible and both motions are in the same plane.</p>
+          <div class="scenario" aria-label="Launch conditions">
+            <div class="scenario-item"><div class="scenario-title"><span class="ball-chip">A</span> Horizontal launch</div><p>Initial velocity: <strong>10 m s⁻¹</strong> horizontally</p></div>
+            <div class="scenario-item b"><div class="scenario-title"><span class="ball-chip">B</span> Angled launch</div><p>Initial velocity: <strong>20 m s⁻¹</strong> at <strong>60°</strong> above horizontal</p></div>
+          </div>
+          <ol class="statements" aria-label="Statements">
+            <li class="statement"><span class="statement-number">1</span><span>Balls A and B travel equal vertical distances in equal times.</span></li>
+            <li class="statement"><span class="statement-number">2</span><span>Balls A and B travel equal horizontal distances in equal times.</span></li>
+            <li class="statement"><span class="statement-number">3</span><span>Balls A and B never meet.</span></li>
+          </ol>
+          <div class="answer-label" id="answer-label">Answer options</div>
+          <div class="answers" role="group" aria-labelledby="answer-label">
+            <button class="answer" type="button" data-answer="A" aria-pressed="false"><span class="answer-letter">A</span><span>(1) only</span></button>
+            <button class="answer" type="button" data-answer="B" aria-pressed="false"><span class="answer-letter">B</span><span>(3) only</span></button>
+            <button class="answer" type="button" data-answer="C" aria-pressed="false"><span class="answer-letter">C</span><span>(1) &amp; (2) only</span></button>
+            <button class="answer" type="button" data-answer="D" aria-pressed="false"><span class="answer-letter">D</span><span>(2) &amp; (3) only</span></button>
+          </div>
+          <div class="check-row"><button class="primary" id="check" type="button">Check answer</button><button class="secondary" id="reset" type="button">Reset</button></div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+          <section class="solution" id="solution" aria-labelledby="solution-title">
+            <h2 id="solution-title">Why D is correct</h2>
+            <ol class="steps">
+              <li><span><strong>Resolve B's velocity.</strong> Its horizontal component is <code>20 cos 60° = 10 m s⁻¹</code>, exactly the same as A's horizontal velocity.</span></li>
+              <li><span><strong>Compare vertical motion.</strong> A starts with vertical velocity 0, while B starts with <code>20 sin 60° = 10√3 m s⁻¹</code> upward. Their vertical distances are therefore not equal.</span></li>
+              <li><span><strong>Check whether they meet.</strong> They start at the same point, but after launch B is always higher than A for <code>t &gt; 0</code>. They do not meet again while travelling in air.</span></li>
+            </ol>
+          </section>
+        </section>
+
+        <aside class="side" aria-label="Physics visualisation and hint">
+          <section class="card visual-card">
+            <div class="visual-heading"><h2>See the components</h2><span>Live simulation</span></div>
+            <div class="simulation">
+              <canvas id="sim-canvas" width="520" height="320"
+                role="img"
+                aria-label="Physics animation: ball A launched horizontally at 10 m/s falls in a parabola. Ball B launched at 60° above horizontal at 20 m/s goes up then falls. Both share the same horizontal position at all equal times, but B is always higher than A.">
+              </canvas>
+            </div>
+            <div class="sim-caption"><strong>Key idea:</strong> horizontal and vertical motion are independent. Before A lands, both balls have the same horizontal position at equal times.</div>
+          </section>
+          <section class="card hint-card">
+            <div class="hint-title">✦ Hint</div>
+            <h2>Start with B's velocity components</h2>
+            <p>Do not compare the launch speeds directly. Resolve the 20 m s⁻¹ velocity into horizontal and vertical components first.</p>
+            <button class="secondary" id="hint-button" type="button" aria-expanded="false" aria-controls="hint-content" style="margin-top: 15px;">Reveal hint</button>
+            <div class="hint-content" id="hint-content" hidden>Use <code>vₓ = v cos θ</code> and <code>vᵧ = v sin θ</code>. Then compare the two balls' positions after the same time <code>t</code>.</div>
+          </section>
+        </aside>
+      </div>
+      <p class="footer-note">Interactive example for teacher demonstration · No data is collected</p>
+    </main>
+  </div>
+  <script>
+    const correctAnswer = "D";
+    const answerButtons = [...document.querySelectorAll(".answer")];
+    const feedback = document.getElementById("feedback");
+    const solution = document.getElementById("solution");
+    let selectedAnswer = "";
+
+    function selectAnswer(answer) {
+      selectedAnswer = answer;
+      answerButtons.forEach((button) => button.setAttribute("aria-pressed", button.dataset.answer === answer ? "true" : "false"));
+      feedback.className = "feedback";
+      feedback.textContent = "";
+      solution.classList.remove("visible");
+    }
+
+    answerButtons.forEach((button) => button.addEventListener("click", () => selectAnswer(button.dataset.answer)));
+
+    document.getElementById("check").addEventListener("click", () => {
+      if (!selectedAnswer) {
+        feedback.className = "feedback visible incorrect";
+        feedback.innerHTML = "<strong>Choose an answer first.</strong>Select A, B, C, or D, then check your reasoning.";
+        return;
+      }
+      if (selectedAnswer === correctAnswer) {
+        feedback.className = "feedback visible correct";
+        feedback.innerHTML = "<strong>Correct — D.</strong>The horizontal components match, but their vertical motions differ, so the balls never meet again.";
+        solution.classList.add("visible");
+      } else {
+        feedback.className = "feedback visible incorrect";
+        feedback.innerHTML = "<strong>Not quite.</strong>Resolve B's velocity into components. Its horizontal component matches A's, while its vertical component does not.";
+      }
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      selectedAnswer = "";
+      answerButtons.forEach((button) => button.setAttribute("aria-pressed", "false"));
+      feedback.className = "feedback";
+      feedback.textContent = "";
+      solution.classList.remove("visible");
+    });
+
+    document.getElementById("hint-button").addEventListener("click", (event) => {
+      const button = event.currentTarget;
+      const content = document.getElementById("hint-content");
+      const isOpen = button.getAttribute("aria-expanded") === "true";
+      button.setAttribute("aria-expanded", String(!isOpen));
+      button.textContent = isOpen ? "Reveal hint" : "Hide hint";
+      content.hidden = isOpen;
+    });
+
+    // Canvas physics simulation
+    // posA(t) and posB(t) are the SINGLE source of truth.
+    // The same function is called when drawing the dotted path AND when placing the dot.
+    // This guarantees the dot is always exactly on the line.
+    (function () {
+      const canvas = document.getElementById("sim-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      // ── Layout constants ─────────────────────────────────────────────────
+      const W  = 520, H = 320;
+      const LX = 130;   // launch x — right edge of building roof
+      const LY = 95;    // launch y — top of building (both balls start here)
+      const GY = 272;   // ground y
+
+      // ── Physics (SI, g = 10 m/s²) ────────────────────────────────────────
+      const G   = 10;
+      // Ball A: horizontal only
+      const VAX = 10, VAY = 0;
+      // Ball B: 20 m/s at 60° above horizontal → vx = 20 cos60° = 10, vy = 20 sin60° = 10√3 upward
+      const VBX = 10, VBY = -(10 * Math.sqrt(3)); // negative = upward in canvas
+
+      // ── Scale factors: pixels per metre ──────────────────────────────────
+      // Chosen so Ball A lands at about x=310, Ball B peaks nicely, both fit canvas.
+      const SX = 4.5;   // horizontal: px per metre
+      const SY = 2.3;   // vertical:   px per metre (positive = downward)
+
+      // Total flight time for Ball A (lands when y = GY)
+      // GY = LY + ½ g t² * SY  →  t = sqrt(2(GY-LY)/(g*SY))
+      const T_A = Math.sqrt(2 * (GY - LY) / (G * SY));   // ≈ 3.9 s
+
+      // Total flight time for Ball B (larger — goes up first then down)
+      // GY = LY + (VBY*t + ½ g t²) * SY  →  quadratic in t
+      const discriminant = VBY * VBY + 2 * G * (GY - LY) / SY;
+      const T_B = (-VBY + Math.sqrt(discriminant)) / G;   // ≈ 6.0 s
+
+      const CYCLE_MS = (T_B + 0.6) * 1000; // animation loop duration
+
+      // ── Colours ──────────────────────────────────────────────────────────
+      const BLUE     = "#2868b2";
+      const BLUE_D   = "#123b72";
+      const ORANGE   = "#d17c37";
+      const ORANGE_D = "#b46224";
+
+      // ── Physics → canvas coordinate mapping ──────────────────────────────
+      // These functions are used for BOTH drawing the dotted trajectory
+      // AND computing the dot position. Identical inputs → identical outputs.
+      function posA(t) {
+        return {
+          x: LX + VAX * t * SX,
+          y: LY + 0.5 * G * t * t * SY
+        };
+      }
+      function posB(t) {
+        return {
+          x: LX + VBX * t * SX,
+          y: LY + (VBY * t + 0.5 * G * t * t) * SY
+        };
+      }
+
+      // ── Helpers ──────────────────────────────────────────────────────────
+      function arrowHead(x1, y1, x2, y2, color, lw) {
+        const ang = Math.atan2(y2 - y1, x2 - x1);
+        const hl  = 9;
+        ctx.save();
+        ctx.strokeStyle = ctx.fillStyle = color;
+        ctx.lineWidth = lw || 2;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - hl * Math.cos(ang - 0.42), y2 - hl * Math.sin(ang - 0.42));
+        ctx.lineTo(x2 - hl * Math.cos(ang + 0.42), y2 - hl * Math.sin(ang + 0.42));
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawDot(x, y, color) {
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      // ── Draw dotted trajectory for one ball ──────────────────────────────
+      function drawPath(posFn, tMax, color) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 2.5;
+        ctx.setLineDash([7, 6]);
+        ctx.beginPath();
+        ctx.moveTo(LX, LY);
+        const steps = 300;
+        for (let i = 1; i <= steps; i++) {
+          const t = (i / steps) * tMax;
+          const p = posFn(t);
+          const y = Math.min(p.y, GY);
+          ctx.lineTo(p.x, y);
+          if (p.y >= GY) break;
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+      }
+
+      // ── Render one animation frame ────────────────────────────────────────
+      function frame(ts) {
+        const phase = (ts % CYCLE_MS) / CYCLE_MS;
+
+        // Both balls are launched at the same instant, so they must use the same
+        // physical time while they are in flight. Ball A lands first and then stays
+        // at the ground while Ball B continues travelling.
+        const t = Math.min(phase * (T_B + 0.6), T_B);
+        const tA = Math.min(t, T_A);
+        const tB = t;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Background gradient
+        const bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, "#f8fbff"); bg.addColorStop(1, "#eef5fc");
+        ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+        // Ground
+        ctx.save();
+        ctx.strokeStyle = "#b8cadc"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(30, GY); ctx.lineTo(490, GY); ctx.stroke();
+        ctx.restore();
+
+        // Building body
+        ctx.save();
+        ctx.fillStyle   = "#d9e6f1";
+        ctx.strokeStyle = "#9eb5c9";
+        ctx.lineWidth   = 2;
+        ctx.beginPath();
+        ctx.moveTo(88, GY); ctx.lineTo(88, LY - 12);
+        ctx.lineTo(LX, LY - 12); ctx.lineTo(LX, GY);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        // Roof cap
+        ctx.strokeStyle = "#7d9bb4"; ctx.lineWidth = 5; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(81, LY - 12); ctx.lineTo(LX + 7, LY - 12); ctx.stroke();
+        ctx.restore();
+
+        // ── Dotted trajectories (drawn with posA / posB — same as dot position) ──
+        drawPath(posA, T_A, BLUE);
+        drawPath(posB, T_B, ORANGE);
+
+        // ── Velocity arrows — both start exactly at (LX, LY) ─────────────
+        // Arrow A: horizontal, 10 m/s
+        arrowHead(LX, LY, LX + 52, LY, BLUE, 2);
+
+        // Arrow B: 60° above horizontal
+        // In canvas coords: y-down, so 60° above = angle -60° from +x axis
+        const BANG = -(Math.PI / 3);   // exactly -60°
+        const BL   = 52;
+        const BTX  = LX + BL * Math.cos(BANG);
+        const BTY  = LY + BL * Math.sin(BANG);  // y decreases = goes up
+        arrowHead(LX, LY, BTX, BTY, ORANGE, 2.5);
+
+        // 60° arc — between the B arrow and the horizontal reference line
+        ctx.save();
+        ctx.strokeStyle = ORANGE_D; ctx.lineWidth = 1.5;
+        // Draw a faint horizontal reference from the launch point
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(LX, LY); ctx.lineTo(LX + 44, LY); ctx.stroke();
+        ctx.setLineDash([]);
+        // Arc from BANG (=-60°) anticlockwise to 0 (=horizontal right)
+        ctx.beginPath(); ctx.arc(LX, LY, 22, BANG, 0); ctx.stroke();
+        ctx.restore();
+
+        // ── Labels ───────────────────────────────────────────────────────
+        ctx.save();
+        ctx.font = "800 13px Inter, sans-serif";
+        ctx.textBaseline = "middle";
+
+        // Ball A label — left of building
+        ctx.fillStyle = BLUE;
+        ctx.fillText("A", LX - 28, LY + 4);
+
+        // Ball B label — above arrow B tip
+        ctx.fillStyle = ORANGE;
+        ctx.fillText("B", LX - 28, LY - 20);
+
+        ctx.font = "700 11px Inter, sans-serif";
+
+        // Arrow A label: below arrow
+        ctx.fillStyle = BLUE_D;
+        ctx.fillText("10 m s⁻¹", LX + 4, LY + 16);
+
+        // Arrow B label: near tip, above
+        ctx.fillStyle = ORANGE_D;
+        ctx.fillText("20 m s⁻¹", BTX + 4, BTY - 7);
+
+        // 60° label inside arc
+        ctx.font = "700 10px Inter, sans-serif";
+        ctx.fillStyle = ORANGE_D;
+        ctx.textBaseline = "middle";
+        ctx.fillText("60°", LX + 26, LY - 11);
+
+        // Bottom caption
+        ctx.font = "11px Inter, sans-serif";
+        ctx.fillStyle = "#71879c";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText("same horizontal position at equal times before A lands", 38, GY + 22);
+
+        ctx.restore();
+
+        // ── Animated dots ─────────────────────────────────────────────────
+        // posA(tA) and posB(tB) are IDENTICAL to the path drawing above.
+        // The dot is always exactly on the dotted line — guaranteed by construction.
+        const pA = posA(tA);
+        const pB = posB(tB);
+        if (pA.y <= GY) drawDot(pA.x, pA.y, BLUE);
+        if (pB.y <= GY) drawDot(pB.x, pB.y, ORANGE);
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Matilda · Page 48 Review</title>
+  <style>
+    :root { --ink:#25242b; --muted:#65646d; --paper:#fffdf8; --lavender:#e8e4ff; --purple:#5147a8; --yellow:#ffd978; --green:#2f8b62; --red:#b64d48; --line:#d8d4c9; --shadow:0 10px 0 #d8d3c8, 0 18px 32px #2d24531a; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#efede8; font:16px/1.45 ui-rounded, "Trebuchet MS", system-ui, sans-serif; }
+    button, input { font:inherit; }
+    button { cursor:pointer; }
+    .skip { position:absolute; left:-999px; top:12px; background:#fff; padding:10px 14px; border-radius:8px; z-index:5; }
+    .skip:focus { left:12px; }
+    header { background:var(--purple); color:white; padding:28px 20px 54px; text-align:center; }
+    header p { margin:0 0 4px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; opacity:.82; }
+    h1,h2,h3 { font-family:ui-rounded, "Trebuchet MS", system-ui, sans-serif; line-height:1.05; margin:0; }
+    h1 { font-size:clamp(2rem,5vw,3.5rem); }
+    header .subtitle { max-width:650px; margin:10px auto 0; font-size:1.05rem; }
+    main { width:min(1060px,calc(100% - 28px)); margin:-30px auto 45px; position:relative; }
+    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; background:var(--paper); border:2px solid var(--line); border-radius:18px; padding:12px 16px; box-shadow:0 5px 0 #d8d3c8; }
+    .progress { font-weight:800; color:var(--purple); }
+    .reset, .answer-key { border:2px solid var(--purple); background:white; color:var(--purple); border-radius:10px; padding:8px 13px; font-weight:800; }
+    .reset:hover,.answer-key:hover { background:var(--lavender); }
+    .card { background:var(--paper); border:2px solid var(--line); border-radius:22px; padding:clamp(20px,4vw,38px); margin-top:22px; box-shadow:var(--shadow); }
+    .card-head { display:flex; justify-content:space-between; gap:15px; align-items:start; margin-bottom:25px; }
+    .eyebrow { color:var(--purple); font-weight:800; text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; }
+    h2 { font-size:clamp(1.65rem,3vw,2.35rem); margin-top:5px; }
+    .instruction { margin:7px 0 0; color:var(--muted); }
+    .badge { flex:none; background:var(--yellow); border:2px solid #c99f3c; border-radius:999px; padding:6px 12px; font-weight:800; }
+    .match-layout { display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center; }
+    .column { display:grid; gap:12px; }
+    .column-label { font-weight:800; color:var(--muted); margin-bottom:2px; }
+    .word-btn { min-height:55px; border:2px solid var(--line); border-radius:13px; background:white; color:var(--ink); text-align:left; padding:10px 16px; font-size:1.1rem; font-weight:800; box-shadow:0 3px 0 #ddd8cf; transition:transform .15s,background .15s,border-color .15s; }
+    .word-btn:hover { transform:translateY(-2px); border-color:#9288e0; }
+    .word-btn.selected { background:var(--lavender); border-color:var(--purple); color:var(--purple); }
+    .word-btn.correct { background:#e2f4ea; border-color:var(--green); color:#176241; }
+    .word-btn.incorrect { background:#fbe4e1; border-color:var(--red); color:#8e302d; }
+    .word-btn.pair-head { background:#dff1ff; border-color:#3d8fbe; color:#194f6a; box-shadow:0 3px 0 #b8d8e8; }
+    .word-btn.pair-black { background:#ffe5dc; border-color:#d26b4c; color:#79321f; box-shadow:0 3px 0 #edc1b2; }
+    .word-btn.pair-extra { background:#e9e2ff; border-color:#8066c7; color:#493783; box-shadow:0 3px 0 #cec3ee; }
+    .word-btn.pair-times { background:#fff0b8; border-color:#c99a25; color:#654d08; box-shadow:0 3px 0 #e8d384; }
+    .connector { color:var(--muted); font-size:1.4rem; text-align:center; }
+    .match-status { min-height:28px; margin-top:18px; color:var(--muted); font-weight:700; }
+    .picture-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    .picture-card { border:2px solid var(--line); border-radius:16px; padding:17px; background:#fff; }
+    .picture-card.correct { border-color:var(--green); background:#f0faf3; }
+    .picture-card.incorrect { border-color:var(--red); background:#fff3f1; }
+    .picture-no { width:30px; height:30px; display:grid; place-items:center; border-radius:50%; background:var(--purple); color:white; font-weight:800; margin-bottom:10px; }
+    .picture { min-height:84px; display:grid; place-items:center; background:#f5f2eb; border-radius:12px; margin-bottom:12px; padding:10px; text-align:center; color:#5d5a63; font-weight:800; }
+    .picture strong { display:block; color:var(--ink); font-size:1.5rem; font-family:ui-rounded, "Trebuchet MS", system-ui, sans-serif; }
+    .answer-row { display:flex; gap:8px; }
+    .answer-row input { width:100%; border:2px solid var(--line); border-radius:10px; padding:10px 12px; color:var(--ink); }
+    .answer-row button { border:0; border-radius:10px; background:var(--purple); color:white; padding:0 15px; font-weight:800; }
+    .feedback { min-height:24px; margin:8px 0 0; font-size:.92rem; font-weight:800; }
+    .good { color:var(--green); } .bad { color:var(--red); }
+    .footer-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-top:24px; }
+    .answer-key { background:var(--yellow); border-color:#c99f3c; color:#493a0d; }
+    #key { margin-top:12px; padding:15px; background:#fff8d9; border:2px dashed #c99f3c; border-radius:12px; }
+    [hidden] { display:none !important; }
+    :focus-visible { outline:4px solid #f0a52d; outline-offset:3px; }
+    @media (max-width:650px) { .toolbar,.card-head { align-items:stretch; flex-direction:column; } .match-layout { grid-template-columns:1fr; } .connector { display:none; } .picture-grid { grid-template-columns:1fr; } .answer-row button { padding:0 12px; } }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to activity</a>
+  <header>
+    <p>Matilda · Chapters 5 &amp; 6</p>
+    <h1>What can you remember?</h1>
+    <div class="subtitle">A friendly interactive version of page 48. Match the words, then write the correct answers.</div>
+  </header>
+  <main id="main">
+    <div class="toolbar"><div class="progress" id="progress" aria-live="polite">0 of 8 answers correct</div><button class="reset" id="reset">Reset activity</button></div>
+
+    <section class="card" aria-labelledby="match-title">
+      <div class="card-head"><div><div class="eyebrow">Activity 1 · Word parts</div><h2 id="match-title">Match the two parts of the words.</h2><p class="instruction">Choose one word on the left, then choose its partner on the right.</p></div><div class="badge">4 matches</div></div>
+      <div class="match-layout">
+        <div class="column"><div class="column-label">First part</div><button class="word-btn" data-left="head">head</button><button class="word-btn" data-left="black">black</button><button class="word-btn" data-left="extra">extra</button><button class="word-btn" data-left="times">times</button></div>
+        <div class="connector" aria-hidden="true">+</div>
+        <div class="column"><div class="column-label">Second part</div><button class="word-btn" data-right="ordinary">ordinary</button><button class="word-btn" data-right="teacher">teacher</button><button class="word-btn" data-right="table">table</button><button class="word-btn" data-right="board">board</button></div>
+      </div>
+      <div class="match-status" id="matchStatus" aria-live="polite">Start by choosing a first word.</div>
+    </section>
+
+    <section class="card" aria-labelledby="write-title">
+      <div class="card-head"><div><div class="eyebrow">Activity 2 · Picture clues</div><h2 id="write-title">Now write the correct word.</h2><p class="instruction">Type the word or phrase that best describes each clue.</p></div><div class="badge">4 answers</div></div>
+      <div class="picture-grid">
+        <div class="picture-card" data-answer="times table"><div class="picture-no">1</div><div class="picture"><strong>2 × 2 = 4</strong><span>and 2 × 3 = 6</span></div><div class="answer-row"><input aria-label="Answer for clue 1" autocomplete="off"><button class="check" type="button">Check</button></div><div class="feedback" aria-live="polite"></div></div>
+        <div class="picture-card" data-answer="head teacher"><div class="picture-no">2</div><div class="picture"><strong aria-hidden="true">⌂</strong><span>The person in charge of a school</span></div><div class="answer-row"><input aria-label="Answer for clue 2" autocomplete="off"><button class="check" type="button">Check</button></div><div class="feedback" aria-live="polite"></div></div>
+        <div class="picture-card" data-answer="textbook"><div class="picture-no">3</div><div class="picture"><strong aria-hidden="true">▤</strong><span>A pupil’s book for reading and learning</span></div><div class="answer-row"><input aria-label="Answer for clue 3" autocomplete="off"><button class="check" type="button">Check</button></div><div class="feedback" aria-live="polite"></div></div>
+        <div class="picture-card" data-answer="blackboard"><div class="picture-no">4</div><div class="picture"><strong aria-hidden="true">▰</strong><span>A dark board for writing on</span></div><div class="answer-row"><input aria-label="Answer for clue 4" autocomplete="off"><button class="check" type="button">Check</button></div><div class="feedback" aria-live="polite"></div></div>
+      </div>
+      <div class="footer-actions"><div id="complete" class="good" aria-live="polite"></div><button class="answer-key" id="showKey" aria-expanded="false" aria-controls="key">Show answer key</button></div>
+      <div id="key" hidden><strong>Answer key:</strong> head + teacher, black + board, extra + ordinary, times + table · times table, head teacher, textbook, blackboard.</div>
+    </section>
+    <footer style="text-align:center;color:#65646d;padding:28px 0 0">English teaching materials · Matilda</footer>
+  </main>
+  <script>
+    const pairs = { head:'teacher', black:'board', extra:'ordinary', times:'table' };
+    let selected = null;
+    let matched = new Set();
+    const leftButtons = [...document.querySelectorAll('[data-left]')];
+    const rightButtons = [...document.querySelectorAll('[data-right]')];
+    const matchStatus = document.querySelector('#matchStatus');
+    const progress = document.querySelector('#progress');
+    const complete = document.querySelector('#complete');
+
+    function updateProgress() {
+      const typed = [...document.querySelectorAll('.picture-card')].filter(card => card.classList.contains('correct')).length;
+      const total = matched.size + typed;
+      progress.textContent = `${total} of 8 answers correct`;
+      if (total === 8) complete.textContent = 'Excellent work — you completed the whole review!';
+      else complete.textContent = '';
+    }
+    function clearSelection() { leftButtons.forEach(b => b.classList.remove('selected')); selected = null; }
+    leftButtons.forEach(button => button.addEventListener('click', () => {
+      if (matched.has(button.dataset.left)) return;
+      clearSelection(); selected = button.dataset.left; button.classList.add('selected');
+      matchStatus.textContent = `Now choose the partner for “${selected}”.`;
+    }));
+    rightButtons.forEach(button => button.addEventListener('click', () => {
+      if (!selected) { matchStatus.textContent = 'Choose a first word before choosing a partner.'; return; }
+      const left = selected;
+      if (pairs[left] !== button.dataset.right) {
+        matchStatus.textContent = 'That pair does not make a word. Try again.';
+        button.classList.add('incorrect'); setTimeout(() => button.classList.remove('incorrect'), 450); return;
+      }
+      matched.add(left); const leftButton = document.querySelector(`[data-left="${left}"]`);
+      const pairClass = `pair-${left}`;
+      leftButton.classList.remove('selected'); leftButton.classList.add('correct', pairClass); button.classList.add('correct', pairClass);
+      leftButton.disabled = true; button.disabled = true; matchStatus.textContent = `Correct: ${left} ${button.dataset.right}. Choose another first word.`; selected = null; updateProgress();
+    }));
+    function normalizeAnswer(value) {
+      return value.trim().toLocaleLowerCase('en-US').replace(/\s+/g, ' ');
+    }
+    document.querySelectorAll('.check').forEach(check => check.addEventListener('click', () => {
+      const card = check.closest('.picture-card'); const input = card.querySelector('input'); const feedback = card.querySelector('.feedback');
+      const guess = normalizeAnswer(input.value); const answer = normalizeAnswer(card.dataset.answer);
+      if (!guess) { feedback.textContent = 'Type an answer first.'; feedback.className = 'feedback bad'; input.focus(); return; }
+      if (guess === answer) { card.classList.add('correct'); card.classList.remove('incorrect'); feedback.textContent = 'Correct!'; feedback.className = 'feedback good'; input.disabled = true; check.disabled = true; updateProgress(); }
+      else { card.classList.add('incorrect'); feedback.textContent = 'Not quite — check the clue and try again.'; feedback.className = 'feedback bad'; setTimeout(() => card.classList.remove('incorrect'), 450); }
+    }));
+    document.querySelectorAll('input').forEach(input => input.addEventListener('keydown', e => { if (e.key === 'Enter') input.closest('.picture-card').querySelector('.check').click(); }));
+    document.querySelector('#showKey').addEventListener('click', e => { const key = document.querySelector('#key'); const hidden = key.hidden = !key.hidden; e.currentTarget.textContent = hidden ? 'Show answer key' : 'Hide answer key'; e.currentTarget.setAttribute('aria-expanded', String(!hidden)); });
+    document.querySelector('#reset').addEventListener('click', () => { location.reload(); });
+    updateProgress();
+  </script>
+</body>
+</html>
