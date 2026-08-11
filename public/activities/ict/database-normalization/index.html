@@ -1,0 +1,1743 @@
+<!DOCTYPE html><html lang="zh-HK"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>數據庫規範化 - 互動教學</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Microsoft JhengHei', 'PingFang HK', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    padding-bottom: 80px;
+  }
+  
+  .slide {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 1100px;
+    width: 100%;
+    padding: 30px 40px;
+    position: relative;
+    display: none;
+    min-height: 600px;
+    transition: box-shadow 0.5s, border 0.5s;
+    border: 4px solid transparent;
+  }
+  
+  .slide.active { display: block; }
+  
+  .slide.all-correct {
+    border: 4px solid #48bb78;
+    box-shadow: 0 0 30px rgba(72, 187, 120, 0.6), 0 20px 60px rgba(0,0,0,0.3);
+  }
+  
+  .page-number {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: #f0f0f0;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .stage-tag {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    background: linear-gradient(135deg, #4299e1 0%, #667eea 100%);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .stage-tag.nf2 { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
+  .stage-tag.nf3 { background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%); }
+  .stage-tag.case { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); }
+  .stage-tag.intro { background: linear-gradient(135deg, #718096 0%, #4a5568 100%); }
+  .stage-tag.basic { background: linear-gradient(135deg, #38b2ac 0%, #319795 100%); }
+  
+  .header { text-align: center; margin-bottom: 20px; margin-top: 10px; }
+  .header h1 { font-size: 26px; color: #2d3748; margin-bottom: 6px; }
+  .header .subtitle { color: #718096; font-size: 15px; }
+  
+  /* Title slide */
+  .title-slide {
+    text-align: center;
+    padding: 70px 40px;
+  }
+  .title-slide .big-icon { font-size: 80px; margin-bottom: 20px; }
+  .title-slide h1 { font-size: 46px; color: #2d3748; margin-bottom: 15px; }
+  .title-slide .en { font-size: 22px; color: #718096; margin-bottom: 25px; }
+  .title-slide .tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #4299e1 0%, #667eea 100%);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 17px;
+  }
+  .journey {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 35px;
+    flex-wrap: wrap;
+  }
+  .journey-step {
+    background: white;
+    border: 2px solid #cbd5e0;
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .journey-step.s1 { border-color: #4299e1; color: #2c5282; }
+  .journey-step.s2 { border-color: #48bb78; color: #276749; }
+  .journey-step.s3 { border-color: #9f7aea; color: #553c9a; }
+  .journey-arrow { color: #a0aec0; font-size: 20px; }
+  
+  /* === Database Basics Visual === */
+  .db-visual-table {
+    background: white;
+    border: 3px solid #38b2ac;
+    border-radius: 12px;
+    overflow: visible;
+    margin: 20px auto 30px;
+    max-width: 800px;
+    position: relative;
+  }
+  .table-name-tag {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: #38b2ac;
+    color: white;
+    padding: 4px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .visual-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .visual-tbl th {
+    background: #e6fffa;
+    color: #234e52;
+    padding: 10px;
+    border: 1px solid #b2f5ea;
+    font-size: 14px;
+    position: relative;
+  }
+  .visual-tbl td {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 13px;
+    text-align: center;
+  }
+  .visual-tbl th.pk-col {
+    background: #fef3c7;
+    color: #92400e;
+    border-bottom: 4px solid #f59e0b;
+  }
+  .visual-tbl th.ck-col {
+    background: #e9d8fd;
+    color: #553c9a;
+    border-bottom: 4px solid #9f7aea;
+  }
+  .visual-tbl th.fk-col {
+    background: #fed7aa;
+    color: #9c4221;
+    border-bottom: 4px solid #ed8936;
+  }
+  .visual-tbl tr.tuple-highlight {
+    background: #ebf8ff;
+    box-shadow: inset 4px 0 0 #4299e1;
+  }
+  
+  .label-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 4px;
+  }
+  .label-tag.pk { background: #f59e0b; color: white; }
+  .label-tag.ck { background: #9f7aea; color: white; }
+  .label-tag.fk { background: #ed8936; color: white; }
+  
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 15px;
+  }
+  .legend-card {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 15px;
+    border-left: 5px solid #cbd5e0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .legend-card.attr { border-left-color: #4299e1; }
+  .legend-card.tuple { border-left-color: #38b2ac; }
+  .legend-card.pk { border-left-color: #f59e0b; background: #fffbeb; }
+  .legend-card.ck { border-left-color: #9f7aea; background: #faf5ff; }
+  .legend-card.fk { border-left-color: #ed8936; background: #fffaf0; }
+  .legend-card .l-title {
+    font-weight: bold;
+    color: #2d3748;
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  .legend-card .l-en {
+    font-size: 11px;
+    color: #718096;
+    font-style: italic;
+    margin-bottom: 5px;
+  }
+  .legend-card .l-desc {
+    font-size: 12.5px;
+    color: #4a5568;
+    line-height: 1.5;
+  }
+  
+  /* Schema box */
+  .schema-box {
+    background: linear-gradient(135deg, #f6f9fc 0%, #e9f2ff 100%);
+    border: 2px solid #4299e1;
+    border-radius: 12px;
+    padding: 16px 25px;
+    margin-bottom: 18px;
+    font-family: 'Consolas', monospace;
+    font-size: 18px;
+    text-align: center;
+    color: #2c5282;
+  }
+  .schema-box .pk {
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border-bottom: 3px solid #f59e0b;
+    font-weight: bold;
+  }
+  .schema-box .key-icon {
+    display: inline-block;
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+  }
+  th {
+    background: #4299e1;
+    color: white;
+    padding: 9px 10px;
+    text-align: center;
+    font-size: 13px;
+  }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+    text-align: center;
+  }
+  tr:last-child td { border-bottom: none; }
+  
+  .data-table th { background: #48bb78; }
+  .messy-table th { background: #ed8936; }
+  .field-table th { background: #4299e1; text-align: left; }
+  .field-table td { text-align: left; }
+  .field-name {
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    color: #2c5282;
+  }
+  
+  .highlight-row {
+    background: #fff5f5 !important;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { background: #fff5f5; }
+    50% { background: #fed7d7; }
+  }
+  .warning-icon { color: #e53e3e; margin-left: 5px; }
+  
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .content-grid.equal {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .section-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 10px;
+  }
+  
+  .question-box {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe4e1 100%);
+    border-left: 5px solid #e53e3e;
+    border-radius: 8px;
+    padding: 13px 22px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .question-box .emoji { font-size: 26px; margin-bottom: 3px; }
+  .question-box .q-text { font-size: 17px; font-weight: bold; color: #c53030; }
+  
+  .reveal-btn {
+    display: block;
+    margin: 12px auto 0;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 9px 22px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+  .reveal-btn:hover { transform: translateY(-2px); }
+  
+  .hidden-clue {
+    display: none;
+    background: #fef5e7;
+    border: 2px dashed #f59e0b;
+    border-radius: 10px;
+    padding: 13px 18px;
+    margin-top: 12px;
+  }
+  .hidden-clue.show { display: block; animation: slideDown 0.4s; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .clue-list { list-style: none; }
+  .clue-list li { padding: 4px 0; font-size: 13px; color: #744210; }
+  .clue-list li::before { content: "🔍 "; }
+  
+  /* Info card */
+  .info-card {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    border-left: 5px solid #4299e1;
+  }
+  .info-card.green { border-left-color: #48bb78; background: #f0fff4; }
+  .info-card.red { border-left-color: #e53e3e; background: #fff5f5; }
+  .info-card.yellow { border-left-color: #f59e0b; background: #fef5e7; }
+  .info-card.purple { border-left-color: #9f7aea; background: #faf5ff; }
+  .info-card.teal { border-left-color: #38b2ac; background: #e6fffa; }
+  .info-card h3 { color: #2d3748; margin-bottom: 6px; font-size: 16px; }
+  .info-card p { color: #4a5568; font-size: 14px; line-height: 1.6; }
+  
+  /* FD diagram */
+  .fd-line {
+    background: white;
+    border: 2px solid #4299e1;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    font-family: 'Consolas', monospace;
+    font-size: 15px;
+    text-align: center;
+  }
+  .fd-line .pk-label {
+    background: #fef3c7;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #92400e;
+  }
+  .fd-line .arrow { color: #e53e3e; font-weight: bold; margin: 0 8px; }
+  
+  /* NF cards */
+  .nf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-top: 18px;
+  }
+  .nf-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-top: 5px solid #4299e1;
+  }
+  .nf-card.nf2 { border-top-color: #48bb78; }
+  .nf-card.nf3 { border-top-color: #9f7aea; }
+  .nf-card .nf-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 4px;
+  }
+  .nf-card .nf-en {
+    font-size: 12px;
+    color: #718096;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .nf-card .nf-desc {
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.5;
+  }
+  .nf-card .nf-key {
+    color: #c53030;
+    font-weight: bold;
+  }
+  
+  .mantra {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 3px dashed #f59e0b;
+    border-radius: 15px;
+    padding: 18px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .mantra .en {
+    font-size: 20px;
+    font-weight: bold;
+    color: #92400e;
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .mantra .zh {
+    font-size: 16px;
+    color: #744210;
+  }
+  
+  /* Compare boxes */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 12px;
+  }
+  .compare-box {
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .compare-box.bad { background: #fff5f5; border: 2px solid #fc8181; }
+  .compare-box.good { background: #f0fff4; border: 2px solid #68d391; }
+  .compare-box h4 { margin-bottom: 8px; font-size: 14px; }
+  .compare-box.bad h4 { color: #c53030; }
+  .compare-box.good h4 { color: #276749; }
+  
+  /* Quiz */
+  .quiz-q {
+    background: #f7fafc;
+    border-left: 5px solid #4299e1;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  .quiz-options.single { grid-template-columns: 1fr; }
+  .quiz-opt {
+    background: white;
+    border: 2px solid #cbd5e0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .quiz-opt:hover { background: #ebf8ff; border-color: #4299e1; }
+  .quiz-opt.correct { background: #c6f6d5; border-color: #48bb78; }
+  .quiz-opt.wrong { background: #fed7d7; border-color: #e53e3e; }
+  
+  .feedback-box {
+    display: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .feedback-box.show { display: block; animation: slideDown 0.3s; }
+  .feedback-box.correct { background: #c6f6d5; border: 2px solid #48bb78; color: #22543d; }
+  .feedback-box.wrong { background: #fed7d7; border: 2px solid #e53e3e; color: #742a2a; }
+  
+  .celebrate-msg {
+    display: none;
+    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+    border: 2px solid #48bb78;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+    color: #22543d;
+    margin-top: 12px;
+    animation: pop 0.5s;
+  }
+  .celebrate-msg.show { display: block; }
+  @keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  /* Atomic example boxes */
+  .atomic-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .atom-box {
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+  }
+  .atom-box.ok { background: #f0fff4; border: 2px solid #68d391; }
+  .atom-box.bad { background: #fff5f5; border: 2px solid #fc8181; }
+  .atom-box .label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .atom-box.ok .label { color: #276749; }
+  .atom-box.bad .label { color: #c53030; }
+  .atom-cell {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .atom-cell .field-label {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 3px;
+  }
+  
+  /* Issue cards (toned down) */
+  .issue-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .issue-card {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    border-top: 4px solid #4299e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .issue-card.update { border-top-color: #ed8936; }
+  .issue-card.delete { border-top-color: #ecc94b; }
+  .issue-card.redundancy { border-top-color: #4a5568; }
+  .issue-card .a-icon { font-size: 26px; margin-bottom: 5px; }
+  .issue-card .a-title { font-size: 15px; font-weight: bold; color: #2d3748; margin-bottom: 4px; }
+  .issue-card .a-en { font-size: 11px; color: #718096; font-style: italic; margin-bottom: 6px; }
+  .issue-card .a-desc { font-size: 13px; color: #4a5568; line-height: 1.5; }
+  
+  /* Intro hero (calmer) */
+  .intro-hero {
+    background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+    border: 2px solid #a0aec0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .intro-hero .icon { font-size: 36px; margin-bottom: 6px; }
+  .intro-hero h2 { font-size: 19px; color: #2d3748; margin-bottom: 4px; }
+  .intro-hero p { font-size: 14px; color: #4a5568; }
+  
+  /* Summary */
+  .summary-table th { background: #667eea; }
+  
+  /* Nav bar */
+  .nav-bar {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .nav-btn {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; }
+  .page-info { color: #4a5568; font-size: 13px; font-weight: bold; }
+  
+  .answer-box {
+    background: #e6fffa;
+    border: 2px solid #38b2ac;
+    border-radius: 10px;
+    padding: 13px 18px;
+    margin-top: 12px;
+  }
+  .answer-box .label {
+    color: #2c7a7b;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 15px;
+  }
+  .answer-box p { font-size: 14px; line-height: 1.6; }
+  
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  /* Highlight cells */
+  .cell-multi { background: #fed7d7 !important; font-weight: bold; }
+  .cell-redundant { background: #fff5b1 !important; }
+  
+  .arrow-down {
+    text-align: center;
+    font-size: 30px;
+    color: #e53e3e;
+    margin: 8px 0;
+  }
+  
+  /* Key visual diagram */
+  .key-venn {
+    position: relative;
+    height: 220px;
+    margin: 15px auto;
+    max-width: 500px;
+  }
+  .key-circle {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-align: center;
+    font-size: 13px;
+  }
+  .super-key-c {
+    width: 100%;
+    height: 100%;
+    border: 3px solid #4299e1;
+    background: rgba(66, 153, 225, 0.1);
+    color: #2c5282;
+    align-items: flex-start;
+    padding-top: 10px;
+  }
+  .candidate-c {
+    width: 70%;
+    height: 70%;
+    top: 15%;
+    left: 15%;
+    border: 3px solid #9f7aea;
+    background: rgba(159, 122, 234, 0.15);
+    color: #553c9a;
+    align-items: flex-start;
+    padding-top: 35px;
+  }
+  .pk-c {
+    width: 35%;
+    height: 50%;
+    top: 28%;
+    left: 32%;
+    border: 3px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.2);
+    color: #92400e;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Slide 1: Title ===== -->
+<div class="slide active">
+  <div class="page-number">P. 1 / 26</div>
+  <div class="title-slide">
+    <div class="big-icon">🗄️</div>
+    <h1>數據庫規範化</h1>
+    <div class="en">Database Normalization</div>
+    <div class="tag">基礎複習 + 1NF / 2NF / 3NF + 互動小測 + 情境應用</div>
+    <div class="journey">
+      <div class="journey-step s1">⚛️ 1NF 原子值</div>
+      <span class="journey-arrow">➡️</span>
+      <div class="journey-step s2">🔗 2NF 無部分相依</div>
+      <span class="journey-arrow">➡️</span>
+      <div class="journey-step s3">🔄 3NF 無遞移相依</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 2: Database 基礎複習 ===== -->
+<div class="slide">
+  <div class="stage-tag basic">📖 基礎複習</div>
+  <div class="page-number">P. 2 / 26</div>
+  <div class="header">
+    <h1>📖 Database 基礎概念複習</h1>
+    <div class="subtitle">學規範化前,先確保理解這些關鍵詞</div>
+  </div>
+
+  <!-- Visual Table -->
+  <div class="db-visual-table">
+    <span class="table-name-tag">📋 STUDENT (表名 / Relation)</span>
+    <table class="visual-tbl">
+      <thead>
+        <tr>
+          <th class="pk-col">SID 🔑<div style="font-size:10px;font-weight:normal;">主鍵 PK</div></th>
+          <th>Name<div style="font-size:10px;font-weight:normal;color:#718096;">屬性</div></th>
+          <th class="ck-col">HKID<div style="font-size:10px;font-weight:normal;">候選鍵 CK</div></th>
+          <th>Class<div style="font-size:10px;font-weight:normal;color:#718096;">屬性</div></th>
+          <th class="fk-col">ClubID<div style="font-size:10px;font-weight:normal;">外鍵 FK</div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="tuple-highlight"><td>S101</td><td>陳大文</td><td>A123456(7)</td><td>5A</td><td>C01</td></tr>
+        <tr><td>S205</td><td>李美儀</td><td>B234567(8)</td><td>5B</td><td>C02</td></tr>
+        <tr><td>S312</td><td>張志豪</td><td>C345678(9)</td><td>4C</td><td>C03</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend-grid">
+    <div class="legend-card attr">
+      <div class="l-title">📐 屬性 (Attribute)</div>
+      <div class="l-en">= Column / Field 欄位</div>
+      <div class="l-desc">表中每一<strong>直行</strong>,例如 Name、Class。每個屬性有自己嘅資料類型。</div>
+    </div>
+    <div class="legend-card tuple">
+      <div class="l-title">📄 元組 (Tuple)</div>
+      <div class="l-en">= Row / Record 紀錄</div>
+      <div class="l-desc">表中每一<strong>橫行</strong>(藍色嗰行)代表一個實體例如一位學生。</div>
+    </div>
+    <div class="legend-card pk">
+      <div class="l-title">🔑 主鍵 (Primary Key, PK)</div>
+      <div class="l-en">唯一識別嘅欄位</div>
+      <div class="l-desc">用嚟<strong>唯一識別</strong>每一行。值必須<strong>唯一</strong>且<strong>非 NULL</strong>。每張表只有一個 PK。</div>
+    </div>
+    <div class="legend-card ck">
+      <div class="l-title">🟣 候選鍵 (Candidate Key, CK)</div>
+      <div class="l-en">有資格做主鍵嘅欄位</div>
+      <div class="l-desc">所有可以做主鍵嘅欄位,值都唯一。最後揀其中一個做 PK,其他叫 <strong>Alternate Key</strong>。</div>
+    </div>
+    <div class="legend-card fk" style="grid-column: span 2;">
+      <div class="l-title">🟠 外鍵 (Foreign Key, FK)</div>
+      <div class="l-en">指向另一張表嘅 PK</div>
+      <div class="l-desc">用嚟連接兩張表(關係)。例如 STUDENT.ClubID 指向 CLUB 表嘅主鍵 ClubID,代表「學生屬於邊個學會」。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 3: 鍵嘅階層 + 功能依賴 ===== -->
+<div class="slide">
+  <div class="stage-tag basic">📖 基礎複習</div>
+  <div class="page-number">P. 3 / 26</div>
+  <div class="header">
+    <h1>🔑 鍵 (Key) 嘅階層 + 功能依賴</h1>
+    <div class="subtitle">理解鍵嘅關係 + 點解一個欄位可以「決定」另一個</div>
+  </div>
+
+  <div class="content-grid equal">
+    <div>
+      <div class="section-title">🎯 鍵 (Key) 嘅關係圖</div>
+      <div class="key-venn">
+        <div class="key-circle super-key-c">Super Key 超鍵<br><span style="font-size:10px;font-weight:normal;">任何能唯一識別嘅組合</span></div>
+        <div class="key-circle candidate-c">Candidate Key 候選鍵<br><span style="font-size:10px;font-weight:normal;">最小嘅超鍵</span></div>
+        <div class="key-circle pk-c">PK<br>主鍵</div>
+      </div>
+      <div class="info-card teal" style="margin-top:8px;">
+        <p style="font-size:12.5px;">📌 <strong>PK ⊂ Candidate Key ⊂ Super Key</strong></p>
+        <p style="font-size:12.5px;">主鍵係從候選鍵中揀出嚟嘅其中一個。</p>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">➡️ 功能依賴 (Functional Dependency, FD)</div>
+      <div class="info-card">
+        <p>當 A 嘅值能<strong>唯一決定</strong> B 嘅值,我哋寫成:</p>
+        <div class="fd-line" style="margin-top:8px;">
+          <span class="pk-label">A</span> <span class="arrow">→</span> B
+        </div>
+        <p style="font-size:13px;">讀作:「A 決定 B」或「B 功能依賴於 A」</p>
+      </div>
+      <div class="info-card green">
+        <h3 style="font-size:14px;">🌰 例子</h3>
+        <div class="fd-line" style="font-size:13px; padding:8px;">
+          <span class="pk-label">SID</span> <span class="arrow">→</span> Name, Class
+        </div>
+        <p style="font-size:12.5px;">畀我學生編號 S101,我可以肯定知道佢叫陳大文,讀 5A。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card yellow">
+    <h3>💡 為什麼這些概念對 Normalization 咁重要?</h3>
+    <p>規範化嘅每條規則,都係建基於<strong>「主鍵」</strong>同<strong>「功能依賴」</strong>嘅概念去判斷:邊啲屬性應該放埋一齊?邊啲應該分開?接下來會用到呢啲詞彙!</p>
+  </div>
+</div>
+
+<!-- ===== Slide 4: 三大範式口訣 ===== -->
+<div class="slide">
+  <div class="page-number">P. 4 / 26</div>
+  <div class="header">
+    <h1>🎯 三大範式口訣總覽</h1>
+    <div class="subtitle">先睇全圖,再逐個學習</div>
+  </div>
+
+  <div class="mantra">
+    <div class="en">"The key, the whole key, and nothing but the key"</div>
+    <div class="zh">「主鍵、完整主鍵、只有主鍵」</div>
+  </div>
+
+  <div class="nf-grid">
+    <div class="nf-card">
+      <div class="nf-title">1NF</div>
+      <div class="nf-en">The KEY</div>
+      <div class="nf-desc">每個欄位只能存放 <span class="nf-key">單一原子值</span>,不可有重複群組</div>
+    </div>
+    <div class="nf-card nf2">
+      <div class="nf-title">2NF</div>
+      <div class="nf-en">The WHOLE Key</div>
+      <div class="nf-desc">非主鍵屬性必須依賴 <span class="nf-key">完整的主鍵</span>,不可只依賴部分</div>
+    </div>
+    <div class="nf-card nf3">
+      <div class="nf-title">3NF</div>
+      <div class="nf-en">NOTHING but the Key</div>
+      <div class="nf-desc">非主鍵屬性必須 <span class="nf-key">直接</span> 依賴主鍵,不可經第三者</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 5: 引子 - 一張未規範嘅表 ===== -->
+<div class="slide">
+  <div class="stage-tag intro">🤔 引子</div>
+  <div class="page-number">P. 5 / 26</div>
+  <div class="header">
+    <h1>🤔 先看一張未規範嘅表</h1>
+    <div class="subtitle">假設公司用一張表記錄所有員工同項目資料</div>
+  </div>
+
+  <div class="intro-hero">
+    <div class="icon">📋</div>
+    <h2>EmployeeProject 表</h2>
+    <p>所有資料都塞入同一張表 — 睇落好方便,但其實會引起一啲問題</p>
+  </div>
+
+  <table class="messy-table">
+    <thead>
+      <tr><th>EmpID</th><th>EmpName</th><th>DeptID</th><th>DeptName</th><th>DeptManager</th><th>Projects</th><th>Phones</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>E001</td><td>陳大文</td>
+        <td class="cell-redundant">D10</td>
+        <td class="cell-redundant">市場部</td>
+        <td class="cell-redundant">王經理</td>
+        <td class="cell-multi">P01, P02, P03</td>
+        <td class="cell-multi">98765432, 23456789</td>
+      </tr>
+      <tr>
+        <td>E002</td><td>李美儀</td>
+        <td class="cell-redundant">D10</td>
+        <td class="cell-redundant">市場部</td>
+        <td class="cell-redundant">王經理</td>
+        <td class="cell-multi">P01, P04</td>
+        <td>91234567</td>
+      </tr>
+      <tr>
+        <td>E003</td><td>張志豪</td>
+        <td>D20</td><td>財務部</td><td>李經理</td>
+        <td class="cell-multi">P05, P06</td>
+        <td>97654321</td>
+      </tr>
+      <tr>
+        <td>E004</td><td>黃曉琳</td>
+        <td class="cell-redundant">D10</td>
+        <td class="cell-redundant">市場部</td>
+        <td class="cell-redundant">王經理</td>
+        <td>P02</td>
+        <td>92345678</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-card yellow">
+    <p>👀 <strong style="color:#c53030;">紅色格</strong> = 一格放多個值 &nbsp;&nbsp; <strong style="color:#92400e;">黃色格</strong> = 重複嘅資料</p>
+  </div>
+</div>
+
+<!-- ===== Slide 6: 引子 - 出乜問題? ===== -->
+<div class="slide">
+  <div class="stage-tag intro">🤔 引子</div>
+  <div class="page-number">P. 6 / 26</div>
+  <div class="header">
+    <h1>⚠️ 呢張表會引起 4 種問題</h1>
+    <div class="subtitle">統稱「異常 (Anomalies)」</div>
+  </div>
+
+  <div class="issue-grid">
+    <div class="issue-card">
+      <div class="a-icon">📥</div>
+      <div class="a-title">1. 插入異常 (Insertion Anomaly)</div>
+      <div class="a-en">想加新資料但加唔到</div>
+      <div class="a-desc">想新增一個部門 <strong>D30 人事部</strong>,但暫時冇員工 → 因為冇 EmpID(主鍵)就無法插入新行。</div>
+    </div>
+
+    <div class="issue-card update">
+      <div class="a-icon">✏️</div>
+      <div class="a-title">2. 更新異常 (Update Anomaly)</div>
+      <div class="a-en">改一個值要改好多次</div>
+      <div class="a-desc">市場部換經理:王經理 → 陳經理。表入面市場部出現 <strong>3 次</strong>,要逐行改。漏改一行會導致資料不一致。</div>
+    </div>
+
+    <div class="issue-card delete">
+      <div class="a-icon">🗑️</div>
+      <div class="a-title">3. 刪除異常 (Deletion Anomaly)</div>
+      <div class="a-en">刪一個值連帶刪埋第二個</div>
+      <div class="a-desc">如果張志豪 (E003) 離職,刪除佢嘅紀錄時,連帶 <strong>「財務部 / 李經理」</strong> 嘅資料一齊消失。</div>
+    </div>
+
+    <div class="issue-card redundancy">
+      <div class="a-icon">📋</div>
+      <div class="a-title">4. 資料重複 (Data Redundancy)</div>
+      <div class="a-en">同樣資料儲存好多次</div>
+      <div class="a-desc">「市場部 / 王經理」喺表入面重複咗 <strong>3 次</strong>。資料越多,佔用嘅空間就越大。</div>
+    </div>
+  </div>
+
+  <div class="question-box">
+    <div class="emoji">💭</div>
+    <div class="q-text">咁有冇方法可以解決呢啲問題?</div>
+  </div>
+</div>
+
+<!-- ===== Slide 7: 引子 - 解決方案 ===== -->
+<div class="slide">
+  <div class="stage-tag intro">🤔 引子</div>
+  <div class="page-number">P. 7 / 26</div>
+  <div class="header">
+    <h1>💡 解決方法:規範化 (Normalization)</h1>
+    <div class="subtitle">用「三道門檻」一步一步將表整齊化</div>
+  </div>
+
+  <div class="info-card green">
+    <h3>🎯 規範化嘅目標</h3>
+    <p>① <strong>減少資料重複</strong>(節省儲存空間,易維護)</p>
+    <p>② <strong>避免三大異常</strong>(插入、更新、刪除唔再出錯)</p>
+    <p>③ <strong>提高資料完整性</strong>(避免矛盾、保持一致)</p>
+  </div>
+
+  <div class="info-card">
+    <h3>🚪 三道門檻 (1NF → 2NF → 3NF)</h3>
+    <p>每一道門檻處理一種特定問題,逐步將表拆得越嚟越整齊。<strong>大部分商業系統做到 3NF 已經足夠!</strong></p>
+  </div>
+
+  <div class="journey" style="margin-top:20px;">
+    <div class="journey-step s1">⚛️ 1NF<br><span style="font-size:11px;font-weight:normal;">解決一格多值 + 重複群組</span></div>
+    <span class="journey-arrow">➡️</span>
+    <div class="journey-step s2">🔗 2NF<br><span style="font-size:11px;font-weight:normal;">解決部分相依</span></div>
+    <span class="journey-arrow">➡️</span>
+    <div class="journey-step s3">🔄 3NF<br><span style="font-size:11px;font-weight:normal;">解決遞移相依</span></div>
+  </div>
+
+  <div class="mantra" style="margin-top:18px;">
+    <div class="zh" style="font-size:18px;">📚 接住落嚟,我哋一個一個範式去學!</div>
+  </div>
+</div>
+
+<!-- ===== Slide 8: 1NF 概念 ===== -->
+<div class="slide">
+  <div class="stage-tag">⚛️ 第一站:1NF</div>
+  <div class="page-number">P. 8 / 26</div>
+  <div class="header">
+    <h1>⚛️ 第一範式 1NF — 兩大規則</h1>
+    <div class="subtitle">Atomic Values &amp; No Repeating Groups</div>
+  </div>
+
+  <div class="info-card">
+    <h3>規則 ①:原子值 (Atomic Value)</h3>
+    <p>每一格 (cell) 只可以儲存 <strong>一個不可再分割的數值</strong>。</p>
+  </div>
+
+  <div class="info-card green">
+    <h3>規則 ②:無重複群組 (No Repeating Groups)</h3>
+    <p>同一資料不可以用 <strong>多個欄位</strong>(例如 Phone1、Phone2、Phone3)重複出現。</p>
+  </div>
+
+  <div class="info-card yellow">
+    <h3>💡 簡單記憶法</h3>
+    <p><strong>「一格一值,一欄一概念」</strong> — 每格只放一個值,每欄只代表一種概念。</p>
+  </div>
+</div>
+
+<!-- ===== Slide 9: 1NF 例子 ===== -->
+<div class="slide">
+  <div class="stage-tag">⚛️ 第一站:1NF</div>
+  <div class="page-number">P. 9 / 26</div>
+  <div class="header">
+    <h1>🔍 1NF 違例 vs 正確示範</h1>
+  </div>
+
+  <div class="atomic-grid">
+    <div class="atom-box bad">
+      <div class="label">❌ 違反「原子值」(一格多值)</div>
+      <div class="atom-cell">
+        陳大文, 李美儀, 黃志強
+        <div class="field-label">姓名(一格三個!)</div>
+      </div>
+      <div class="atom-cell">
+        數學/英文/物理
+        <div class="field-label">科目(一格多科!)</div>
+      </div>
+    </div>
+    <div class="atom-box ok">
+      <div class="label">✅ 符合原子值(每格一值)</div>
+      <div class="atom-cell">
+        陳大文
+        <div class="field-label">姓名</div>
+      </div>
+      <div class="atom-cell">
+        數學
+        <div class="field-label">科目</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card red">
+    <h3>❌ 違反「無重複群組」嘅典型例子</h3>
+    <table style="margin-top:8px;">
+      <thead><tr><th>SID</th><th>Name</th><th>Subject1</th><th>Subject2</th><th>Subject3</th></tr></thead>
+      <tbody>
+        <tr><td>S2103</td><td>陳大文</td><td>數學</td><td>英文</td><td>物理</td></tr>
+        <tr><td>S2087</td><td>李美儀</td><td>中文</td><td>歷史</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:8px;">⚠️ 用 Subject1, Subject2, Subject3 重複欄位儲存同類資料 = 重複群組</p>
+  </div>
+</div>
+
+<!-- ===== Slide 10: 1NF 解決方法 ===== -->
+<div class="slide">
+  <div class="stage-tag">⚛️ 第一站:1NF</div>
+  <div class="page-number">P. 10 / 26</div>
+  <div class="header">
+    <h1>🛠️ 1NF 解決方法:每個值獨立一行</h1>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-box bad">
+      <h4>❌ 原始表(違反 1NF)</h4>
+      <table>
+        <thead><tr><th>SID</th><th>Name</th><th>Subjects</th></tr></thead>
+        <tbody>
+          <tr><td>S2103</td><td>陳大文</td><td>數學, 英文, 物理</td></tr>
+          <tr><td>S2087</td><td>李美儀</td><td>中文, 歷史</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="compare-box good">
+      <h4>✅ 正規化後(符合 1NF)</h4>
+      <table>
+        <thead><tr><th>SID 🔑</th><th>Name</th><th>Subject 🔑</th></tr></thead>
+        <tbody>
+          <tr><td>S2103</td><td>陳大文</td><td>數學</td></tr>
+          <tr><td>S2103</td><td>陳大文</td><td>英文</td></tr>
+          <tr><td>S2103</td><td>陳大文</td><td>物理</td></tr>
+          <tr><td>S2087</td><td>李美儀</td><td>中文</td></tr>
+          <tr><td>S2087</td><td>李美儀</td><td>歷史</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="info-card yellow">
+    <h3>📌 注意:主鍵需要重新設定</h3>
+    <p>由於 SID 重複出現,單一欄位已唔可以做主鍵 → 改用 <strong>複合主鍵 (SID + Subject)</strong></p>
+  </div>
+</div>
+
+<!-- ===== Slide 11: 1NF 小測 ===== -->
+<div class="slide" id="quiz1NF">
+  <div class="stage-tag">⚛️ 第一站:1NF</div>
+  <div class="page-number">P. 11 / 26</div>
+  <div class="header">
+    <h1>🧠 小測驗:1NF</h1>
+    <div class="subtitle">兩題答啱再去 2NF</div>
+  </div>
+
+  <div class="quiz-q">Q1. 以下邊一格資料違反咗 1NF 嘅「原子值」規則?</div>
+  <div class="quiz-options">
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q1nf1')">A. 姓名:陳大文</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, true, 'q1nf1')">B. 興趣:籃球, 音樂, 閱讀</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q1nf1')">C. 年齡:17</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q1nf1')">D. 班別:5A</div>
+  </div>
+  <div id="fb-q1nf1" class="feedback-box"></div>
+
+  <div class="quiz-q" style="margin-top:15px;">Q2. 以下哪個欄位設計屬於「重複群組」(Repeating Groups)?</div>
+  <div class="quiz-options">
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q1nf2')">A. SID, Name, Class</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q1nf2')">B. SID, Subject, Score</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, true, 'q1nf2')">C. SID, Phone1, Phone2, Phone3</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q1nf2')">D. SID, Address, City</div>
+  </div>
+  <div id="fb-q1nf2" class="feedback-box"></div>
+</div>
+
+<!-- ===== Slide 12: 情境題 ===== -->
+<div class="slide">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 12 / 26</div>
+  <div class="header">
+    <h1>📚 情境題</h1>
+    <div class="subtitle">學咗概念,我哋落手做案例!</div>
+  </div>
+  <div class="info-card">
+    <p style="font-size:16px;">小健係一所學校嘅<strong>數據庫管理員</strong> 💻,要處理<strong style="color:#c53030;">學會主席</strong>嘅資料。</p>
+  </div>
+  <div class="info-card yellow">
+    <h3>📌 重要規則</h3>
+    <p>① 每一個學會由 <strong>一位主席</strong> 帶領</p>
+    <p>② 每名學生最多只可帶領 <strong>一個學會</strong></p>
+  </div>
+</div>
+
+<!-- ===== Slide 13: CLUB 表 ===== -->
+<div class="slide">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 13 / 26</div>
+  <div class="header">
+    <h1>📋 小健設計咗一個 CLUB 表 ⋯</h1>
+    <div class="subtitle">你覺得呢個設計 OK 嗎?🤔</div>
+  </div>
+
+  <div class="schema-box">
+    CLUB ( <span class="pk">ClubID <span class="key-icon">🔑</span></span>, ClubName, Chairperson, SID, Class )
+  </div>
+
+  <div class="content-grid">
+    <div>
+      <div class="section-title">📖 欄位意思</div>
+      <table class="field-table">
+        <thead><tr><th>欄位</th><th>意思</th></tr></thead>
+        <tbody>
+          <tr><td class="field-name">ClubID</td><td>學會編號 🔑</td></tr>
+          <tr><td class="field-name">ClubName</td><td>學會名稱</td></tr>
+          <tr><td class="field-name">Chairperson</td><td>主席姓名</td></tr>
+          <tr><td class="field-name">SID</td><td>主席嘅學生編號</td></tr>
+          <tr><td class="field-name">Class</td><td>主席嘅班別</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">📊 實際存入嘅資料</div>
+      <table class="data-table">
+        <thead><tr><th>ClubID</th><th>ClubName</th><th>Chair</th><th>SID</th><th>Class</th></tr></thead>
+        <tbody>
+          <tr><td>C01</td><td>圍棋學會</td><td>阿明</td><td>S101</td><td>5A</td></tr>
+          <tr><td>C02</td><td>數學學會</td><td>阿May</td><td>S205</td><td>5B</td></tr>
+          <tr><td>C03</td><td>音樂學會</td><td>阿Ken</td><td>S312</td><td>4C</td></tr>
+          <tr class="highlight-row"><td>C04</td><td>辯論學會</td><td>阿May</td><td>S205</td><td>5B<span class="warning-icon">⚠️</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="question-box">
+    <div class="emoji">🤔</div>
+    <div class="q-text">等等⋯⋯ 你哋有冇發現啲咩怪怪哋嘅地方?</div>
+  </div>
+
+  <button class="reveal-btn" onclick="toggleClue(this, 'clue1')">💡 俾啲提示我!</button>
+
+  <div id="clue1" class="hidden-clue">
+    <ul class="clue-list">
+      <li>望下 <strong style="color:#c53030;">C02 同 C04</strong> 兩行,主席係咪同一個人?</li>
+      <li>題目話「<strong>每名學生最多只可帶領一個學會</strong>」⋯⋯ 但阿May做咗 <strong>兩個</strong> 學會嘅主席?</li>
+      <li>阿May、S205、5B 呢三格資料係咪 <strong>重複咗兩次</strong>?📋📋</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== Slide 14: 功能依賴 ===== -->
+<div class="slide">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 14 / 26</div>
+  <div class="header">
+    <h1>🔗 功能依賴 (Functional Dependencies)</h1>
+    <div class="subtitle">由規則推斷出兩條重要嘅 FD</div>
+  </div>
+
+  <div class="info-card">
+    <h3>① ClubID 決定一切</h3>
+    <div class="fd-line">
+      <span class="pk-label">ClubID</span>
+      <span class="arrow">→</span>
+      ClubName, Chairperson, SID, Class
+    </div>
+    <p>因為「<strong>每個學會只有一位主席</strong>」</p>
+  </div>
+
+  <div class="info-card green">
+    <h3>② SID 都可以決定一切</h3>
+    <div class="fd-line">
+      <span class="pk-label">SID</span>
+      <span class="arrow">→</span>
+      Chairperson, Class, ClubID, ClubName
+    </div>
+    <p>因為「<strong>每名學生最多只可帶領一個學會</strong>」</p>
+  </div>
+
+  <div class="info-card yellow">
+    <p>✅ 主鍵 (Primary Key) = <strong style="color:#c53030;">ClubID</strong></p>
+    <p>✅ <strong style="color:#2c7a7b;">SID</strong> 係另一個 candidate key (候選鍵)</p>
+  </div>
+</div>
+
+<!-- ===== Slide 15: 答案 (i) 1NF ===== -->
+<div class="slide">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 15 / 26</div>
+  <div class="header">
+    <h1>✅ (i) CLUB 符合 1NF 嗎?</h1>
+    <div class="subtitle">用啱啱學嘅 1NF 規則去檢查</div>
+  </div>
+
+  <div class="info-card yellow">
+    <h3>🔍 檢查清單</h3>
+    <p>① 每格只放一個原子值?</p>
+    <p>② 有冇重複群組(例如 Subject1, Subject2…)?</p>
+  </div>
+
+  <table class="data-table">
+    <thead><tr><th>ClubID</th><th>ClubName</th><th>Chairperson</th><th>SID</th><th>Class</th></tr></thead>
+    <tbody>
+      <tr><td>C01</td><td>圍棋學會</td><td>阿明</td><td>S101</td><td>5A</td></tr>
+      <tr><td>C02</td><td>數學學會</td><td>阿May</td><td>S205</td><td>5B</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-card green">
+    <p>✅ 每格都係單一值(冇 "阿明, 阿仁" 之類)</p>
+    <p>✅ 冇 Subject1、Subject2 之類嘅重複欄位</p>
+  </div>
+
+  <div class="answer-box">
+    <div class="label">📝 答案</div>
+    <p><strong>符合 1NF。</strong>因為 CLUB 表格中每個欄位都只儲存單一原子值,並且沒有重複群組。</p>
+  </div>
+</div>
+
+<!-- ===== Slide 16: 2NF 概念 ===== -->
+<div class="slide">
+  <div class="stage-tag nf2">🔗 第二站:2NF</div>
+  <div class="page-number">P. 16 / 26</div>
+  <div class="header">
+    <h1>🔗 第二範式 2NF — 消除部分相依</h1>
+    <div class="subtitle">Eliminate Partial Dependency</div>
+  </div>
+
+  <div class="info-card">
+    <h3>條件 ①:已經符合 1NF</h3>
+    <p>每格放一個原子值,無重複群組。</p>
+  </div>
+
+  <div class="info-card green">
+    <h3>條件 ②:無部分相依 (No Partial Dependency)</h3>
+    <p>所有<strong>非主鍵欄位</strong>必須<strong>完全相依</strong>於整個主鍵,不可以只依賴主鍵嘅一部分。</p>
+  </div>
+
+  <div class="info-card yellow">
+    <h3>⚠️ 重要前提</h3>
+    <p>2NF 嘅問題只會出現喺 <strong>複合主鍵 (Composite Key)</strong> 嘅表格。若主鍵只係 <strong>單一欄位</strong>,根本無「部分」可言,自動符合 2NF!</p>
+  </div>
+
+  <div class="mantra">
+    <div class="en">"要靠就靠晒,唔可以淨係靠半個"</div>
+    <div class="zh">非主鍵屬性必須依賴整個主鍵</div>
+  </div>
+</div>
+
+<!-- ===== Slide 17: 2NF 例子 ===== -->
+<div class="slide">
+  <div class="stage-tag nf2">🔗 第二站:2NF</div>
+  <div class="page-number">P. 17 / 26</div>
+  <div class="header">
+    <h1>🔍 2NF 違例:選課成績表</h1>
+    <div class="subtitle">複合主鍵 = (SID + CourseID)</div>
+  </div>
+
+  <table class="data-table">
+    <thead><tr><th>SID 🔑</th><th>CourseID 🔑</th><th>StudentName</th><th>CourseName</th><th>Score</th></tr></thead>
+    <tbody>
+      <tr><td>S2103</td><td>C001</td><td style="background:#fed7d7;">陳大文</td><td style="background:#fff5b1;">數學</td><td>85</td></tr>
+      <tr><td>S2103</td><td>C002</td><td style="background:#fed7d7;">陳大文</td><td style="background:#fff5b1;">英文</td><td>78</td></tr>
+      <tr><td>S2087</td><td>C001</td><td style="background:#fed7d7;">李美儀</td><td style="background:#fff5b1;">數學</td><td>88</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-card red">
+    <h3>🔴 部分相依分析</h3>
+    <p><strong>StudentName</strong> 只靠 <strong>SID</strong> 就決定到 → 部分相依 ❌</p>
+    <p><strong>CourseName</strong> 只靠 <strong>CourseID</strong> 就決定到 → 部分相依 ❌</p>
+    <p><strong>Score</strong> 必須要 SID + CourseID 一齊先決定到 → 完全相依 ✓</p>
+  </div>
+</div>
+
+<!-- ===== Slide 18: 2NF 解決方法 ===== -->
+<div class="slide">
+  <div class="stage-tag nf2">🔗 第二站:2NF</div>
+  <div class="page-number">P. 18 / 26</div>
+  <div class="header">
+    <h1>🛠️ 2NF 解決方法:拆成獨立表</h1>
+    <div class="subtitle">將部分相依嘅欄位連同所依賴嘅主鍵抽出嚟</div>
+  </div>
+
+  <div class="content-grid equal">
+    <div>
+      <div class="section-title">📘 Student 表</div>
+      <table class="data-table">
+        <thead><tr><th>SID 🔑</th><th>StudentName</th></tr></thead>
+        <tbody>
+          <tr><td>S2103</td><td>陳大文</td></tr>
+          <tr><td>S2087</td><td>李美儀</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">📗 Course 表</div>
+      <table class="data-table">
+        <thead><tr><th>CourseID 🔑</th><th>CourseName</th></tr></thead>
+        <tbody>
+          <tr><td>C001</td><td>數學</td></tr>
+          <tr><td>C002</td><td>英文</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">📙 Enrollment 表(只保留完全相依嘅 Score)</div>
+  <table class="data-table">
+    <thead><tr><th>SID 🔑(FK)</th><th>CourseID 🔑(FK)</th><th>Score</th></tr></thead>
+    <tbody>
+      <tr><td>S2103</td><td>C001</td><td>85</td></tr>
+      <tr><td>S2103</td><td>C002</td><td>78</td></tr>
+      <tr><td>S2087</td><td>C001</td><td>88</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== Slide 19: 2NF 小測 ===== -->
+<div class="slide" id="quiz2NF">
+  <div class="stage-tag nf2">🔗 第二站:2NF</div>
+  <div class="page-number">P. 19 / 26</div>
+  <div class="header">
+    <h1>🧠 小測驗:2NF</h1>
+  </div>
+
+  <div class="quiz-q">Q1. 假設 Order(<u>OrderID</u>, <u>ProductID</u>, ProductName, Quantity),主鍵為 (OrderID + ProductID)。以下邊個係<strong>部分相依</strong>?</div>
+  <div class="quiz-options single">
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q2nf1')">A. (OrderID + ProductID) → Quantity</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, true, 'q2nf1')">B. ProductID → ProductName</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q2nf1')">C. Quantity → OrderID</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q2nf1')">D. 以上都唔係</div>
+  </div>
+  <div id="fb-q2nf1" class="feedback-box"></div>
+
+  <div class="quiz-q" style="margin-top:15px;">Q2. 以下邊一種情況下,1NF 嘅表格<strong>會自動符合</strong> 2NF?</div>
+  <div class="quiz-options single">
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q2nf2')">A. 表格冇任何外鍵</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q2nf2')">B. 表格冇 NULL 值</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, true, 'q2nf2')">C. 表格嘅主鍵只係單一欄位 (Single-attribute Primary Key)</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q2nf2')">D. 表格只有兩個欄位</div>
+  </div>
+  <div id="fb-q2nf2" class="feedback-box"></div>
+</div>
+
+<!-- ===== Slide 20: 答案 (ii) 2NF ===== -->
+<div class="slide">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 20 / 26</div>
+  <div class="header">
+    <h1>✅ (ii) CLUB 符合 2NF 嗎?</h1>
+  </div>
+
+  <div class="info-card yellow">
+    <h3>🔍 檢查思路</h3>
+    <p>① 主鍵係咩類型?單一定複合?</p>
+    <p>② 如果係複合主鍵,有冇非主鍵只依賴其中一部分?</p>
+  </div>
+
+  <div class="schema-box">
+    CLUB ( <span class="pk">ClubID 🔑</span>, ClubName, Chairperson, SID, Class )
+  </div>
+
+  <div class="info-card green">
+    <h3>🔑 主鍵分析</h3>
+    <p>CLUB 嘅主鍵 <strong>ClubID</strong> 係<strong>單一欄位</strong>,唔係複合主鍵</p>
+    <p>→ 根本冇「主鍵嘅一部分」呢個概念</p>
+    <p>→ 唔可能有 partial dependency</p>
+  </div>
+
+  <div class="answer-box">
+    <div class="label">📝 答案</div>
+    <p><strong>符合 2NF。</strong>因為主鍵 ClubID 係單一欄位,自動符合 2NF ✅</p>
+  </div>
+</div>
+
+<!-- ===== Slide 21: 3NF 概念 ===== -->
+<div class="slide">
+  <div class="stage-tag nf3">🔄 第三站:3NF</div>
+  <div class="page-number">P. 21 / 26</div>
+  <div class="header">
+    <h1>🔄 第三範式 3NF — 消除遞移相依</h1>
+    <div class="subtitle">Eliminate Transitive Dependency</div>
+  </div>
+
+  <div class="info-card">
+    <h3>條件 ①:已經符合 2NF</h3>
+    <p>已是 1NF + 無部分相依。</p>
+  </div>
+
+  <div class="info-card purple">
+    <h3>條件 ②:無遞移相依 (No Transitive Dependency)</h3>
+    <p>非主鍵欄位之間<strong>不能互相決定</strong>,所有非主鍵欄位必須<strong>直接</strong>依賴主鍵。</p>
+  </div>
+
+  <div class="info-card red">
+    <h3>📌 什麼是「遞移相依」?</h3>
+    <p>當 <strong>非主鍵 A → 非主鍵 B</strong>,而 B 又依賴主鍵時,就形成「<strong>主鍵 → A → B</strong>」嘅鏈條。呢種「轉手相依」就叫 <strong>遞移相依</strong>。</p>
+  </div>
+
+  <div class="mantra">
+    <div class="en">"淨係聽老闆話,唔聽同事話"</div>
+    <div class="zh">非主鍵欄位只可以直接聽主鍵指揮</div>
+  </div>
+</div>
+
+<!-- ===== Slide 22: 3NF 例子 ===== -->
+<div class="slide">
+  <div class="stage-tag nf3">🔄 第三站:3NF</div>
+  <div class="page-number">P. 22 / 26</div>
+  <div class="header">
+    <h1>🔍 3NF 違例:員工資料表</h1>
+  </div>
+
+  <table class="data-table">
+    <thead><tr><th>EmpID 🔑</th><th>EmpName</th><th>Salary</th><th>DeptID</th><th>DeptName</th><th>DeptManager</th></tr></thead>
+    <tbody>
+      <tr><td>E001</td><td>陳大文</td><td>$30,000</td><td>D10</td><td style="background:#fed7d7;">市場部</td><td style="background:#fed7d7;">王經理</td></tr>
+      <tr><td>E002</td><td>李美儀</td><td>$28,000</td><td>D10</td><td style="background:#fed7d7;">市場部</td><td style="background:#fed7d7;">王經理</td></tr>
+      <tr><td>E003</td><td>張志豪</td><td>$35,000</td><td>D20</td><td style="background:#fed7d7;">財務部</td><td style="background:#fed7d7;">李經理</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-card red">
+    <h3>🚨 遞移相依分析</h3>
+    <div class="fd-line">
+      <span class="pk-label">EmpID</span>
+      <span class="arrow">→</span>
+      <span style="background:#e9d8fd; padding:3px 10px; border-radius:5px;">DeptID</span>
+      <span class="arrow">→</span>
+      DeptName, DeptManager
+    </div>
+    <p>DeptName 同 DeptManager 唔係直接依賴 EmpID,而係透過 DeptID 轉手 → <strong>遞移相依!</strong></p>
+  </div>
+
+  <div class="info-card yellow">
+    <p>⚠️ <strong>注意</strong>:雖然主鍵係單一欄位 EmpID(自動符合 2NF),但仍然違反 3NF。</p>
+  </div>
+</div>
+
+<!-- ===== Slide 23: 3NF 解決方法 ===== -->
+<div class="slide">
+  <div class="stage-tag nf3">🔄 第三站:3NF</div>
+  <div class="page-number">P. 23 / 26</div>
+  <div class="header">
+    <h1>🛠️ 3NF 解決方法:抽走遞移相依</h1>
+    <div class="subtitle">將遞移相依嘅欄位連同佢嘅決定者抽出嚟,獨立成新表</div>
+  </div>
+
+  <div class="content-grid equal">
+    <div>
+      <div class="section-title">📘 Employee 表</div>
+      <table class="data-table">
+        <thead><tr><th>EmpID 🔑</th><th>EmpName</th><th>Salary</th><th>DeptID(FK)</th></tr></thead>
+        <tbody>
+          <tr><td>E001</td><td>陳大文</td><td>$30,000</td><td>D10</td></tr>
+          <tr><td>E002</td><td>李美儀</td><td>$28,000</td><td>D10</td></tr>
+          <tr><td>E003</td><td>張志豪</td><td>$35,000</td><td>D20</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">📗 Department 表</div>
+      <table class="data-table">
+        <thead><tr><th>DeptID 🔑</th><th>DeptName</th><th>DeptManager</th></tr></thead>
+        <tbody>
+          <tr><td>D10</td><td>市場部</td><td>王經理</td></tr>
+          <tr><td>D20</td><td>財務部</td><td>李經理</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="info-card green">
+    <h3>✨ 轉換後嘅好處</h3>
+    <p>✅ 部門資料只儲存一次(無重複)</p>
+    <p>✅ 換經理只需改 Department 表入面嗰一行(無更新異常)</p>
+    <p>✅ 可以新增冇員工嘅部門(無插入異常)</p>
+  </div>
+</div>
+
+<!-- ===== Slide 24: 3NF 小測 ===== -->
+<div class="slide" id="quiz3NF">
+  <div class="stage-tag nf3">🔄 第三站:3NF</div>
+  <div class="page-number">P. 24 / 26</div>
+  <div class="header">
+    <h1>🧠 小測驗:3NF</h1>
+  </div>
+
+  <div class="quiz-q">Q1. 假設 Book(<u>BookID</u>, Title, AuthorID, AuthorName),主鍵為 BookID。以下邊個係<strong>遞移相依</strong>?</div>
+  <div class="quiz-options single">
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q3nf1')">A. BookID → Title</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, true, 'q3nf1')">B. BookID → AuthorID → AuthorName</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q3nf1')">C. BookID → AuthorID</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q3nf1')">D. Title → BookID</div>
+  </div>
+  <div id="fb-q3nf1" class="feedback-box"></div>
+
+  <div class="quiz-q" style="margin-top:15px;">Q2. 以下邊一個說法<strong>正確</strong>?</div>
+  <div class="quiz-options single">
+    <div class="quiz-opt" onclick="checkNFAns(this, true, 'q3nf2')">A. 單一主鍵嘅表自動符合 2NF,但仲可能違反 3NF</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q3nf2')">B. 單一主鍵嘅表自動符合 3NF</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q3nf2')">C. 複合主鍵嘅表自動符合 3NF</div>
+    <div class="quiz-opt" onclick="checkNFAns(this, false, 'q3nf2')">D. 符合 3NF 嘅表唔需要符合 2NF</div>
+  </div>
+  <div id="fb-q3nf2" class="feedback-box"></div>
+</div>
+
+<!-- ===== Slide 25: 答案 (iii) 3NF ===== -->
+<div class="slide">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 25 / 26</div>
+  <div class="header">
+    <h1>❌ (iii) CLUB 符合 3NF 嗎?</h1>
+  </div>
+
+  <div class="info-card">
+    <h3>🔍 睇返 CLUB 嘅依賴關係</h3>
+    <div class="fd-line">
+      <span class="pk-label">ClubID</span>
+      <span class="arrow">→</span>
+      <span style="background:#e9d8fd; padding:3px 10px; border-radius:5px;">SID</span>
+      <span class="arrow">→</span>
+      Chairperson, Class
+    </div>
+    <p style="color:#c53030;">↑ Chairperson 同 Class 唔係直接依賴 ClubID,而係經 SID 轉一個彎!</p>
+  </div>
+
+  <div class="info-card red">
+    <h3>🚨 傳遞依賴 (Transitive Dependency)</h3>
+    <p><strong>ClubID → SID</strong>,而 <strong>SID → Chairperson, Class</strong></p>
+    <p>結果:ClubID → Chairperson, Class 係透過 SID <strong>間接</strong>傳過去</p>
+  </div>
+
+  <div class="answer-box">
+    <div class="label">📝 答案</div>
+    <p><strong>唔符合 3NF。</strong>因為 Chairperson 同 Class 並唔係直接依賴主鍵 ClubID,而係透過 SID 形成傳遞依賴。</p>
+  </div>
+</div>
+
+<!-- ===== Slide 26: (iv) 規範化 + 最終測 ===== -->
+<div class="slide" id="finalQuiz">
+  <div class="stage-tag case">📚 情境應用</div>
+  <div class="page-number">P. 26 / 26</div>
+  <div class="header">
+    <h1>💡 (iv) 將 CLUB 規範化到 3NF + 最終挑戰</h1>
+    <div class="subtitle">解決方法:把傳遞依賴拆走,將 CLUB 拆成兩個表</div>
+  </div>
+
+  <div class="content-grid equal">
+    <div>
+      <div class="section-title">📋 表 1: CLUB</div>
+      <div class="schema-box" style="font-size:14px; padding:10px;">
+        CLUB ( <span class="pk">ClubID</span>, ClubName, SID* )
+      </div>
+      <table class="data-table">
+        <thead><tr><th>ClubID</th><th>ClubName</th><th>SID</th></tr></thead>
+        <tbody>
+          <tr><td>C01</td><td>圍棋學會</td><td>S101</td></tr>
+          <tr><td>C02</td><td>數學學會</td><td>S205</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">📋 表 2: STUDENT</div>
+      <div class="schema-box" style="font-size:14px; padding:10px;">
+        STUDENT ( <span class="pk">SID</span>, Chairperson, Class )
+      </div>
+      <table class="data-table">
+        <thead><tr><th>SID</th><th>Chairperson</th><th>Class</th></tr></thead>
+        <tbody>
+          <tr><td>S101</td><td>阿明</td><td>5A</td></tr>
+          <tr><td>S205</td><td>阿May</td><td>5B</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="quiz-q">🎯 最終挑戰:2NF 同 3NF 最大嘅分別係?</div>
+  <div class="quiz-options">
+    <div class="quiz-opt" onclick="checkFinal(this, false, 1)">A. 2NF 處理 NULL,3NF 處理重複</div>
+    <div class="quiz-opt" onclick="checkFinal(this, true, 1)">B. 2NF 處理「主鍵內部」,3NF 處理「非主鍵之間」</div>
+    <div class="quiz-opt" onclick="checkFinal(this, false, 1)">C. 兩者完全一樣</div>
+    <div class="quiz-opt" onclick="checkFinal(this, false, 1)">D. 2NF 用於小資料庫,3NF 用於大資料庫</div>
+  </div>
+
+  <div id="celebrateMsg" class="celebrate-msg">
+    🎊 恭喜你完成全部課程!Database Normalization 你已經掌握!🎊
+  </div>
+</div>
+
+<!-- ===== Navigation Bar ===== -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">◀ 上一頁</button>
+  <span class="page-info"><span id="curPage">1</span> / 26</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">下一頁 ▶</button>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+
+  const finalAnswers = { 1: null };
+
+  const feedbackMsgs = {
+    'q1nf1': { correct: '✅ 正確!「籃球, 音樂, 閱讀」一格放咗三個值,違反原子值規則。', wrong: '❌ 唔啱。違反原子值規則嘅係 B —「籃球, 音樂, 閱讀」一格放咗三個值。' },
+    'q1nf2': { correct: '✅ 正確!Phone1, Phone2, Phone3 用多個結構相同嘅欄位儲存同類資料 = 重複群組。', wrong: '❌ 唔啱。答案係 C — Phone1, Phone2, Phone3 用多個欄位儲存同類資料,屬重複群組。' },
+    'q2nf1': { correct: '✅ 正確!ProductName 只靠 ProductID(主鍵嘅一半)就決定到 = 部分相依。', wrong: '❌ 唔啱。答案係 B — ProductName 只靠 ProductID 就決定到,屬部分相依。' },
+    'q2nf2': { correct: '✅ 正確!主鍵係單一欄位時,根本冇「部分」可言,自動符合 2NF。', wrong: '❌ 唔啱。答案係 C — 主鍵係單一欄位時,自動符合 2NF。' },
+    'q3nf1': { correct: '✅ 正確!BookID → AuthorID → AuthorName 經過 AuthorID 轉手 = 遞移相依。', wrong: '❌ 唔啱。答案係 B — BookID 經過 AuthorID 才到 AuthorName,屬遞移相依。' },
+    'q3nf2': { correct: '✅ 正確!單一主鍵 = 自動符合 2NF,但 3NF 仍要檢查非主鍵之間嘅依賴。', wrong: '❌ 唔啱。答案係 A — 單一主鍵自動符合 2NF,但仲可能違反 3NF(例如 CLUB)。' }
+  };
+
+  function showSlide(n) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[n].classList.add('active');
+    document.getElementById('curPage').innerText = n + 1;
+    document.getElementById('prevBtn').disabled = (n === 0);
+    document.getElementById('nextBtn').disabled = (n === totalSlides - 1);
+    window.scrollTo(0, 0);
+  }
+
+  function changeSlide(dir) {
+    const next = currentSlide + dir;
+    if (next >= 0 && next < totalSlides) {
+      currentSlide = next;
+      showSlide(currentSlide);
+    }
+  }
+
+  function toggleClue(btn, id) {
+    const clue = document.getElementById(id);
+    clue.classList.toggle('show');
+    btn.innerText = clue.classList.contains('show') ? '🙈 收埋提示' : '💡 俾啲提示我!';
+  }
+
+  function checkNFAns(opt, isCorrect, qid) {
+    const allOpts = opt.parentElement.querySelectorAll('.quiz-opt');
+    if (Array.from(allOpts).some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+    
+    opt.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) {
+      allOpts.forEach(o => {
+        if (o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    
+    const fb = document.getElementById('fb-' + qid);
+    fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+    fb.innerHTML = isCorrect ? feedbackMsgs[qid].correct : feedbackMsgs[qid].wrong;
+  }
+
+  function checkFinal(opt, isCorrect, qNum) {
+    const allOpts = opt.parentElement.querySelectorAll('.quiz-opt');
+    if (Array.from(allOpts).some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+    
+    opt.classList.add(isCorrect ? 'correct' : 'wrong');
+    finalAnswers[qNum] = isCorrect;
+    
+    if (!isCorrect) {
+      allOpts.forEach(o => {
+        if (o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    
+    if (finalAnswers[1] === true) {
+      document.getElementById('finalQuiz').classList.add('all-correct');
+      document.getElementById('celebrateMsg').classList.add('show');
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') changeSlide(1);
+    if (e.key === 'ArrowLeft') changeSlide(-1);
+  });
+
+  showSlide(0);
+</script>
+
+
+
+</body></html>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import MatrixEquationActivity from "./components/MatrixEquationActivity";
+import ShareActivityPage from "./components/ShareActivityPage";
 import {
   ArrowLeft,
   ArrowRight,
@@ -53,20 +54,28 @@ type Activity = {
 };
 
 const subjects: Subject[] = [
-  { name: "Chinese", slug: "chinese", short: "中", color: "#d97965", soft: "#fbeceb" },
-  { name: "English", slug: "english", short: "EN", color: "#4c83b5", soft: "#eaf3fc" },
-  { name: "Mathematics", slug: "mathematics", short: "∑", color: "#5a9a82", soft: "#e9f6ef" },
-  { name: "Civic Education", slug: "civic-education", short: "CE", color: "#9077b4", soft: "#f1ecf8" },
-  { name: "Physics", slug: "physics", short: "Φ", color: "#c78344", soft: "#fbf0e4" },
-  { name: "Chemistry", slug: "chemistry", short: "⚗", color: "#4c9d9a", soft: "#e7f5f4" },
-  { name: "Biology", slug: "biology", short: "♧", color: "#6d9f66", soft: "#edf6ea" },
-  { name: "BAFS", slug: "bafs", short: "BA", color: "#9a7b57", soft: "#f6f0e9" },
-  { name: "THS", slug: "ths", short: "TH", color: "#bd718c", soft: "#faedf2" },
-  { name: "Geography", slug: "geography", short: "GE", color: "#5c8d9f", soft: "#eaf4f6" },
-  { name: "ICT", slug: "ict", short: "</>", color: "#3979b9", soft: "#eaf3fc" },
-  { name: "DAT", slug: "dat", short: "DA", color: "#8277b8", soft: "#efedfa" },
-  { name: "VA", slug: "va", short: "VA", color: "#cb7660", soft: "#fbedeb" },
-  { name: "Music", slug: "music", short: "♫", color: "#a477ad", soft: "#f4edf7" },
+  { name: "Chinese Language (中文科)", slug: "chinese", short: "中", color: "#d97965", soft: "#fbeceb" },
+  { name: "English Language (英文科)", slug: "english", short: "EN", color: "#4c83b5", soft: "#eaf3fc" },
+  { name: "Mathematics (數學科)", slug: "mathematics", short: "∑", color: "#5a9a82", soft: "#e9f6ef" },
+  { name: "Citizenship and Social Development (公民與社會發展科)", slug: "csd", short: "CS", color: "#9077b4", soft: "#f1ecf8" },
+  { name: "Science (科學科)", slug: "science", short: "SC", color: "#6aa88f", soft: "#e7f3ee" },
+  { name: "Mathematics M2 (數學延伸單元二)", slug: "m2", short: "M2", color: "#8a7bb5", soft: "#efeaf8" },
+  { name: "Physics (物理科)", slug: "physics", short: "Φ", color: "#c78344", soft: "#fbf0e4" },
+  { name: "Chemistry (化學科)", slug: "chemistry", short: "⚗", color: "#4c9d9a", soft: "#e7f5f4" },
+  { name: "Biology (生物科)", slug: "biology", short: "♧", color: "#6d9f66", soft: "#edf6ea" },
+  { name: "Chinese History (中國歷史科)", slug: "chinese-history", short: "CH", color: "#a0506d", soft: "#f6e9ee" },
+  { name: "Geography (地理科)", slug: "geography", short: "GE", color: "#5c8d9f", soft: "#eaf4f6" },
+  { name: "Economics (經濟科)", slug: "economics", short: "EC", color: "#7a8b4d", soft: "#f0f4e6" },
+  { name: "BAFS (企業、會計與財務概論)", slug: "bafs", short: "BA", color: "#9a7b57", soft: "#f6f0e9" },
+  { name: "THS (旅遊與款待)", slug: "ths", short: "TH", color: "#bd718c", soft: "#faedf2" },
+  { name: "ICT (資訊及通訊科技)", slug: "ict", short: "</>", color: "#3979b9", soft: "#eaf3fc" },
+  { name: "DAT (設計與應用科技)", slug: "dat", short: "DA", color: "#8277b8", soft: "#efedfa" },
+  { name: "VA (視覺藝術)", slug: "va", short: "VA", color: "#cb7660", soft: "#fbedeb" },
+  { name: "Music (音樂)", slug: "music", short: "♫", color: "#a477ad", soft: "#f4edf7" },
+  { name: "Citizenship, Economics and Society (公民、經濟與社會科)", slug: "ces", short: "CE", color: "#7c9a86", soft: "#e9f3ee" },
+  { name: "Putonghua (普通話科)", slug: "putonghua", short: "普", color: "#c9895c", soft: "#faf1e8" },
+  { name: "Physical Education (體育科)", slug: "pe", short: "PE", color: "#5f9ea8", soft: "#e8f4f5" },
+  { name: "Technology and Living (家政科/科技與生活)", slug: "he", short: "TL", color: "#b07a56", soft: "#f6ede6" },
 ];
 
 const subjectExamples: Record<string, Activity[]> = {
@@ -85,12 +94,17 @@ const subjectExamples: Record<string, Activity[]> = {
     description: "An animated, self-contained activity that matches corresponding matrix entries and reveals the solution one step at a time.",
     format: "Interactive walkthrough",
     url: "/activities/mathematics/matrix-equation/maths-question.html",
-  }], "civic-education": [], physics: [{
+  }], csd: [], science: [], m2: [], physics: [{
     title: "Two Projectiles, One Starting Point",
     description: "An interactive HKAL-style question on resolving velocity components and comparing the horizontal and vertical motion of two launched balls.",
     format: "Interactive multiple choice",
     url: "/activities/physics/projectile-motion/index.html",
-  }], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [], dat: [], va: [], music: [],
+  }], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [{
+    title: "數據庫規範化：互動教學",
+    description: "以廣東話中文講解 database normalization，涵蓋 database 基礎、功能依賴、1NF、2NF、3NF、情境應用，以及互動小測驗。",
+    format: "Interactive lesson + quizzes",
+    url: "/activities/ict/database-normalization/index.html",
+  }], dat: [], va: [], music: [], "chinese-history": [], ces: [], putonghua: [], pe: [], he: [],
 };
 
 const activityTypes = ["Interactive quiz", "Matching activity", "Drag and drop", "Flashcards", "Simulation", "Timeline"];
@@ -116,6 +130,7 @@ function AppContent() {
   const currentSlug = location.pathname.startsWith("/subject/") ? location.pathname.split("/")[2] : "";
   const currentSubject = subjectBySlug(currentSlug);
   const isBuilder = location.pathname === "/prompt-builder";
+  const isShare = location.pathname === "/share";
   const isGettingStarted = location.pathname === "/getting-started";
   const isHome = location.pathname === "/";
   const isMatrixActivity = location.pathname === "/activities/mathematics/matrix-equation" || location.pathname === "/activities/mathematics/matrix-equation/";
@@ -157,6 +172,7 @@ function AppContent() {
           <NavButton icon={<Home size={16} />} label="Home" selected={isHome} collapsed={collapsed} onClick={() => navigateTo("/")} />
           <NavButton icon={<Route size={16} />} label="Getting Started" selected={isGettingStarted} collapsed={collapsed} onClick={() => navigateTo("/getting-started")} />
           <NavButton icon={<MessageSquareText size={16} />} label="Prompt Builder" selected={isBuilder} collapsed={collapsed} onClick={() => navigateTo("/prompt-builder")} />
+          <NavButton icon={<GiftIcon />} label="Share an Activity" selected={isShare} collapsed={collapsed} onClick={() => navigateTo("/share")} />
         </nav>
         <div className="sidebar-section-label subject-label">Subjects</div>
         <nav className="subject-nav">
@@ -173,11 +189,16 @@ function AppContent() {
           {!isMatrixActivity && isHome && <HomePage navigateTo={navigateTo} />}
           {isGettingStarted && <GettingStartedPage navigateTo={navigateTo} />}
           {isBuilder && <PromptBuilderPage subject={subject} setSubject={setSubject} topic={topic} setTopic={setTopic} activityType={activityType} setActivityType={setActivityType} level={level} setLevel={setLevel} selectedFeatures={selectedFeatures} toggleFeature={toggleFeature} prompt={prompt} copied={copied} copyPrompt={copyPrompt} />}
+          {isShare && <ShareActivityPage onBack={() => navigateTo("/")} />}
           {currentSubject && <SubjectPage subject={currentSubject} activities={subjectExamples[currentSubject.slug] ?? []} navigateTo={navigateTo} />}
         </>}
       </main>
     </div>
   );
+}
+
+function GiftIcon() {
+  return <span className="nav-icon"><Sparkles size={16} /></span>;
 }
 
 function NavButton({ icon, subject, label, selected, collapsed, onClick }: { icon?: React.ReactNode; subject?: Subject; label: string; selected: boolean; collapsed: boolean; onClick: () => void }) {
@@ -203,7 +224,7 @@ function HomePage({ navigateTo }: { navigateTo: (path: string) => void }) {
       <ResourceCard number="02" icon={<MessageSquareText size={17} />} title="Prompt Builder" description="Shape a clear, detailed request that gives your AI agent the context it needs." action="Build a prompt" onClick={() => navigateTo("/prompt-builder")} />
       <ResourceCard number="03" icon={<BookOpen size={17} />} title="Activity Gallery" description="Browse subject areas and see how a growing collection of activities can be organised." action="Browse subjects" onClick={() => document.getElementById("subjects")?.scrollIntoView({ behavior: "smooth" })} />
     </div></section>
-    <section className="home-section" id="subjects"><div className="section-heading"><div><div className="eyebrow">Teaching areas</div><h2>Browse by subject</h2></div><span className="section-count">14 subjects</span></div><div className="subject-grid">{subjects.map((subject) => <button className="subject-tile" key={subject.slug} onClick={() => navigateTo(`/subject/${subject.slug}`)}><span className="subject-tile-icon" style={{ background: subject.soft, color: subject.color }}>{subject.short}</span>{subject.name}<ArrowUpRight size={14} /></button>)}</div></section>
+    <section className="home-section" id="subjects"><div className="section-heading"><div><div className="eyebrow">Teaching areas</div><h2>Browse by subject</h2></div><span className="section-count">22 subjects</span></div><div className="subject-grid">{subjects.map((subject) => <button className="subject-tile" key={subject.slug} onClick={() => navigateTo(`/subject/${subject.slug}`)}><span className="subject-tile-icon" style={{ background: subject.soft, color: subject.color }}>{subject.short}</span>{subject.name}<ArrowUpRight size={14} /></button>)}</div></section>
     <footer className="site-footer"><span>AI-Powered Interactive HTML · Teacher demonstration toolkit</span><span>Designed for exploration and iteration</span></footer>
   </div>;
 }

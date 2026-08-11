@@ -15,6 +15,73 @@ const mode: Mode =
  * Add any API routes here. Testing Editing
  */
 app.get("/api/hello-zo", (c) => c.json({ msg: "Hello from Zo" }));
+/**
+ * Accept a teaching-activity submission from the Share form and open it as a
+ * GitHub issue in this repo so the project owner can review and publish it.
+ * Contributors do not need a GitHub account: the server files the issue for them.
+ */
+app.post("/api/submit-activity", async (c) => {
+  let payload: Record<string, unknown> = {};
+  try {
+    payload = await c.req.json();
+  } catch {
+    return c.json({ ok: false, error: "Invalid JSON body." }, 400);
+  }
+
+  const contributor = String(payload.contributor ?? "").trim();
+  const subject = String(payload.subject ?? "").trim();
+  const title = String(payload.title ?? "").trim();
+  const description = String(payload.description ?? "").trim();
+  const format = String(payload.format ?? "Activity").trim();
+  const html = String(payload.html ?? "").trim();
+
+  if (!contributor || !subject || !title || !html) {
+    return c.json({ ok: false, error: "Contributor, subject, title and HTML source are required." }, 400);
+  }
+
+  const body = [
+    `**Contributor:** ${contributor}`,
+    `**Subject:** ${subject}`,
+    `**Format:** ${format || "Activity"}`,
+    "",
+    "## Description",
+    description || "_(no description)_",
+    "",
+    "## HTML source",
+    "```html",
+    html,
+    "```",
+    "",
+    "_Filed automatically from the Share form on the live site._",
+  ].join("\n");
+
+  try {
+    const proc = Bun.spawn({
+      cmd: [
+        "gh", "issue", "create",
+        "--repo", "aeaeJacky/ai-powered-interactive-html",
+        "--title", `${subject}: ${title}`,
+        "--body", body,
+        "--label", "activity-submission",
+      ],
+      stdin: "ignore",
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const exitCode = await proc.exited;
+    const stdout = await new Response(proc.stdout).text();
+    const stderr = await new Response(proc.stderr).text();
+    if (exitCode !== 0) {
+      console.error("gh issue create failed:", stderr);
+      return c.json({ ok: false, error: "Could not file the submission. Please try again later." }, 500);
+    }
+    return c.json({ ok: true, issueUrl: stdout.trim() });
+  } catch (error) {
+    console.error("gh issue create error:", error);
+    return c.json({ ok: false, error: "Submission service unavailable." }, 500);
+  }
+});
+
 
 if (mode === "production") {
   configureProduction(app);
