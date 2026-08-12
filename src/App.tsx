@@ -104,6 +104,11 @@ const subjectExamples: Record<string, Activity[]> = {
     description: "以廣東話中文講解 database normalization，涵蓋 database 基礎、功能依賴、1NF、2NF、3NF、情境應用，以及互動小測驗。",
     format: "Interactive lesson + quizzes",
     url: "/activities/ict/database-normalization/index.html",
+  }, {
+    title: "數據庫規範化（精簡版）",
+    description: "由老師提交的 13 頁精簡互動簡報，涵蓋 1NF、2NF、3NF 與小測驗，適用於較短課堂。",
+    format: "Interactive slides + quizzes",
+    url: "/activities/ict/database-normalization-submitted/index.html",
   }], dat: [], va: [], music: [], "chinese-history": [{
     title: "漢武帝新經濟政策 猜謎遊戲",
     description: "以 8 道謎題重溫漢武帝的新經濟政策：鹽鐵官營、均輸平準、算緡告緡與統一貨幣，每題附詳細解說並統計得分。",
