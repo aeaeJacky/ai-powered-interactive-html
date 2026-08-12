@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢武帝新經濟政策 猜謎遊戲</title>
+<style>
+  :root{
+    --crimson:#9e1f2e; --crimson-d:#7a1520; --ink:#3a2b25; --paper:#fbfaf6;
+    --gold:#b6862d; --soft:#f3eee4; --line:#e2dac8; --good:#4c7a3d; --bad:#a83232;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Noto Serif TC","Songti SC","PingFang TC",serif;background:var(--paper);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 20px 60px}
+  header{text-align:center;padding:26px 16px 18px;border-bottom:3px double var(--crimson);margin-bottom:22px}
+  header .seal{width:52px;height:52px;margin:0 auto 10px;border:2px solid var(--crimson);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--crimson)}
+  header h1{font-size:1.6rem;color:var(--crimson);letter-spacing:1px}
+  header p{font-size:.95rem;color:#8b7a6a;margin-top:6px}
+  .progress{display:flex;justify-content:space-between;align-items:center;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 16px;margin-bottom:20px}
+  .pills{display:flex;gap:6px}
+  .pill{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#b8a78f}
+  .pill.done{background:var(--good);border-color:var(--good);color:#fff}
+  .pill.cur{background:var(--crimson);border-color:var(--crimson);color:#fff}
+  .score{font-weight:700;color:var(--crimson-d)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 22px;box-shadow:0 3px 10px rgba(122,21,32,.05)}
+  .riddle{font-size:1.15rem;margin-bottom:6px;color:var(--crimson-d)}
+  .hint{font-size:.9rem;color:#8b7a6a;font-style:italic;margin-bottom:16px}
+  .options{display:grid;gap:10px}
+  .opt{border:1.5px solid var(--line);border-radius:10px;padding:13px 14px;font-size:1.02rem;cursor:pointer;background:#fff;transition:.15s;text-align:left}
+  .opt:hover{border-color:var(--crimson);background:#fdf5f4}
+  .opt.correct{border-color:var(--good);background:#eef5ea;color:var(--good)}
+  .opt.wrong{border-color:var(--bad);background:#f9ecec;color:var(--bad)}
+  .opt:disabled{cursor:default;opacity:.85}
+  .explain{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--soft);display:none}
+  .explain.show{display:block}
+  .explain b{color:var(--crimson-d)}
+  .bar{margin-top:16px;display:flex;gap:10px;justify-content:flex-end}
+  .bar button{border:none;border-radius:9px;padding:10px 18px;font-size:1rem;cursor:pointer;font-family:inherit}
+  #nextBtn{background:var(--crimson);color:#fff}
+  #nextBtn:hover{background:var(--crimson-d)}
+  #restartBtn{background:#fff;border:1.5px solid var(--crimson);color:var(--crimson)}
+  .result{text-align:center;padding:10px 0}
+  .result .badge{font-size:3rem;margin-bottom:8px}
+  .result h2{color:var(--crimson-d);margin-bottom:10px}
+  .result p{font-size:1.02rem;margin-bottom:6px}
+  .result .summary{text-align:left;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+  .result .summary li{margin-bottom:8px;list-style:none}
+  .result .summary .q{font-weight:700;color:var(--crimson-d)}
+  @media(max-width:480px){header h1{font-size:1.3rem}.riddle{font-size:1.05rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="seal">漢</div>
+    <h1>漢武帝新經濟政策 猜謎遊戲</h1>
+    <p>中國歷史科 · 互動複習</p>
+  </header>
+
+  <div class="progress">
+    <div class="pills" id="pills"></div>
+    <div class="score" id="scoreText">得分：0 / 8</div>
+  </div>
+
+  <div class="card" id="gameCard"></div>
+</div>
+
+<script>
+const DATA = [
+  {
+    riddle:"官府獨家壟斷食鹽與鐵器的買賣，是漢武帝哪一項經濟政策？",
+    hint:"「盬」是古人對鹽的稱呼；鐵器為農兵所需。",
+    options:["算緡","均輸","鹽鐵官營","平準"],
+    answer:2,
+    explain:"<b>鹽鐵官營：</b>漢武帝將鹽、鐵收歸國營，由官府獨家經營，打擊富商大賈，大幅增加國庫收入。"
+  },
+  {
+    riddle:"政府統一鑄造並發行哪一種錢幣，取代各地雜亂的舊幣？",
+    hint:"這款錢幣形制為「外圓內方」。",
+    options:["五銖錢","半兩錢","刀幣","布幣"],
+    answer:0,
+    explain:"<b>統一貨幣：</b>漢武帝下令鑄造「五銖錢」，廢除各地舊幣，全國貨幣自此統一，方便交易並穩定幣值。"
+  },
+  {
+    riddle:"官府向商人、手工業者按資產徵收稅款，並鼓勵檢舉瞞報，此舉稱為？",
+    hint:"「緡」即穿錢的繩子，後來引申指財貨。",
+    options:["算緡與告緡","均輸平準","鹽鐵專賣","屯田積穀"],
+    answer:0,
+    explain:"<b>算緡、告緡：</b>算緡向商人按資產課稅；告緡鼓勵百姓告發瞞報者，沒收其財產，重創富商勢力。"
+  },
+  {
+    riddle:"官府在各地收購貨物，低買高賣以調節物價、穩定市場，此法稱什麼？",
+    hint:"兩個關鍵字分別為「調运」與「平定物價」。",
+    options:["常平倉","均輸","平準","鹽鐵"],
+    answer:1,
+    explain:"<b>均輸：</b>由官府統一調運各地貢物至價高處販賣，既省運費又平抑物價。"
+  },
+  {
+    riddle:"官設機構在物價低時收購、物價高時拋售，以穩定糧價，這項措施是？",
+    hint:"與「平衡」物價有關，是均輸的姊妹措施。",
+    options:["平準","告緡","五銖錢","鹽鐵官營"],
+    answer:0,
+    explain:"<b>平準：</b>官府在京城平抑物價，賤買貴賣，防止商人囤積居奇。"
+  },
+  {
+    riddle:"漢武帝為了充實國庫、抗擊匈奴，最後甚至把酒也收歸專賣，稱為？",
+    hint:"鹽、鐵、酒被合稱「三專賣」。",
+    options:["酒榷","酒幌","酒引","酒博"],
+    answer:0,
+    explain:"<b>酒榷：</b>漢武帝將釀酒、賣酒也收歸官營，與鹽鐵並列，進一步增闢財政來源。"
+  },
+  {
+    riddle:"「平準」與「均輸」兩法的共同目的是下列何者？",
+    hint:"想一想：官府出手的對象是「物價」與「商人」。",
+    options:["增加農業生產","杜絕貧富懸殊","平抑物價、抑制商人囤積","發展海外貿易"],
+    answer:2,
+    explain:"<b>共同目的：</b>均輸、平準都是為平穩物價、打擊商人投機，舒緩財政壓力。"
+  },
+  {
+    riddle:"鹽鐵官營與算緡告緡共同打擊的對象主要是？",
+    hint:"他們憑著財富壟斷市場、逃避賦稅。",
+    options:["外戚","豪強地主與富商大賈","諸侯王","匈奴商人"],
+    answer:1,
+    explain:"<b>打擊對象：</b>兩項措施皆針對壟斷鹽鐵、兼併土地的豪強地主與富商大賈，使國家財政大為充盈。"
+  }
+];
+
+let cur=0, score=0, chosen=null;
+const g=document.getElementById("gameCard");
+const tp=document.getElementById("pills");
+
+function renderPills(){
+  tp.innerHTML="";
+  DATA.forEach((_,i)=>{
+    const d=document.createElement("div");
+    d.className="pill"+(i<cur?" done":"")+(i===cur?" cur":"");
+    d.textContent=i+1;
+    tp.appendChild(d);
+  });
+  document.getElementById("scoreText").textContent="得分："+score+" / "+DATA.length;
+}
+
+function render(){
+  renderPills();
+  if(cur>=DATA.length){ showResult(); return; }
+  chosen=null;
+  const q=DATA[cur];
+  g.innerHTML=`
+    <div class="riddle">第 ${cur+1} 題：${q.riddle}</div>
+    <div class="hint">提示：${q.hint}</div>
+    <div class="options">${q.options.map((o,i)=>
+      `<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div>
+    <div class="explain" id="explain"></div>
+    <div class="bar"><button id="nextBtn" style="display:none">下一題 →</button></div>`;
+
+  g.querySelectorAll(".opt").forEach(b=>{
+    b.addEventListener("click",()=>select(b));
+  });
+  document.getElementById("nextBtn").addEventListener("click",()=>{cur++;render();});
+}
+
+function select(btn){
+  if(chosen!==null) return;
+  chosen=parseInt(btn.dataset.i);
+  const q=DATA[cur];
+  g.querySelectorAll(".opt").forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.answer)b.classList.add("correct");
+    else if(i===chosen)b.classList.add("wrong");
+  });
+  if(chosen===q.answer) score++;
+  const ex=document.getElementById("explain");
+  ex.innerHTML=(chosen===q.answer?"<b>✅ 答對了！</b> ":"<b>❌ 答錯了。</b> ")+q.explain;
+  ex.classList.add("show");
+  document.getElementById("scoreText").textContent="得分："+score+" / "+DATA.length;
+  document.getElementById("nextBtn").style.display="inline-block";
+}
+
+function showResult(){
+  const pct=Math.round(score/DATA.length*100);
+  const badge= pct===100?"🏆":pct>=75?"🥇":pct>=50?"👍":"📚";
+  const tip = pct===100?"滿分！你對漢武帝的新經濟政策瞭如指掌！":pct>=75?"表現出色，已掌握大部分重點！":pct>=50?"不錯，建議重溫答錯的題目。":"再複習一次課文，然後重新挑戰吧！";
+  g.innerHTML=`
+    <div class="result">
+      <div class="badge">${badge}</div>
+      <h2>測驗完成！</h2>
+      <p>你答對了 ${score} / ${DATA.length} 題（${pct}%）</p>
+      <p>${tip}</p>
+      <ul class="summary">
+        ${DATA.map((q,i)=>
+          `<li><span class="q">${i+1}. ${q.riddle}</span><br>${q.options[q.answer]}</li>`).join("")}
+      </ul>
+      <button id="restartBtn">再玩一次</button>
+    </div>`;
+  document.getElementById("restartBtn").addEventListener("click",()=>{cur=0;score=0;chosen=null;render();});
+}
+
+render();
+</script>
+</body>
+</html>

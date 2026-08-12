@@ -104,7 +104,12 @@ const subjectExamples: Record<string, Activity[]> = {
     description: "以廣東話中文講解 database normalization，涵蓋 database 基礎、功能依賴、1NF、2NF、3NF、情境應用，以及互動小測驗。",
     format: "Interactive lesson + quizzes",
     url: "/activities/ict/database-normalization/index.html",
-  }], dat: [], va: [], music: [], "chinese-history": [], ces: [], putonghua: [], pe: [], he: [],
+  }], dat: [], va: [], music: [], "chinese-history": [{
+    title: "漢武帝新經濟政策 猜謎遊戲",
+    description: "以 8 道謎題重溫漢武帝的新經濟政策：鹽鐵官營、均輸平準、算緡告緡與統一貨幣，每題附詳細解說並統計得分。",
+    format: "互動猜謎遊戲",
+    url: "/activities/chinese-history/han-wudi-economy/index.html",
+  }], ces: [], putonghua: [], pe: [], he: [],
 };
 
 const activityTypes = ["Interactive quiz", "Matching activity", "Drag and drop", "Flashcards", "Simulation", "Timeline"];
@@ -163,8 +168,8 @@ function AppContent() {
       {mobileOpen && <button className="mobile-scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
       <aside className={`sidebar ${collapsed ? "sidebar-collapsed" : ""} ${mobileOpen ? "sidebar-mobile-open" : ""}`}>
         <div className="sidebar-brand">
-          <div className="brand-mark"><Sparkles size={17} /></div>
-          <div className="sidebar-brand-copy"><strong>ai-powered</strong><span>interactive html</span></div>
+          <div className="brand-mark"><img src="/images/profilepic.jpg" alt="" className="brand-img" /></div>
+          <div className="sidebar-brand-copy"><strong>AI for learning</strong><span>teaching</span></div>
           {mobileOpen && <button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X size={18} /></button>}
         </div>
         <div className="sidebar-section-label">Workspace</div>

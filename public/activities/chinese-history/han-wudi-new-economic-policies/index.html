@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢武帝 新經濟政策 · 猜謎遊戲</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", "PMingLiU", Georgia, serif;
+    color: #2b2f36;
+    background: linear-gradient(160deg, #f5efe3 0%, #efe4cc 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.7;
+  }
+  .wrap { width: min(680px, 92vw); margin: 0 auto; padding: 40px 0 56px; }
+  .header { text-align: center; margin-bottom: 28px; }
+  .kicker {
+    display: inline-block; padding: 5px 14px; border-radius: 999px;
+    background: #8a2b23; color: #fff; font-size: 13px; letter-spacing: .12em; margin-bottom: 12px;
+  }
+  .header h1 { margin: 0 0 6px; font-size: clamp(24px, 5vw, 34px); color: #6d1f18; letter-spacing: .02em; }
+  .header p { margin: 0; color: #6f6a5e; font-size: 15px; }
+  .progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px; }
+  .progress { flex: 1; height: 8px; border-radius: 8px; background: #d8cbae; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; background: #8a2b23; border-radius: 8px; transition: width .3s; }
+  .score-badge { background: #fff; border: 1px solid #d8cbae; border-radius: 999px; padding: 4px 14px; font-size: 14px; white-space: nowrap; }
+  .card {
+    background: #fff; border: 1px solid #e0d6bd; border-radius: 18px;
+    box-shadow: 0 14px 40px rgba(109, 31, 24, .10); padding: clamp(20px, 4.5vw, 32px);
+  }
+  .riddle-title { color: #8a2b23; font-size: 14px; font-weight: 700; letter-spacing: .08em; margin: 0 0 6px; }
+  .riddle-label { color: #6f6a5e; font-size: 13px; margin: 0 0 14px; }
+  .riddle { font-size: clamp(17px, 3.5vw, 21px); margin: 0 0 22px; color: #333; }
+  .riddle em { font-style: normal; color: #8a2b23; font-weight: 700; }
+  .options { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 8px; }
+  .option {
+    width: 100%; text-align: left; padding: 14px 16px; border: 2px solid #e0d6bd; border-radius: 12px;
+    background: #fdfaf3; color: #333; font-family: inherit; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 12px; transition: border-color .15s, background .15s, transform .06s;
+  }
+  .option:hover { border-color: #b98d7f; }
+  .option:focus-visible { outline: 3px solid #8a2b23; outline-offset: 2px; }
+  .option .key {
+    flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: 50%;
+    background: #eee4d0; color: #6d1f18; font-weight: 700; font-size: 14px;
+  }
+  .option.correct { border-color: #2e7d4f; background: #e7f4ec; }
+  .option.correct .key { background: #2e7d4f; color: #fff; }
+  .option.wrong { border-color: #b0413e; background: #fbeaea; }
+  .option.wrong .key { background: #b0413e; color: #fff; }
+  .option:disabled { cursor: default; }
+  .feedback {
+    margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 15px; min-height: 20px;
+    border: 1px solid transparent;
+  }
+  .feedback.good { background: #e7f4ec; border-color: #bfe0cc; color: #245c3b; }
+  .feedback.bad { background: #fbeaea; border-color: #edc5c3; color: #8e302c; }
+  .next-row { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .btn {
+    padding: 11px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: inherit;
+    font-size: 15px; font-weight: 700; transition: background .15s, transform .06s;
+  }
+  .btn-next { background: #8a2b23; color: #fff; }
+  .btn-next:hover { background: #6d1f18; }
+  .btn-next:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-ghost { background: #efe6d2; color: #5d5448; }
+  .btn-ghost:hover { background: #e4d8be; }
+  .btn-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .result { text-align: center; padding: 16px 0 6px; }
+  .result .stamp { font-size: clamp(20px, 5vw, 26px); color: #8a2b23; }
+  .result h2 { margin: 6px 0; font-size: clamp(22px, 4.5vw, 28px); color: #6d1f18; }
+  .result p { color: #6f6a5e; }
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 20px 0; }
+  .result-cell { background: #fdfaf3; border: 1px solid #e0d6bd; border-radius: 12px; padding: 14px; }
+  .result-cell b { display: block; font-size: 15px; color: #333; }
+  .result-cell small { color: #8a7f6c; }
+  .hidden { display: none; }
+  .aria { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (max-width: 480px) {
+    .option { font-size: 15px; padding: 12px 12px; }
+    .btn-row { flex-direction: column-reverse; }
+    .btn-row .btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .progress-fill { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <span class="kicker">中國歷史 · 同步練習</span>
+    <h1>漢武帝 新經濟政策</h1>
+    <p>猜一猜，下列謎面描述的是哪一項政策？</p>
+  </header>
+
+  <div class="progress-row">
+    <div class="progress" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="score-badge" id="scoreBadge">答對 0 / 0</span>
+  </div>
+
+  <div class="card">
+    <div id="gameView">
+      <p class="riddle-title">第 <span id="currentNum">1</span> 題</p>
+      <p class="riddle-label">閱讀謎面，選出對應的政策</p>
+      <p class="riddle" id="riddleText"></p>
+      <div class="options" id="optionsBox"></div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+      <div class="next-row">
+        <button class="btn btn-next" id="nextBtn" disabled>下一題 ▶</button>
+      </div>
+    </div>
+
+    <div class="result hidden" id="resultView">
+      <div class="stamp">🎋</div>
+      <h2 id="resultTitle"></h2>
+      <p id="resultSub"></p>
+      <div class="result-grid" id="resultGrid"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="reviewBtn">重看謎面</button>
+        <button class="btn btn-next" id="restartBtn">再玩一次</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="aria" id="liveRegion" aria-live="polite"></p>
+
+<script>
+(function () {
+  var policies = {
+    saltIron: "鹽鐵官營",
+    junshu: "均輸平準",
+    suanbu: "算緡告緡",
+    coin: "統一貨幣"
+  };
+  var clues = [
+    {
+      riddle: "官府把灶與礦都收歸國有，人人煮鹽、打鐵都要向朝廷取證，富商再也無法壟斷天下利源。",
+      answer: "saltIron",
+      explain: "漢武帝把鹽、鐵改由國家專營，鹽鐵營收大幅增加國庫，並壓制了豪商勢力。"
+    },
+    {
+      riddle: "京城的大倉每當物價低時便出手收購，物價高時便開倉拋售，讓天下貨價不再大起大落。",
+      answer: "junshu",
+      explain: "「平準」在首都設官，以賤買貴賣調節物價；再配合「均輸」調運各地物資。"
+    },
+    {
+      riddle: "商人趁機囤積致富，朝廷便按資產徵收重稅，更鼓勵百姓出面「報銷」揭發逃稅之家。",
+      answer: "suanbu",
+      explain: "「算緡」是向商賈按財產估值抽稅；「告緡」鼓勵告發，沒收逃稅商人的財產。"
+    },
+    {
+      riddle: "從前各國各自鑄錢，幣制混亂、價值不一；如今天下只認一種官府統一的錢幣。",
+      answer: "coin",
+      explain: "漢武帝收回鑄幣權，統一行使五銖錢，幣值穩定，經濟更加有序。"
+    },
+    {
+      riddle: "一家製鹽的大戶正春風得意，轉眼朝廷下令，鹽利統歸國庫，他的生意瞬間斷了生路。",
+      answer: "saltIron",
+      explain: "鹽鐵官營直接打擊靠鹽鐵致富的豪強，也為國家提供穩定的財政來源。"
+    },
+    {
+      riddle: "官員巡視各郡國，把各地多餘的物資調往缺乏之處，讓物資流通、貨有所用。",
+      answer: "junshu",
+      explain: "「均輸」調劑各地物資往來；與「平準」合稱均輸平準，是武帝的重要財經措施。"
+    },
+    {
+      riddle: "朝廷頒令：誰先揭發隱瞞財富的商家，便可得其被沒收家產的一半作為獎賞。",
+      answer: "suanbu",
+      explain: "告緡以重賞鼓勵檢舉，令富商大賈的隱匿資產無所遁形，財政為之大增。"
+    },
+    {
+      riddle: "廢除以往又輕又薄、成色不一的舊錢，改由政府統一鑄造，通行全國。",
+      answer: "coin",
+      explain: "統一鑄五銖錢後，假冒劣幣減少，市場交易恢復秩序。"
+    }
+  ];
+
+  var current = 0, score = 0, answered = false, used = [];
+  var el = {
+    fill: document.getElementById("progressFill"),
+    score: document.getElementById("scoreBadge"),
+    game: document.getElementById("gameView"),
+    result: document.getElementById("resultView"),
+    num: document.getElementById("currentNum"),
+    riddle: document.getElementById("riddleText"),
+    options: document.getElementById("optionsBox"),
+    feedback: document.getElementById("feedback"),
+    next: document.getElementById("nextBtn"),
+    live: document.getElementById("liveRegion"),
+    resultTitle: document.getElementById("resultTitle"),
+    resultSub: document.getElementById("resultSub"),
+    resultGrid: document.getElementById("resultGrid"),
+    review: document.getElementById("reviewBtn"),
+    restart: document.getElementById("restartBtn")
+  };
+  var order = [];
+  for (var i = 0; i < clues.length; i++) order.push(i);
+  shuffle(order);
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+  }
+
+  function updateProgress() {
+    el.fill.style.width = Math.round(((current) / clues.length) * 100) + "%";
+    el.score.textContent = "答對 " + score + " / " + clues.length;
+  }
+
+  function render() {
+    answered = false;
+    el.num.textContent = current + 1;
+    var clue = clues[order[current]];
+    el.riddle.textContent = clue.riddle;
+    el.next.disabled = true;
+    el.feedback.className = "feedback";
+    el.feedback.textContent = "";
+
+    var keys = Object.keys(policies);
+    var opts = keys.slice();
+    shuffle(opts);
+    // 確保正確答案不會永遠排頭
+    if (opts[0] === clue.answer && opts.length > 1) {
+      var k = opts[1]; opts[1] = opts[0]; opts[0] = k;
+    }
+    el.options.innerHTML = "";
+    var letters = ["甲", "乙", "丙", "丁"];
+    opts.forEach(function (p, idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "option";
+      b.dataset.key = p;
+      b.innerHTML = '<span class="key">' + letters[idx] + '</span><span>' + policies[p] + '</span>';
+      b.addEventListener("click", function () { pick(clue, p, b); });
+      el.options.appendChild(b);
+    });
+    updateProgress();
+  }
+
+  function pick(clue, chosen, btn) {
+    if (answered) return;
+    answered = true;
+    var correct = chosen === clue.answer;
+    var buttons = el.options.querySelectorAll(".option");
+    buttons.forEach(function (b) {
+      b.disabled = true;
+      if (b.dataset.key === clue.answer) b.classList.add("correct");
+      else if (b.dataset.key === chosen) b.classList.add("wrong");
+    });
+    el.feedback.classList.add(correct ? "good" : "bad");
+    el.feedback.textContent = (correct ? "答對了！" : "再想一想。正確答案是「" + policies[clue.answer] + "」。") + " " + clue.explain;
+    if (correct) score++;
+    el.live.textContent = correct ? "答對了。下一次請按「下一題」。" : "答錯了。正確答案是" + policies[clue.answer] + "。";
+    el.next.disabled = false;
+    updateProgress();
+  }
+
+  el.next.addEventListener("click", function () {
+    if (current + 1 < clues.length) {
+      current++;
+      render();
+    } else {
+      showResult();
+    }
+  });
+
+  function showResult() {
+    el.game.classList.add("hidden");
+    el.result.classList.remove("hidden");
+    var pct = Math.round(score / clues.length * 100);
+    el.resultTitle.textContent = "你猜對了 " + score + " / " + clues.length + " 題";
+    el.resultSub.textContent = pct === 100 ? "滿分！對武帝四大財經政策瞭如指掌！" : pct >= 75 ? "表現優秀，繼續加油！" : pct >= 50 ? "不錯，溫習一下再挑戰。" : "別灰心，先看解釋，再玩一次。";
+
+    var rows = [
+      ["鹽鐵官營", "國家壟斷鹽、鐵生產銷售"],
+      ["均輸平準", "調運物資、穩定物價"],
+      ["算緡告緡", "向商人抽稅、鼓勵檢舉"],
+      ["統一貨幣", "政府統籌鑄造五銖錢"]
+    ];
+    el.resultGrid.innerHTML = rows.map(function (r) {
+      return '<div class="result-cell"><b>' + r[0] + '</b><small>' + r[1] + '</small></div>';
+    }).join("");
+    el.live.textContent = "遊戲完成，得分 " + score + " 題。";
+    if (isReviewing) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  var isReviewing = false;
+  el.review.addEventListener("click", function () {
+    current = 0; score = 0; shuffle(order);
+    isReviewing = false;
+    el.result.classList.add("hidden");
+    el.game.classList.remove("hidden");
+    render();
+  });
+  el.restart.addEventListener("click", function () {
+    current = 0; score = 0; shuffle(order);
+    isReviewing = true;
+    el.result.classList.add("hidden");
+    el.game.classList.remove("hidden");
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
