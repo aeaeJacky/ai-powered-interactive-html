@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art Elements &amp; Principles 視覺元素與設計原理</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans HK", sans-serif; background: #f8f6f3; color: #1e1b16; line-height: 1.6; min-height: 100vh; }
+  .container { max-width: 960px; margin: 0 auto; padding: 24px 20px 60px; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; color: #2b2219; }
+  header p { font-size: 0.9rem; color: #7a7168; margin-top: 4px; }
+  .badge { display: inline-block; background: #e8d9cd; color: #6a4d35; font-size: 0.75rem; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-bottom: 8px; letter-spacing: 0.02em; }
+  .progress-bar { background: #e8e2da; height: 6px; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #bc8f6b; border-radius: 3px; transition: width 0.4s ease; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #5a4f45; margin-bottom: 20px; }
+  .score-row strong { color: #2b2219; }
+  .card { background: #fff; border-radius: 16px; padding: 28px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 20px; }
+  .card h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #2b2219; }
+  .card .artwork-desc { font-size: 0.95rem; color: #4a4138; line-height: 1.7; margin-bottom: 16px; padding: 12px 16px; background: #f8f6f3; border-radius: 10px; border-left: 3px solid #bc8f6b; }
+  .card .artwork-desc .highlight { background: #f0e6d8; padding: 0 3px; border-radius: 2px; }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) { .options { grid-template-columns: 1fr; } }
+  .option { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 2px solid #e4ddd4; border-radius: 12px; background: #fff; cursor: pointer; transition: all 0.15s; font-size: 0.9rem; color: #2b2219; }
+  .option:hover { border-color: #c9b09a; background: #fcf9f6; }
+  .option.selected { border-color: #bc8f6b; background: #f5ede4; }
+  .option.correct { border-color: #5a9a7a; background: #ecf7f0; }
+  .option.wrong { border-color: #c96b6b; background: #fceeee; }
+  .option .label { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #c9b09a; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; flex-shrink: 0; color: #7a7168; }
+  .option.correct .label { background: #5a9a7a; border-color: #5a9a7a; color: #fff; }
+  .option.wrong .label { background: #c96b6b; border-color: #c96b6b; color: #fff; }
+  .option.disabled { cursor: default; opacity: 0.85; }
+  .feedback { margin-top: 12px; padding: 12px 16px; border-radius: 10px; font-size: 0.88rem; line-height: 1.6; }
+  .feedback.correct { background: #ecf7f0; color: #2d6b4a; }
+  .feedback.wrong { background: #fceeee; color: #8a3d3d; }
+  .feedback h4 { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: #2b2219; color: #fff; }
+  .btn-primary:hover { background: #1e1611; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary { background: #ede7df; color: #2b2219; }
+  .btn-secondary:hover { background: #e2d9ce; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .result { text-align: center; padding: 40px 20px; }
+  .result .score-big { font-size: 3rem; font-weight: 700; color: #bc8f6b; }
+  .result h2 { font-size: 1.5rem; margin: 10px 0 6px; }
+  .result p { color: #5a4f45; font-size: 0.95rem; max-width: 400px; margin: 0 auto; }
+  .result .stars { font-size: 2rem; margin-bottom: 10px; }
+  .tag { display: inline-block; background: #e8ddd1; color: #6a4d35; font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+  .tag.element { background: #dce8f0; color: #2d5a7a; }
+  .tag.principle { background: #f0e0d0; color: #7a4d2d; }
+  .tag.elements { background: #dce8f0; color: #2d5a7a; }
+  .tag.principles { background: #f0e0d0; color: #7a4d2d; }
+  .intro-card { text-align: center; }
+  .intro-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .intro-card h2 { margin-bottom: 8px; }
+  .intro-card p { color: #5a4f45; font-size: 0.9rem; max-width: 480px; margin: 0 auto 16px; }
+  .legend { display: flex; gap: 20px; justify-content: center; font-size: 0.8rem; color: #5a4f45; margin-bottom: 20px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .dot { width: 10px; height: 10px; border-radius: 3px; }
+  .dot.elements { background: #dce8f0; }
+  .dot.principles { background: #f0e0d0; }
+  .topic-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .topic-tab { padding: 6px 16px; border-radius: 20px; border: 1.5px solid #e4ddd4; background: transparent; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.15s; color: #5a4f45; }
+  .topic-tab.active { background: #2b2219; border-color: #2b2219; color: #fff; }
+  .topic-tab:hover:not(.active) { border-color: #c9b09a; background: #fcf9f6; }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <header>
+    <div class="badge">HKDSE Visual Arts</div>
+    <h1>Art Elements &amp; Principles 視覺元素與設計原理</h1>
+    <p>Identify the visual elements and design principles in each artwork description</p>
+  </header>
+
+  <!-- Intro screen -->
+  <div id="screen-intro" class="card intro-card" style="display:block;">
+    <div class="icon">🎨</div>
+    <h2>Art Appreciation Practice</h2>
+    <p>Read each artwork description and identify which visual elements or design principles are being used. This is a core skill for HKDSE Paper 1 Section A (Art Appreciation and Criticism).</p>
+    <div class="legend">
+      <span><span class="dot elements"></span> Elements of Art</span>
+      <span><span class="dot principles"></span> Principles of Design</span>
+    </div>
+    <div class="topic-tabs">
+      <button class="topic-tab active" data-topic="all">All Topics</button>
+      <button class="topic-tab" data-topic="elements">Elements Only</button>
+      <button class="topic-tab" data-topic="principles">Principles Only</button>
+    </div>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Practice →</button>
+  </div>
+
+  <!-- Quiz screen -->
+  <div id="screen-quiz" style="display:none;">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="score-row">
+      <span>Question <strong id="qNum">1</strong> / <span id="qTotal">10</span></span>
+      <span>Score: <strong id="qScore">0</strong></span>
+    </div>
+    <div class="card" id="questionCard"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="btnNext" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div id="screen-result" style="display:none;">
+    <div class="card result">
+      <div class="stars" id="resultStars"></div>
+      <div class="score-big" id="resultScore">0/10</div>
+      <h2 id="resultTitle">Great work!</h2>
+      <p id="resultDesc">Keep practising to strengthen your art appreciation skills.</p>
+      <div style="margin-top:24px;">
+        <button class="btn btn-primary" onclick="restartQuiz()">Try Again</button>
+        <button class="btn btn-secondary" style="margin-left:8px;" onclick="showIntro()">Back to Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    topic: "elements",
+    artwork: "A still life painting of a bowl of fruit on a wooden table. The artist uses bold, sweeping curves to outline the apples and pears, with thin, delicate marks suggesting the texture of the tabletop grain.",
+    answer: "line",
+    options: ["line", "colour", "texture", "space"],
+    explanation: "The artist uses sweeping curves and delicate marks — both are descriptions of **line (線條)**, one of the fundamental elements of art.",
+    tags: ["element"]
+  },
+  {
+    topic: "elements",
+    artwork: "A landscape painting where the artist applies paint thickly in some areas and smoothly in others. The rough, raised surface of the tree bark contrasts with the smooth, flat sky.",
+    answer: "texture",
+    options: ["form", "texture", "value", "shape"],
+    explanation: "The contrast between rough/raised and smooth/flat surfaces describes **texture (質感)** — the surface quality of the artwork.",
+    tags: ["element"]
+  },
+  {
+    topic: "elements",
+    artwork: "A portrait where the artist uses a wide range of tones, from pure white highlights on the forehead to deep black shadows under the chin, creating a strong sense of volume.",
+    answer: "value",
+    options: ["value", "colour", "line", "space"],
+    explanation: "The range from white highlights to black shadows describes **value (明暗/調子)** — the lightness or darkness of tones.",
+    tags: ["element"]
+  },
+  {
+    topic: "elements",
+    artwork: "An abstract sculpture made of welded steel. The work has a solid, three-dimensional presence with rounded, bulging forms that occupy the gallery space forcefully.",
+    answer: "form",
+    options: ["form", "shape", "texture", "space"],
+    explanation: "The three-dimensional presence and rounded bulging forms describe **form (形體)** — a 3D element with height, width, and depth.",
+    tags: ["element"]
+  },
+  {
+    topic: "elements",
+    artwork: "A geometric abstract painting consisting of a red square on a blue circle, with a yellow triangle overlapping both. The shapes are flat and clearly defined, with no illusion of depth.",
+    answer: "shape",
+    options: ["shape", "form", "colour", "line"],
+    explanation: "Flat, clearly defined red square, blue circle, and yellow triangle all describe **shape (形狀)** — a 2D area defined by boundaries.",
+    tags: ["element"]
+  },
+  {
+    topic: "principles",
+    artwork: "A poster design where a large, bright red headline sits at the top, while the smaller body text is placed at the bottom. The viewer's eye is immediately drawn to the headline first.",
+    answer: "emphasis",
+    options: ["emphasis", "balance", "rhythm", "proportion"],
+    explanation: "The large red headline drawing the eye first is **emphasis (強調)** — creating a focal point that stands out from the rest.",
+    tags: ["principle"]
+  },
+  {
+    topic: "principles",
+    artwork: "A painting where a large tree on the left side is balanced by a cluster of small buildings and open sky on the right side. Neither side feels heavier than the other.",
+    answer: "balance",
+    options: ["balance", "unity", "emphasis", "movement"],
+    explanation: "The visual weight of the large tree on one side being offset by the buildings and sky on the other describes **balance (平衡)**.",
+    tags: ["principle"]
+  },
+  {
+    topic: "principles",
+    artwork: "A fabric design where a small floral motif repeats every 5 centimetres across the entire surface, creating a steady, predictable beat that guides the eye across the cloth.",
+    answer: "rhythm",
+    options: ["rhythm", "pattern", "movement", "contrast"],
+    explanation: "The repeating floral motif at regular intervals creating a steady beat describes **rhythm (節奏)** — repetition with a regular interval.",
+    tags: ["principle"]
+  },
+  {
+    topic: "principles",
+    artwork: "A photograph of a city street where dark shadows under the buildings create strong contrast against the bright, sunlit walls. The difference between light and dark areas is dramatic.",
+    answer: "contrast",
+    options: ["contrast", "value", "emphasis", "balance"],
+    explanation: "The dramatic difference between dark shadows and bright sunlit walls describes **contrast (對比)** — the juxtaposition of opposing elements.",
+    tags: ["principle"]
+  },
+  {
+    topic: "elements",
+    artwork: "A sunset seascape using only shades of orange, red, purple, and pink. The warm hues create a feeling of heat and intensity, while the absence of cool colours makes the scene feel almost oppressive.",
+    answer: "colour",
+    options: ["colour", "value", "texture", "line"],
+    explanation: "The use of orange, red, purple, and pink — warm hues — describes **colour (色彩)** as the dominant visual element.",
+    tags: ["element"]
+  },
+  {
+    topic: "principles",
+    artwork: "A Chinese ink painting where the artist leaves large areas of unpainted white paper around a single bamboo stalk, suggesting mist and vast empty space without actually painting it.",
+    answer: "space",
+    options: ["space", "balance", "emphasis", "negative space"],
+    explanation: "The use of unpainted white paper to suggest mist and emptiness is about **space (空間)** — specifically negative space, a key concept in Chinese painting.",
+    tags: ["element"]
+  },
+  {
+    topic: "principles",
+    artwork: "A cubist painting where the same violin is shown from multiple angles simultaneously — the scroll seen from the side, the strings from above, and the f-holes both frontally and in profile.",
+    answer: "movement",
+    options: ["movement", "rhythm", "emphasis", "proportion"],
+    explanation: "Showing multiple viewpoints simultaneously guides the viewer's eye around the composition, creating **movement (動感)** — how the eye travels through the artwork.",
+    tags: ["principle"]
+  },
+  {
+    topic: "elements",
+    artwork: "A charcoal drawing of a crumpled paper bag. The artist uses extremely dark blacks in the deepest creases, mid-grey tones across the folded surfaces, and leaves the paper white for the highlights.",
+    answer: "value",
+    options: ["value", "texture", "form", "line"],
+    explanation: "The range from dark blacks to mid-greys to white paper describes **value (明暗/調子)** — the gradation of tone.",
+    tags: ["element"]
+  },
+  {
+    topic: "principles",
+    artwork: "A poster where every element — the typeface, the colour palette, the illustration style, and the border shapes — derives from the same Art Deco aesthetic, creating a cohesive feel.",
+    answer: "unity",
+    options: ["unity", "balance", "rhythm", "harmony"],
+    explanation: "All elements deriving from the same Art Deco aesthetic to create a cohesive feel describes **unity (統一/和諧)** — the sense of wholeness.",
+    tags: ["principle"]
+  },
+  {
+    topic: "principles",
+    artwork: "A classical Greek temple where the columns are exactly twice as tall as they are wide, and the spacing between columns follows a precise mathematical ratio to the width of the building.",
+    answer: "proportion",
+    options: ["proportion", "balance", "scale", "rhythm"],
+    explanation: "The mathematical ratio between column height and width, and between spacing and building width, describes **proportion (比例)** — the size relationship between parts.",
+    tags: ["principle"]
+  }
+];
+
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+let selectedTopic = "all";
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startQuiz() {
+  const filtered = selectedTopic === "all" ? [...questions] : questions.filter(q => q.topic === selectedTopic);
+  const shuffled = shuffleArray([...filtered]);
+  currentQuestions = shuffled.slice(0, Math.min(shuffled.length, 10));
+  currentIndex = 0;
+  score = 0;
+  answered = false;
+  document.getElementById("screen-intro").style.display = "none";
+  document.getElementById("screen-quiz").style.display = "block";
+  document.getElementById("screen-result").style.display = "none";
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = currentQuestions[currentIndex];
+  const total = currentQuestions.length;
+  document.getElementById("qNum").textContent = currentIndex + 1;
+  document.getElementById("qTotal").textContent = total;
+  document.getElementById("qScore").textContent = score;
+  document.getElementById("progressFill").style.width = ((currentIndex) / total * 100) + "%";
+  answered = false;
+  document.getElementById("btnNext").disabled = true;
+
+  const tagEl = q.tags.map(t => `<span class="tag ${t}">${t === "element" ? "Element of Art" : "Principle of Design"}</span>`).join("");
+
+  const labels = ["A", "B", "C", "D"];
+  const optionsHtml = q.options.map((opt, i) =>
+    `<div class="option" data-value="${opt}" onclick="selectOption(this, '${opt}', '${q.answer}')">
+      <span class="label">${labels[i]}</span>
+      <span>${opt}</span>
+    </div>`
+  ).join("");
+
+  document.getElementById("questionCard").innerHTML = `
+    <h2>Question ${currentIndex + 1}</h2>
+    <div class="artwork-desc">${q.artwork}</div>
+    <div style="margin-bottom:10px;">${tagEl}</div>
+    <p style="font-size:0.85rem;color:#5a4f45;margin-bottom:10px;">Which <strong>element</strong> or <strong>principle</strong> is the artist primarily using?</p>
+    <div class="options" id="optionsContainer">${optionsHtml}</div>
+    <div id="feedbackArea"></div>
+  `;
+}
+
+function selectOption(el, selected, correct) {
+  if (answered) return;
+  answered = true;
+  document.getElementById("btnNext").disabled = false;
+
+  const options = document.querySelectorAll(".option");
+  options.forEach(opt => opt.classList.add("disabled"));
+
+  const isCorrect = selected === correct;
+  if (isCorrect) {
+    el.classList.add("correct");
+    score++;
+    document.getElementById("qScore").textContent = score;
+  } else {
+    el.classList.add("wrong");
+    options.forEach(opt => {
+      if (opt.dataset.value === correct) opt.classList.add("correct");
+    });
+  }
+
+  const q = currentQuestions[currentIndex];
+  const feedback = document.getElementById("feedbackArea");
+  feedback.innerHTML = isCorrect
+    ? `<div class="feedback correct"><h4>✓ Correct</h4><p>${q.explanation}</p></div>`
+    : `<div class="feedback wrong"><h4>✗ Not quite</h4><p>${q.explanation}</p></div>`;
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= currentQuestions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById("screen-quiz").style.display = "none";
+  document.getElementById("screen-result").style.display = "block";
+  document.getElementById("progressFill").style.width = "100%";
+
+  const total = currentQuestions.length;
+  const pct = score / total;
+  document.getElementById("resultScore").textContent = `${score}/${total}`;
+
+  let stars, title, desc;
+  if (pct === 1) {
+    stars = "⭐⭐⭐";
+    title = "Perfect! Excellent art appreciation skills!";
+    desc = "You have a strong understanding of visual elements and design principles. Ready for HKDSE Paper 1!";
+  } else if (pct >= 0.7) {
+    stars = "⭐⭐";
+    title = "Great work! 不錯！";
+    desc = "You have a solid foundation. Review the questions you got wrong to strengthen your understanding.";
+  } else if (pct >= 0.4) {
+    stars = "⭐";
+    title = "Good start! 繼續努力！";
+    desc = "Keep practising — identifying elements and principles is a skill that improves with repeated exposure.";
+  } else {
+    stars = "💪";
+    title = "Keep going! 加油！";
+    desc = "Try reviewing the elements of art (line, shape, form, colour, value, texture, space) and principles of design (balance, emphasis, contrast, rhythm, movement, proportion, unity).";
+  }
+  document.getElementById("resultStars").textContent = stars;
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultDesc").textContent = desc;
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  score = 0;
+  answered = false;
+  document.getElementById("screen-result").style.display = "none";
+  document.getElementById("screen-quiz").style.display = "block";
+  renderQuestion();
+}
+
+function showIntro() {
+  document.getElementById("screen-result").style.display = "none";
+  document.getElementById("screen-quiz").style.display = "none";
+  document.getElementById("screen-intro").style.display = "block";
+}
+
+// Topic tabs
+document.querySelectorAll(".topic-tab").forEach(tab => {
+  tab.addEventListener("click", function() {
+    document.querySelectorAll(".topic-tab").forEach(t => t.classList.remove("active"));
+    this.classList.add("active");
+    selectedTopic = this.dataset.topic;
+  });
+});
+</script>
+</body>
+</html>
