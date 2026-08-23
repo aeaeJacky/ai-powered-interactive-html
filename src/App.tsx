@@ -18,6 +18,7 @@ import {
   FileText,
   FlaskConical,
   GraduationCap,
+  Lock,
   Home,
   Lightbulb,
   Menu,
@@ -79,11 +80,41 @@ const subjects: Subject[] = [
 ];
 
 const subjectExamples: Record<string, Activity[]> = {
-  chinese: [],   english: [{
-    title: "Matilda: Find the Words",
+  chinese: [{
+    title: "HKDSE 中文科 — 十二篇指定文言文小測試",
+    description: "涵蓋《論語》《孟子》《莊子》《荀子》《史記》《出師表》《始得西山宴遊記》《師說》《唐詩三首》《岳陽樓記》《六國論》《詞三首》，每篇均有原文、白話語譯、英文翻譯、詞解、重點分析與隨堂測驗，並內建學習進度追蹤。",
+    format: "篇章學習卡 + 原文/語譯/詞解分頁 + 隨堂測驗 + 進度追蹤",
+    url: "/activities/chinese/dse-12-mandatory-classics/index.html",
+  }],   english: [{
+    title: "Matilda: Find the Words (Ch 1–2)",
     description: "A classroom-friendly word-search game based on Chapters 1 and 2 of Matilda. Students find five hidden vocabulary words across and down the grid.",
     format: "Interactive word search",
     url: "/activities/english/matilda/index.html",
+  }, {
+    title: "Matilda: Find the Words (Ch 3–4)",
+    description: "A word-search game for Chapters 3 and 4 (The Hat and the Glue / The Hair-dye). Students find seven vocabulary words: glue, stare, stuck, snatch, rip, dye, pour.",
+    format: "Interactive word search",
+    url: "/activities/english/matilda/ch-3-4/index.html",
+  }, {
+    title: "Matilda: Find the Words (Ch 5–6)",
+    description: "A word-search game for Chapters 5 and 6 (Miss Honey / The Trunchbull). Students find seven vocabulary words: teacher, genius, black, board, march, pigtail, terrified.",
+    format: "Interactive word search",
+    url: "/activities/english/matilda/ch-5-6/index.html",
+  }, {
+    title: "Matilda: Find the Words (Ch 7–8)",
+    description: "A word-search game for Chapters 7 and 8 (Bruce Bogtrotter / The Newt). Students find six vocabulary words: whisper, nervous, worm, jug, newt, crocodile.",
+    format: "Interactive word search",
+    url: "/activities/english/matilda/ch-7-8/index.html",
+  }, {
+    title: "Matilda: Find the Words (Ch 9–10)",
+    description: "A word-search game for Chapters 9 and 10 (The Glass / Miss Honey's Story). Students find six vocabulary words: lightning, furious, power, wobble, glass, tip.",
+    format: "Interactive word search",
+    url: "/activities/english/matilda/ch-9-10/index.html",
+  }, {
+    title: "Matilda: Find the Words (Ch 11–12)",
+    description: "A word-search game for Chapters 11 and 12 (The Chalk / A New Home). Students find five vocabulary words: chalk, will, lift, faint, hug.",
+    format: "Interactive word search",
+    url: "/activities/english/matilda/ch-11-12/index.html",
   }, {
     title: "Matilda: What Can You Remember? (p.48)",
     description: "A two-part review activity for Chapters 5 and 6. Students match compound-word pairs in a colour-coded column game, then complete fill-in-the-blank sentences about the story.",
@@ -94,12 +125,37 @@ const subjectExamples: Record<string, Activity[]> = {
     description: "An animated, self-contained activity that matches corresponding matrix entries and reveals the solution one step at a time.",
     format: "Interactive walkthrough",
     url: "/activities/mathematics/matrix-equation/maths-question.html",
+  }, {
+    title: "HKDSE Maths 15C.16 — Frustum & Cone Solver",
+    description: "A responsive step-by-step solver for wet curved surface area and water volume in a frustum vessel, with exact-coordinate technical diagrams and guided calculations.",
+    format: "Interactive walkthrough + technical diagram",
+    url: "/activities/mathematics/maths-15c-16/index.html",
   }], csd: [], science: [], m2: [], physics: [{
     title: "Two Projectiles, One Starting Point",
     description: "An interactive HKAL-style question on resolving velocity components and comparing the horizontal and vertical motion of two launched balls.",
     format: "Interactive multiple choice",
     url: "/activities/physics/projectile-motion/index.html",
-  }], chemistry: [], biology: [], bafs: [], ths: [], geography: [], ict: [{
+  }, {
+    title: "The Bomber Problem \u2014 What Happens to Released Bombs?",
+    description: "An HKAL 1994 Paper IIA Q6 interactive lesson on projectile motion. A simulation shows why released bombs stay directly below a moving bomber while the gaps between them grow, then tests the idea with four diagram options and a quick quiz.",
+    format: "Interactive simulation + multiple choice",
+    url: "/activities/physics/bomber-problem/index.html",
+  }, {
+    title: "Sliding off the Table \u2014 Energy + Projectile Motion",
+    description: "An HKAL 1983 Paper I Q7 interactive lesson. A particle slides down a smooth curve and leaves a 2 m table horizontally, landing 3 m away. Students explore how release height, table height and range connect through v = \u221a(2gh) and x\u00b2 = 4hH, with a live simulator, step-by-step solution and a 4-question quiz.",
+    format: "Interactive simulation + multiple choice",
+    url: "/activities/physics/sliding-off-table/index.html",
+  }, {
+    title: "Projectile Motion with Elastic Collision",
+    description: "An HKAL 1987 Paper 1 Q5 interactive lesson. A particle is projected downward at 10 m s\u207b\u00b9 and 30\u00b0 from a height, rebounds perfectly elastically off smooth ground, and lands again. Students choose from four options, then a live simulator and six guided steps decompose velocities, find times P\u2192Q and Q\u2192R, and show how QR = 15\u221a3 \u2248 26.0 m is reached.",
+    format: "Interactive simulation + multiple choice",
+    url: "/activities/physics/projectile-elastic-collision/index.html",
+  }], chemistry: [], biology: [{
+    title: "Introduction to the Human Heart",
+    description: "An interactive Biology lesson on the heart. A labelled anatomical SVG highlights 13 structures on hover or tap (chambers, valves, great vessels, septum), followed by a clickable blood-flow pathway, a four-valve overview, and a five-question quiz with instant feedback. Includes keyboard access and reduced-motion support.",
+    format: "Labelled diagram + pathway + quiz",
+    url: "/activities/biology/introduction-to-the-human-heart/index.html",
+  }], bafs: [], ths: [], geography: [], ict: [{
     title: "數據庫規範化：互動教學",
     description: "以廣東話中文講解 database normalization，涵蓋 database 基礎、功能依賴、1NF、2NF、3NF、情境應用，以及互動小測驗。",
     format: "Interactive lesson + quizzes",
@@ -109,7 +165,12 @@ const subjectExamples: Record<string, Activity[]> = {
     description: "由老師提交的 13 頁精簡互動簡報，涵蓋 1NF、2NF、3NF 與小測驗，適用於較短課堂。",
     format: "Interactive slides + quizzes",
     url: "/activities/ict/database-normalization-submitted/index.html",
-  }], dat: [], va: [], music: [], "chinese-history": [{
+  }], dat: [{
+    title: "塑膠分類回收遊戲：學習 7 種塑膠回收碼",
+    description: "學生把下墜的塑膠物品拖到正確的回收膠箱，認識 PET、HDPE、PVC、LDPE、PP、PS 與 OTHER 七種塑膠回收碼，每一次分類都附耐熱、安全性與回收資訊的解說卡，寓教於樂。",
+    format: "拖放分類遊戲 + 科普解說卡",
+    url: "/activities/dat/plastic-classification/index.html",
+  }], va: [], music: [], "chinese-history": [{
     title: "漢武帝新經濟政策 猜謎遊戲",
     description: "以 8 道謎題重溫漢武帝的新經濟政策：鹽鐵官營、均輸平準、算緡告緡與統一貨幣，每題附詳細解說並統計得分。",
     format: "互動猜謎遊戲",
@@ -244,6 +305,16 @@ function ResourceCard({ number, icon, title, description, action, onClick }: { n
 }
 
 function SubjectPage({ subject, activities, navigateTo }: { subject: Subject; activities: Activity[]; navigateTo: (path: string) => void }) {
+  const [magicUnlocked, setMagicUnlocked] = useState(false);
+  const [magicInput, setMagicInput] = useState("");
+  const [magicError, setMagicError] = useState(false);
+
+  const needsMagic = subject.slug !== "english";
+
+  if (needsMagic && !magicUnlocked) {
+    return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}.`} badge="🔒" /><div className="magic-gate"><div className="magic-lock-icon"><Lock size={32} /></div><h2>This subject gallery is private</h2><p>Enter the magic number to reveal the content.</p><div className="magic-input-row"><input type="password" className="magic-input" placeholder="Enter magic number" value={magicInput} onChange={(e) => { setMagicInput(e.target.value); setMagicError(false); }} onKeyDown={(e) => { if (e.key === "Enter") { if (magicInput === "1568") { setMagicUnlocked(true); } else { setMagicError(true); } } }} /><button className="button-primary" onClick={() => { if (magicInput === "1568") { setMagicUnlocked(true); } else { setMagicError(true); } }}>Unlock <ArrowRight size={14} /></button></div>{magicError && <p className="magic-error">Incorrect number. Try again.</p>}</div></div>;
+  }
+
   return <div className="page-wrap"><button className="back-link" onClick={() => navigateTo("/")}><ArrowLeft size={14} /> Back to all subjects</button><PageHeader eyebrow="Subject activity gallery" title={subject.name} description={`A growing collection of interactive HTML examples for ${subject.name}. Use these activities as inspiration for your own classroom ideas.`} badge={`${activities.length} examples`} /><div className="subject-intro" style={{ borderLeftColor: subject.color }}><div><h2>Interactive activities for {subject.name}</h2><p>Examples will be added here as they are created. Each activity can include a preview and a link to open the complete HTML experience.</p></div><div className="gallery-status"><span className="status-dot" /> Ready for examples</div></div>{activities.length ? <div className="activity-grid">{activities.map((activity) => <ActivityCard key={activity.title} activity={activity} />)}</div> : <EmptyGallery subject={subject} navigateTo={navigateTo} />}<div className="add-note"><span className="note-icon"><Plus size={16} /></span><div><strong>Adding a new example</strong><p>Activities are added manually in the site code, so the gallery stays easy to curate for demonstrations.</p></div><Code2 size={17} /></div></div>;
 }
 

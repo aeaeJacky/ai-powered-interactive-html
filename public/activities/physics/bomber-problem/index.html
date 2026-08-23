@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projectile Motion — The Bomber Problem (HKAL 1994 Paper IIA Q6)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --panel: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --accent2: #06b6d4;
+    --good: #16a34a;
+    --goodbg: #dcfce7;
+    --bad: #dc2626;
+    --badbg: #fee2e2;
+    --warnbg: #fef3c7;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(2, 6, 23, 0.18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    background: linear-gradient(160deg, #0f172a 0%, #1e3a8a 60%, #0f766e 130%);
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  header.hero {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    color: #fff;
+    margin-bottom: 26px;
+    box-shadow: var(--shadow);
+  }
+  header.hero .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.14);
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: #dbeafe;
+  }
+  header.hero h1 { font-size: 1.7rem; line-height: 1.25; margin-bottom: 8px; }
+  header.hero p { color: #cbd5e1; max-width: 780px; font-size: 0.98rem; }
+  header.hero .objectives { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 10px; }
+  header.hero .objectives div {
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #e2e8f0;
+  }
+  header.hero .objectives b { color: #7dd3fc; }
+  .card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    margin-bottom: 26px;
+    box-shadow: var(--shadow);
+  }
+  .card h2 {
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card h2 .num {
+    background: var(--accent);
+    color: #fff;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; flex: 0 0 auto;
+  }
+  .card h3 { font-size: 1.02rem; color: var(--ink); margin: 16px 0 6px; }
+  .card p, .card li { font-size: 0.97rem; color: #334155; }
+  .card ul, .card ol { padding-left: 22px; margin: 8px 0; }
+  .card li { margin: 5px 0; }
+  .question-box {
+    background: var(--bg2);
+    color: #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 14px 0;
+    border-left: 4px solid var(--accent2);
+  }
+  .question-box .src { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .question-box .qtext { font-size: 1.02rem; }
+  .equation {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family: "Cambria Math", Georgia, serif;
+    font-size: 1.05rem;
+    margin: 8px 0;
+    text-align: center;
+    color: #0f172a;
+  }
+  .key {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+    color: #1e3a8a;
+  }
+  .key b { color: #1d4ed8; }
+
+  /* Controls */
+  .controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin-top: 14px; }
+  .ctrl { display: flex; flex-direction: column; gap: 4px; min-width: 160px; flex: 1; }
+  .ctrl label { font-size: 0.8rem; color: #64748b; font-weight: 600; }
+  .ctrl input[type=range] { width: 100%; accent-color: var(--accent); }
+  .ctrl .val { font-size: 0.85rem; color: var(--accent); font-weight: 700; }
+  button {
+    border: none;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .15s ease, background .15s ease;
+    background: var(--accent);
+    color: #fff;
+  }
+  button:hover { filter: brightness(1.08); }
+  button:active { transform: scale(0.97); }
+  button.ghost { background: #e2e8f0; color: #334155; }
+  button.ghost:hover { background: #cbd5e1; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .toggles label {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #f1f5f9; border: 1px solid #e2e8f0;
+    border-radius: 999px; padding: 5px 13px;
+    font-size: 0.82rem; cursor: pointer; color: #334155; user-select: none;
+  }
+  .toggles input { accent-color: var(--accent); }
+  canvas#sim {
+    width: 100%;
+    background: linear-gradient(180deg, #bfdbfe 0%, #dbeafe 40%, #fef3c7 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    display: block;
+    touch-action: none;
+  }
+  .canvas-wrap { position: relative; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 12px; font-size: 0.85rem; color: #475569;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+
+  /* Options */
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+  .option {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .08s ease;
+    background: #fff;
+  }
+  .option:hover { border-color: var(--accent2); box-shadow: 0 6px 16px rgba(6,182,212,0.18); }
+  .option:active { transform: scale(0.98); }
+  .option .lbl {
+    font-weight: 800; font-size: 1rem; color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .option .mini { height: 130px; display: flex; align-items: center; justify-content: center; }
+  .option.correct { border-color: var(--good); background: var(--goodbg); }
+  .option.wrong { border-color: var(--bad); background: var(--badbg); }
+  .option .verdict { margin-top: 8px; font-size: 0.85rem; font-weight: 700; min-height: 20px; }
+  .option .verdict.ok { color: var(--good); }
+  .option .verdict.no { color: var(--bad); }
+  .option.disabled { cursor: default; }
+
+  /* Feedback panel */
+  #feedback {
+    margin-top: 16px;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: none;
+    font-size: 0.96rem;
+  }
+  #feedback.show { display: block; }
+  #feedback.right { background: var(--goodbg); border: 1px solid #86efac; }
+  #feedback.wrong { background: var(--badbg); border: 1px solid #fca5a5; }
+  #feedback h4 { margin-bottom: 6px; }
+  #feedback.right h4 { color: var(--good); }
+  #feedback.wrong h4 { color: var(--bad); }
+
+  .steps { counter-reset: step; }
+  .steps .step {
+    display: flex; gap: 14px; margin: 12px 0; align-items: flex-start;
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px;
+  }
+  .steps .step .n {
+    counter-increment: step;
+    flex: 0 0 28px; height: 28px;
+    background: var(--accent); color: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .steps .step .n::before { content: counter(step); }
+  .steps .step .body { font-size: 0.95rem; color: #334155; }
+
+  table.tab { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
+  table.tab th, table.tab td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: center; }
+  table.tab th { background: #eff6ff; color: #1e3a8a; }
+
+  .quiz { margin-top: 16px; }
+  .quiz .q { margin: 14px 0; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; }
+  .quiz .q .qtext2 { font-weight: 600; margin-bottom: 8px; color: #0f172a; }
+  .quiz .q .ans { display: flex; flex-wrap: wrap; gap: 8px; }
+  .quiz .q .ans button { background: #e2e8f0; color: #334155; font-weight: 600; }
+  .quiz .q .ans button.chosen-good { background: var(--good); color: #fff; }
+  .quiz .q .ans button.chosen-bad { background: var(--bad); color: #fff; }
+  .quiz .q .explain { margin-top: 10px; font-size: 0.9rem; color: #334155; display: none; }
+  .quiz .q .explain.show { display: block; }
+
+  .foot { color: #cbd5e1; font-size: 0.82rem; text-align: center; margin-top: 10px; }
+  .badge-pill { display:inline-block; background:#e0f2fe; color:#0369a1; border-radius:999px; padding:2px 10px; font-size:0.8rem; font-weight:700; }
+  @media (max-width: 640px) {
+    body { padding: 14px 8px 40px; }
+    .card, header.hero { padding: 18px 16px; }
+    header.hero h1 { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="tag">Physics · Mechanics · Projectile Motion</span>
+    <h1>🎯 The Bomber Problem — What Happens to Released Bombs?</h1>
+    <p>
+      A classic multiple-choice question that tests the deepest idea in projectile motion:
+      <b>horizontal and vertical motion are independent</b>.
+      Based on <b>HKAL 1994 Paper IIA Q6</b>, this interactive lesson lets you run the experiment yourself.
+    </p>
+    <div class="objectives">
+      <div><b>1 ·</b> Predict where falling bombs land relative to a moving bomber</div>
+      <div><b>2 ·</b> Visualise independence of horizontal &amp; vertical motion</div>
+      <div><b>3 ·</b> Explain why the gaps between bombs <b>grow</b> as they fall</div>
+      <div><b>4 ·</b> Apply the idea to a classic exam question</div>
+    </div>
+  </header>
+
+  <!-- 1. THE QUESTION -->
+  <section class="card">
+    <h2><span class="num">1</span>The Question</h2>
+    <div class="question-box">
+      <div class="src">HKAL 1994 Paper IIA · Question 6</div>
+      <div class="qtext">
+        A bomber is flying <b>horizontally to the right with constant velocity</b>.
+        It releases <b>three bombs one by one at a constant time interval</b>.
+        If <b>air resistance is neglected</b>, which of the following diagrams best shows the
+        <b>positions of the bomber and the bombs</b> at a certain time instant?
+      </div>
+    </div>
+    <p>Try to answer before you read on — then use the interactive simulation below to check your intuition, and finally test yourself on the four options in Part 4.</p>
+  </section>
+
+  <!-- 2. SIMULATION -->
+  <section class="card">
+    <h2><span class="num">2</span>Run The Experiment Yourself</h2>
+    <p>Watch the bomber drop three bombs one by one at a constant interval. No air resistance. What pattern do the falling bombs make? Look closely at the <b>vertical gaps</b> between the bombs — and whether the bombs stay <b>underneath</b> the bomber.</p>
+
+    <div class="canvas-wrap">
+      <canvas id="sim" width="940" height="420"></canvas>
+    </div>
+
+    <div class="controls">
+      <div class="ctrl">
+        <label>▶ Play / Pause</label>
+        <button id="playBtn" style="background:var(--good)">Pause</button>
+      </div>
+      <div class="ctrl">
+        <label>⏩ Simulation speed</label>
+        <input type="range" id="speed" min="0.2" max="3" step="0.1" value="1">
+        <span class="val" id="speedVal">1.0×</span>
+      </div>
+      <div class="ctrl">
+        <label>💣 Interval between releases (s)</label>
+        <input type="range" id="interval" min="0.4" max="2" step="0.1" value="1.0">
+        <span class="val" id="intervalVal">1.0 s</span>
+      </div>
+      <div class="ctrl">
+        <label>🚀 Bomber speed</label>
+        <input type="range" id="bspeed" min="1" max="4" step="0.2" value="2.2">
+        <span class="val" id="bspeedVal">2.2</span>
+      </div>
+      <div style="flex:0 0 auto; display:flex; gap:8px; align-items:flex-end;">
+        <button class="ghost" id="resetBtn">↺ Reset</button>
+        <button class="ghost" id="dropOneBtn">💣 Drop one now</button>
+      </div>
+    </div>
+
+    <div class="toggles">
+      <label><input type="checkbox" id="showTrail" checked> Show motion trails</label>
+      <label><input type="checkbox" id="showVel" checked> Show velocity arrows</label>
+      <label><input type="checkbox" id="showGaps" checked> Show gap labels</label>
+      <label><input type="checkbox" id="showVlines" checked> Show vertical guide lines</label>
+      <label><input type="checkbox" id="showGround" checked> Show ground</label>
+    </div>
+
+    <div class="legend">
+      <span><span class="swatch" style="background:#2563eb"></span> Bomber</span>
+      <span><span class="swatch" style="background:#dc2626"></span> Bomb (drop-shaped)</span>
+      <span><span class="swatch" style="background:#7c3aed"></span> Velocity vectors</span>
+      <span><span class="swatch" style="background:#d97706"></span> Ground</span>
+    </div>
+
+    <div class="key" id="simHint">
+      <b>What to notice:</b> every bomb keeps exactly the <b>same horizontal speed as the bomber</b> (so it always stays directly underneath it), while gravity pulls it <b>faster and faster downward</b> — that is why the <b>gaps between the bombs grow</b> the longer they fall. (The display uses a smaller value of g so several bombs stay visible at once — the pattern is the same as with real g = 9.8 m/s².)
+    </div>
+  </section>
+
+  <!-- 3. KEY IDEA -->
+  <section class="card">
+    <h2><span class="num">3</span>The Key Idea: Two Independent Motions</h2>
+    <p>A bomb released from a moving bomber does <b>not</b> fall straight down, and it does <b>not</b> fall behind the bomber either. Once released it keeps moving sideways <em>exactly</em> as fast as the bomber.</p>
+    <div class="key">
+      <b>Independent motion #1 — horizontal (no force):</b>
+      air resistance is neglected, so there is <b>no horizontal force</b> on a bomb. Its horizontal velocity stays
+      <b>constant and equal to the bomber's velocity</b> for the whole flight.
+    </div>
+    <div class="key">
+      <b>Independent motion #2 — vertical (gravity):</b>
+      the bomb starts with <b>zero vertical velocity</b> (dropped, not thrown) and accelerates downward with
+      <b>g</b>, so its downward speed increases continuously.
+    </div>
+    <div class="equation">x(t) = v t&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;&nbsp;y(t) = ½ g t²</div>
+    <p>The bomber itself also moves with <b>x = v t</b>. Because bomb and bomber share the <i>same</i> horizontal motion, at every instant each bomb is positioned <b>directly below the bomber</b> — no trailing, no leading. Meanwhile the vertical motion means the first-released (lowest) bomb is already moving fastest, so it pulls away — <b>the gaps between successive bombs widen with time</b>.</p>
+  </section>
+
+  <!-- 4. THE OPTIONS -->
+  <section class="card">
+    <h2><span class="num">4</span>Test Yourself — Which Diagram Is Correct?</h2>
+    <p>Click each option to see whether it is correct and why. (Each diagram shows the bomber and the three bombs at the same instant.)</p>
+
+    <div class="options" id="options">
+      <div class="option" data-id="A" onclick="choose('A')">
+        <div class="lbl">A</div>
+        <div class="mini"><canvas width="150" height="120"></canvas></div>
+        <div class="verdict"></div>
+      </div>
+      <div class="option" data-id="B" onclick="choose('B')">
+        <div class="lbl">B</div>
+        <div class="mini"><canvas width="150" height="120"></canvas></div>
+        <div class="verdict"></div>
+      </div>
+      <div class="option" data-id="C" onclick="choose('C')">
+        <div class="lbl">C</div>
+        <div class="mini"><canvas width="150" height="120"></canvas></div>
+        <div class="verdict"></div>
+      </div>
+      <div class="option" data-id="D" onclick="choose('D')">
+        <div class="lbl">D</div>
+        <div class="mini"><canvas width="150" height="120"></canvas></div>
+        <div class="verdict"></div>
+      </div>
+    </div>
+
+    <div id="feedback"></div>
+    <div style="text-align:right; margin-top:10px;">
+      <button class="ghost" id="revealBtn">Reveal answer</button>
+    </div>
+  </section>
+
+  <!-- 5. SOLUTION -->
+  <section class="card" id="solution">
+    <h2><span class="num">5</span>Worked Solution (Step by Step)</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="n"></div>
+        <div class="body">
+          <b>Label the bombs by order of release.</b>
+          Let the interval be <b>τ</b>. If the instant shown is time <b>T</b> after the <i>last</i> bomb is released, then the
+          bombs have been falling for times <b>t₃ = T</b> (last), <b>t₂ = T + τ</b>, and <b>t₁ = T + 2τ</b> (first).
+        </div>
+      </div>
+      <div class="step">
+        <div class="n"></div>
+        <div class="body">
+          <b>Horizontal position — all bombs line up under the bomber.</b>
+          Each bomb keeps the bomber's horizontal speed <b>v</b>, so its horizontal displacement from the drop point is
+          <b>x = v t</b> — identical to the bomber's own position <b>x = v t</b>. Therefore <b>all three bombs are always directly below the bomber</b>: the pattern is a <b>vertical line</b>.
+        </div>
+      </div>
+      <div class="step">
+        <div class="n"></div>
+        <div class="body">
+          <b>Vertical position — drops grow.</b>
+          With zero initial vertical speed, each bomb falls a distance
+          <div class="equation">y(t) = ½ g t²</div>
+          The height differences between successive bombs (i.e. the visible gaps) are:
+          <div class="equation">
+            gap₂ = y(t₂) − y(t₃) = ½g[(T+τ)² − T²] = ½g(2Tτ + τ²)<br>
+            gap₁ = y(t₁) − y(t₂) = ½g[(T+2τ)² − (T+τ)²] = ½g(2Tτ + 3τ²)
+          </div>
+          Since <b>gap₁ − gap₂ = gτ² &gt; 0</b>, the gap between the two lowest bombs is <b>larger</b> than the gap between the two upper bombs.
+        </div>
+      </div>
+      <div class="step">
+        <div class="n"></div>
+        <div class="body">
+          <b>In words:</b> the lower a bomb is, the longer it has been accelerating, so the faster it is moving and the more it "pulls away" from the bomb above. The correct diagram therefore shows the bombs in a <b>vertical line with gaps that increase going downwards</b>.
+        </div>
+      </div>
+      <div class="step">
+        <div class="n"></div>
+        <div class="body">
+          <b>Check the options:</b>
+          <table class="tab">
+            <tr><th>Option</th><th>Pattern</th><th>Correct?</th><th>Why</th></tr>
+            <tr><td><b>A</b></td><td>Bombs trail behind in a diagonal</td><td style="color:var(--bad);font-weight:700;">✗</td><td>Bombs share the bomber's horizontal velocity; they never lag behind.</td></tr>
+            <tr><td><b>B</b></td><td>Diagonal line of bombs</td><td style="color:var(--bad);font-weight:700;">✗</td><td>Same misconception as A — no horizontal velocity change.</td></tr>
+            <tr><td><b>C</b></td><td>Vertical line, <b>equal</b> gaps</td><td style="color:var(--bad);font-weight:700;">✗</td><td>Looks plausible (equal time → equal spacing) but gravity accelerates the bombs, so gaps must grow.</td></tr>
+            <tr><td><b>D</b></td><td>Vertical line, <b>increasing</b> gaps</td><td style="color:var(--good);font-weight:700;">✔</td><td>Horizontal velocity conserved (vertical line) <i>and</i> vertical acceleration (widening gaps).</td></tr>
+          </table>
+          <div class="key"><b>Answer: D.</b></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Common misconception — why C is a trap</h3>
+    <p>
+      Many students think "the bombs are released at equal time intervals, so they are equally spaced."
+      That is true for a <b>train of objects moving at constant speed</b>, but falling bombs are <b>accelerating</b>.
+      Equal time intervals with increasing speed means the distances covered in each interval <b>increase</b> — so the separations grow.
+    </p>
+  </section>
+
+  <!-- 6. QUIZ -->
+  <section class="card">
+    <h2><span class="num">6</span>Quick Check — Can You Apply the Idea?</h2>
+    <div class="quiz">
+
+      <div class="q">
+        <div class="qtext2">Q1 · A stunt car jumps horizontally off a cliff. While it is in the air, a passenger drops a coin out the window. Relative to the car, the coin</div>
+        <div class="ans" data-q="q1" data-correct="a">
+          <button data-a="a">falls straight down below the car</button>
+          <button data-a="b">is left behind as the car flies forward</button>
+          <button data-a="c">flies ahead of the car</button>
+        </div>
+        <div class="explain">The coin keeps the car's horizontal velocity (no horizontal force), so it stays directly below the car — exactly like the bombs under the bomber. Answer: <b>falls straight down below the car</b>.</div>
+      </div>
+
+      <div class="q">
+        <div class="qtext2">Q2 · Two balls are released one after another (1 s apart) from the same hovering drone. As both fall (no air resistance), the gap between them</div>
+        <div class="ans" data-q="q2" data-correct="b">
+          <button data-a="a">stays constant</button>
+          <button data-a="b">increases</button>
+          <button data-a="c">decreases</button>
+        </div>
+        <div class="explain">The first ball started falling earlier, so it is moving faster; it pulls away. Gap increases (growing by gτ² every interval). Answer: <b>increases</b>.</div>
+      </div>
+
+      <div class="q">
+        <div class="qtext2">Q3 · A package is dropped from a horizontally-moving helicopter (no air resistance). Just before it hits the ground, the helicopter is</div>
+        <div class="ans" data-q="q3" data-correct="a">
+          <button data-a="a">directly above the package</button>
+          <button data-a="b">behind the package</button>
+          <button data-a="c">ahead of the package</button>
+        </div>
+        <div class="explain">Package and helicopter share the same horizontal velocity, so they travel the same horizontal distance — the helicopter is directly above the package on impact. Answer: <b>directly above the package</b>.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="foot">Interactive teaching material · Projectile motion · Bomber problem · HKAL 1994 Paper IIA Q6 · Open the file in any modern browser — no internet needed.</div>
+</div>
+
+<script>
+/* ============ SIMULATION ============ */
+(function(){
+  const canvas = document.getElementById('sim');
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+
+  // world scale: px per metre
+  const PPM = 26;
+  const RELEASE_Y = 60;
+  const GROUND_Y = 390;
+  const START_X = 70;
+
+  let running = true;
+  let t = 0;               // sim time (s)
+  let speed = 1;
+  let interval = 1.0;
+  let v = 2.2;             // bomber speed m/s
+  let nextDrop = 0;
+  // Display gravity is compressed so several bombs stay on screen at once.
+  // Any g > 0 gives the same pattern (vertical line + growing gaps).
+  const g = 3.2;
+
+  const bombs = [];        // {tRelease, x, vx}
+  const trail = new Map(); // bombId -> array of {x,y}
+
+  let idCounter = 0;
+
+  const els = {
+    playBtn: document.getElementById('playBtn'),
+    speed: document.getElementById('speed'),
+    speedVal: document.getElementById('speedVal'),
+    interval: document.getElementById('interval'),
+    intervalVal: document.getElementById('intervalVal'),
+    bspeed: document.getElementById('bspeed'),
+    bspeedVal: document.getElementById('bspeedVal'),
+    resetBtn: document.getElementById('resetBtn'),
+    dropOneBtn: document.getElementById('dropOneBtn'),
+    showTrail: document.getElementById('showTrail'),
+    showVel: document.getElementById('showVel'),
+    showGaps: document.getElementById('showGaps'),
+    showVlines: document.getElementById('showVlines'),
+    showGround: document.getElementById('showGround'),
+  };
+
+  function bomberX() { return START_X + v * t * PPM; }
+
+  function reset() {
+    t = 0; bombs.length = 0; trail.clear(); idCounter = 0; nextDrop = 0;
+  }
+
+  function dropBomb() {
+    const b = { tRelease: t, x: bomberX(), vx: v };
+    b.id = ++idCounter;
+    bombs.push(b);
+    trail.set(b.id, []);
+  }
+
+  function step(dt) {
+    t += dt;
+    while (nextDrop <= t) {
+      dropBomb();
+      nextDrop += interval;
+    }
+    // record trails
+    for (const b of bombs) {
+      const tt = t - b.tRelease;
+      if (tt >= 0) {
+        const x = b.x + b.vx * tt * PPM;
+        const y = RELEASE_Y + 0.5 * g * tt * tt * PPM;
+        const arr = trail.get(b.id);
+        arr.push([x, y]);
+        if (arr.length > 200) arr.shift();
+      }
+    }
+  }
+
+  function drawBomb(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = '#dc2626';
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    // teardrop shape, pointing down
+    ctx.moveTo(0, -7);
+    ctx.bezierCurveTo(6, -7, 7, 2, 0, 8);
+    ctx.bezierCurveTo(-7, 2, -6, -7, 0, -7);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#fecaca';
+    ctx.beginPath();
+    ctx.ellipse(-1.5, -3, 1.6, 2.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawBomber(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    // body
+    ctx.fillStyle = '#2563eb';
+    ctx.strokeStyle = '#1e3a8a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(20, 0);
+    ctx.lineTo(-22, 0);
+    ctx.lineTo(-24, 4);
+    ctx.lineTo(-18, 3);
+    ctx.lineTo(-8, 10);
+    ctx.lineTo(4, 9);
+    ctx.lineTo(16, 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // cockpit
+    ctx.fillStyle = '#bfdbfe';
+    ctx.beginPath();
+    ctx.ellipse(2, -1, 8, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // nose
+    ctx.fillStyle = '#2563eb';
+    ctx.beginPath();
+    ctx.arc(22, 0, 3.4, 0, Math.PI * 2);
+    ctx.fill();
+    // tail
+    ctx.fillStyle = '#1d4ed8';
+    ctx.beginPath();
+    ctx.moveTo(-22, 0);
+    ctx.lineTo(-28, -12);
+    ctx.lineTo(-24, -11);
+    ctx.lineTo(-18, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function draw() {
+    // ---- background
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#bfdbfe');
+    grad.addColorStop(0.55, '#dbeafe');
+    grad.addColorStop(1, '#fef9c3');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // ground
+    if (els.showGround.checked) {
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, GROUND_Y);
+      ctx.lineTo(canvas.width, GROUND_Y);
+      ctx.stroke();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 18) {
+        ctx.beginPath();
+        ctx.moveTo(x, GROUND_Y);
+        ctx.lineTo(x + 8, GROUND_Y);
+        ctx.stroke();
+      }
+      ctx.fillStyle = '#92400e';
+      ctx.font = '13px sans-serif';
+      ctx.fillText('ground', 8, GROUND_Y + 16);
+    }
+
+    // bomber flight path (dashed)
+    ctx.save();
+    ctx.setLineDash([6, 6]);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(10, 60);
+    ctx.lineTo(canvas.width - 10, 60);
+    ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = '#475569';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('bomber height (y = 0 of each bomb)', 12, 52);
+
+    // ---- bombs & trails
+    const sorted = [...bombs].sort((a, b) => (t - a.tRelease) - (t - b.tRelease));
+    for (const b of sorted) {
+      const tt = t - b.tRelease;
+      if (tt < 0) continue;
+      const x = b.x + b.vx * tt * PPM;
+      const y = RELEASE_Y + 0.5 * g * tt * tt * PPM;
+      if (y > GROUND_Y - 8) continue;
+
+      // vertical guide line
+      if (els.showVlines.checked) {
+        ctx.save();
+        ctx.setLineDash([2, 6]);
+        ctx.strokeStyle = 'rgba(37,99,235,0.35)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, 40);
+        ctx.lineTo(x, GROUND_Y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // trail
+      if (els.showTrail.checked) {
+        const arr = trail.get(b.id);
+        if (arr.length > 1) {
+          ctx.strokeStyle = 'rgba(220,38,38,0.35)';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(arr[0][0], arr[0][1]);
+          for (const pt of arr) ctx.lineTo(pt[0], pt[1]);
+          ctx.stroke();
+        }
+      }
+
+      // velocity arrows
+      if (els.showVel.checked) {
+        const vxpx = b.vx * PPM * 0.45;
+        const vypx = (g * tt) * PPM * 0.45;
+        ctx.strokeStyle = '#7c3aed';
+        ctx.lineWidth = 2;
+        arrow(ctx, x, y, x + vxpx, y, '#7c3aed');
+        arrow(ctx, x, y, x, y + Math.min(vypx, GROUND_Y - y), '#7c3aed');
+      }
+
+      drawBomb(x, y);
+    }
+
+    // ---- gap labels
+    if (els.showGaps.checked) {
+      const inAir = bombs.filter(b => {
+        const tt = t - b.tRelease;
+        return tt >= 0 && (RELEASE_Y + 0.5 * g * tt * tt * PPM) < GROUND_Y - 8;
+      }).sort((a, b) => (t - a.tRelease) - (t - b.tRelease));
+      if (inAir.length >= 2) {
+        const pts = inAir.map(b => {
+          const tt = t - b.tRelease;
+          return { x: b.x + b.vx * tt * PPM, y: RELEASE_Y + 0.5 * g * tt * tt * PPM, tt };
+        });
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i], b = pts[i + 1];
+          const midX = a.x, midY = (a.y + b.y) / 2;
+          const gap = a.y - b.y;
+          ctx.strokeStyle = '#0f766e';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(midX + 10, a.y);
+          ctx.lineTo(midX + 10, b.y);
+          ctx.stroke();
+          ctx.fillStyle = '#0f766e';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(Math.max(1, Math.round(gap / PPM * 10) / 10) + ' m', midX + 16, midY + 4);
+        }
+      }
+    }
+
+    // ---- bomber
+    const bx = bomberX();
+    drawBomber(bx, 60);
+    ctx.fillStyle = '#1e3a8a';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('v', bx + 30, 40);
+
+    // time display
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 15px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('t = ' + t.toFixed(1) + ' s', 14, 24);
+    ctx.textAlign = 'left';
+  }
+
+  function arrow(ctx, x1, y1, x2, y2, color) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len < 2) return;
+    const ang = Math.atan2(dy, dx);
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    const s = 6;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - s * Math.cos(ang - 0.45), y2 - s * Math.sin(ang - 0.45));
+    ctx.lineTo(x2 - s * Math.cos(ang + 0.45), y2 - s * Math.sin(ang + 0.45));
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  let last = null;
+  function loop(ts) {
+    if (last === null) last = ts;
+    let dt = (ts - last) / 1000;
+    last = ts;
+    if (dt > 0.05) dt = 0.05;
+    if (running) step(dt * speed);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // ---- controls
+  els.playBtn.addEventListener('click', () => {
+    running = !running;
+    els.playBtn.textContent = running ? 'Pause' : 'Play';
+    els.playBtn.style.background = running ? '#16a34a' : '#f59e0b';
+  });
+  els.speed.addEventListener('input', () => {
+    speed = parseFloat(els.speed.value);
+    els.speedVal.textContent = speed.toFixed(1) + '×';
+  });
+  els.interval.addEventListener('input', () => {
+    interval = parseFloat(els.interval.value);
+    els.intervalVal.textContent = interval.toFixed(1) + ' s';
+    nextDrop = Math.min(nextDrop, t); // allow immediate re-eval
+  });
+  els.bspeed.addEventListener('input', () => {
+    v = parseFloat(els.bspeed.value);
+    els.bspeedVal.textContent = v.toFixed(1);
+  });
+  els.resetBtn.addEventListener('click', () => {
+    reset();
+    last = null;
+  });
+  els.dropOneBtn.addEventListener('click', () => {
+    dropBomb();
+  });
+
+  reset();
+  requestAnimationFrame(loop);
+})();
+
+/* ============ OPTION MINI-DIAGRAMS ============ */
+function drawMini(canvas, kind) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2;
+
+  const planeY = 18;
+  let bombs;
+  if (kind === 'A') {
+    bombs = [{x: cx, y: planeY + 16}, {x: cx - 26, y: planeY + 48}, {x: cx - 52, y: planeY + 92}];
+  } else if (kind === 'B') {
+    bombs = [{x: cx + 18, y: planeY + 16}, {x: cx - 8, y: planeY + 50}, {x: cx - 34, y: planeY + 90}];
+  } else if (kind === 'C') {
+    bombs = [{x: cx, y: planeY + 18}, {x: cx, y: planeY + 52}, {x: cx, y: planeY + 86}];
+  } else {
+    bombs = [{x: cx, y: planeY + 16}, {x: cx, y: planeY + 40}, {x: cx, y: planeY + 86}];
+  }
+
+  // ground
+  ctx.strokeStyle = '#d97706';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(8, H - 8);
+  ctx.lineTo(W - 8, H - 8);
+  ctx.stroke();
+
+  // mini bomber
+  ctx.save();
+  ctx.translate(cx, planeY);
+  ctx.fillStyle = '#2563eb';
+  ctx.strokeStyle = '#1e3a8a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(14, 0);
+  ctx.lineTo(-14, 0);
+  ctx.lineTo(-16, 3);
+  ctx.lineTo(-11, 2.5);
+  ctx.lineTo(-5, 6.5);
+  ctx.lineTo(3, 6);
+  ctx.lineTo(10, 3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(15, 0, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // bombs
+  bombs.forEach(b => {
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    ctx.fillStyle = '#dc2626';
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(0, -5);
+    ctx.bezierCurveTo(4.5, -5, 5, 1.5, 0, 6);
+    ctx.bezierCurveTo(-5, 1.5, -4.5, -5, 0, -5);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  // dashed vertical line through bomber (shows "directly below")
+  if (kind === 'C' || kind === 'D') {
+    ctx.save();
+    ctx.setLineDash([2, 4]);
+    ctx.strokeStyle = 'rgba(37,99,235,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, planeY + 8);
+    ctx.lineTo(cx, H - 10);
+    ctx.stroke();
+    ctx.restore();
+  }
+  if (kind === 'A' || kind === 'B') {
+    ctx.save();
+    ctx.setLineDash([2, 4]);
+    ctx.strokeStyle = 'rgba(220,38,38,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, planeY + 8);
+    ctx.lineTo(bombs[bombs.length - 1].x, H - 10);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+/* ============ OPTION INTERACTION ============ */
+const OPTIONS = {
+  A: { correct: false, reason: "The bombs would keep the bomber's horizontal velocity, so they must stay directly below the bomber — they never trail behind into a diagonal." },
+  B: { correct: false, reason: "A diagonal line means the bombs are changing horizontal position relative to the bomber. With no air resistance there is no horizontal force, so this cannot happen." },
+  C: { correct: false, reason: "The bombs do line up vertically — but equal gaps are wrong. Gravity makes each bomb accelerate, so the lower (earlier-released) bombs are moving faster and the gaps must increase." },
+  D: { correct: true, reason: "Correct! Each bomb keeps the bomber's horizontal speed (vertical line) while falling faster and faster (widening gaps). The correct answer is D." },
+};
+
+function choose(id) {
+  const cards = document.querySelectorAll('.option');
+  cards.forEach(c => {
+    c.classList.remove('correct', 'wrong', 'disabled');
+    c.querySelector('.verdict').textContent = '';
+    c.querySelector('.verdict').className = 'verdict';
+  });
+  const info = OPTIONS[id];
+  cards.forEach(c => {
+    const cid = c.dataset.id;
+    if (cid === id) {
+      c.classList.add(info.correct ? 'correct' : 'wrong');
+      c.querySelector('.verdict').textContent = info.correct ? '✓ Correct!' : '✗ Not this one';
+      c.querySelector('.verdict').className = 'verdict ' + (info.correct ? 'ok' : 'no');
+    } else if (info.correct) {
+      c.classList.add('wrong');
+      c.querySelector('.verdict').textContent = '✗';
+    }
+  });
+  const fb = document.getElementById('feedback');
+  fb.className = 'show ' + (info.correct ? 'right' : 'wrong');
+  fb.innerHTML = (info.correct ? '<h4>✓ Well done — that is the answer!</h4>' : '<h4>✗ Not quite.</h4>') +
+    '<p>' + info.reason + '</p>';
+  if (info.correct) fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.getElementById('revealBtn').addEventListener('click', () => {
+  choose('D');
+  const sol = document.getElementById('solution');
+  sol.scrollIntoView({ behavior: 'smooth' });
+});
+
+/* init mini diagrams */
+(function(){
+  const cards = document.querySelectorAll('.option');
+  cards.forEach(c => {
+    const cv = c.querySelector('canvas');
+    drawMini(cv, c.dataset.id);
+  });
+})();
+
+/* ============ QUIZ ============ */
+document.querySelectorAll('.quiz .q').forEach(q => {
+  const ans = q.querySelector('.ans');
+  const buttons = ans.querySelectorAll('button');
+  const explain = q.querySelector('.explain');
+  const correct = ans.dataset.correct;
+  buttons.forEach(b => {
+    b.addEventListener('click', () => {
+      buttons.forEach(x => x.className = '');
+      b.classList.add(b.dataset.a === correct ? 'chosen-good' : 'chosen-bad');
+      explain.classList.add('show');
+    });
+  });
+});
+</script>
+</body>
+</html>

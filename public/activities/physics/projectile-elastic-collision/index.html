@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectile Motion — HKAL 1987 Paper 1 Q5 (Interactive)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Canvas container */
+        #simCanvas { border-radius: 0.75rem; display: block; }
+
+        /* Step reveal animation */
+        .step-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease;
+            opacity: 0;
+        }
+        .step-content.revealed {
+            max-height: 600px;
+            opacity: 1;
+        }
+
+        /* Hint tooltip */
+        .hint-box {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .hint-box.show {
+            max-height: 200px;
+            opacity: 1;
+        }
+
+        /* Active step indicator */
+        .step-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            transform: scale(1.05);
+        }
+        .step-btn.completed {
+            background-color: #22c55e;
+            color: white;
+        }
+        .step-btn:not(.active):not(.completed) {
+            background-color: #334155;
+            color: #94a3b8;
+        }
+
+        /* Slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #334155;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(59,130,246,0.5);
+        }
+
+        /* Answer option highlight */
+        .option-btn.correct {
+            background-color: #22c55e !important;
+            border-color: #22c55e !important;
+            color: white !important;
+        }
+        .option-btn.wrong {
+            background-color: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-2xl font-bold text-blue-400">Projectile Motion with Elastic Collision</h1>
+            <p class="text-slate-400 text-sm mt-1">HKAL 1987 Paper 1 — Question 5 · Interactive Teaching Page</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- ============================================ -->
+        <!-- SECTION 1: Problem Transcription -->
+        <!-- ============================================ -->
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
+            <h2 class="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Problem Statement
+            </h2>
+            <p class="text-slate-200 leading-relaxed text-base">
+                A particle is projected with a speed of <span class="font-bold text-yellow-300">10 m s⁻¹</span>
+                <em>downwards</em> from point <span class="font-bold text-yellow-300">P</span> at an angle of
+                <span class="font-bold text-yellow-300">30°</span> to the horizontal.
+                The particle rebounds from the ground at point <span class="font-bold text-yellow-300">Q</span>
+                as shown in the figure. If the collision is <span class="font-bold text-green-400">perfectly elastic</span>
+                and the ground is <span class="font-bold text-green-400">smooth</span>, what is the horizontal
+                distance <strong>QR</strong> when it reaches the ground at <span class="font-bold text-yellow-300">R</span>?
+                <br><span class="text-slate-400 text-sm">(Take <em>g</em> = 10 m s⁻²)</span>
+            </p>
+
+            <!-- Multiple choice options -->
+            <div class="mt-6">
+                <h3 class="text-sm font-semibold text-slate-400 mb-3">Select your answer:</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="optionsGrid">
+                    <button class="option-btn px-4 py-3 rounded-lg border-2 border-slate-600 bg-slate-700 hover:bg-slate-600 transition font-semibold text-left" data-value="10.0" onclick="selectOption(this)">
+                        A. 10.0 m
+                    </button>
+                    <button class="option-btn px-4 py-3 rounded-lg border-2 border-slate-600 bg-slate-700 hover:bg-slate-600 transition font-semibold text-left" data-value="13.0" onclick="selectOption(this)">
+                        B. 13.0 m
+                    </button>
+                    <button class="option-btn px-4 py-3 rounded-lg border-2 border-slate-600 bg-slate-700 hover:bg-slate-600 transition font-semibold text-left" data-value="26.0" onclick="selectOption(this)">
+                        C. 26.0 m
+                    </button>
+                    <button class="option-btn px-4 py-3 rounded-lg border-2 border-slate-600 bg-slate-700 hover:bg-slate-600 transition font-semibold text-left" data-value="43.5" onclick="selectOption(this)">
+                        D. 43.5 m
+                    </button>
+                </div>
+                <p id="feedbackMsg" class="mt-3 text-sm font-medium hidden"></p>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SECTION 2: Interactive Simulation -->
+        <!-- ============================================ -->
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
+            <h2 class="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Interactive Simulation
+            </h2>
+
+            <!-- Slider controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="text-sm text-slate-400 block mb-1">Initial Speed: <span id="speedVal" class="text-yellow-300 font-mono">10</span> m/s</label>
+                    <input type="range" id="speedSlider" min="5" max="25" step="0.5" value="10" class="w-full" oninput="updateSimulation()">
+                </div>
+                <div>
+                    <label class="text-sm text-slate-400 block mb-1">Angle below horizontal: <span id="angleVal" class="text-yellow-300 font-mono">30</span>°</label>
+                    <input type="range" id="angleSlider" min="5" max="80" step="1" value="30" class="w-full" oninput="updateSimulation()">
+                </div>
+                <div>
+                    <label class="text-sm text-slate-400 block mb-1">Height of P: <span id="heightVal" class="text-yellow-300 font-mono">10</span> m</label>
+                    <input type="range" id="heightSlider" min="2" max="30" step="0.5" value="10" class="w-full" oninput="updateSimulation()">
+                </div>
+            </div>
+
+            <!-- Simulation canvas -->
+            <div class="bg-slate-950 rounded-xl p-2 border border-slate-600">
+                <canvas id="simCanvas" width="900" height="400"></canvas>
+            </div>
+
+            <!-- Play controls -->
+            <div class="flex items-center gap-4 mt-4">
+                <button onclick="playSimulation()" id="playBtn"
+                        class="px-5 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    Play
+                </button>
+                <button onclick="resetSimulation()"
+                        class="px-5 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg font-semibold transition">
+                    Reset
+                </button>
+                <div class="text-sm text-slate-400 flex-1 text-right" id="simInfo">
+                    Drag sliders to explore. Click <strong>Play</strong> to animate.
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SECTION 3: Step-by-Step Guided Solution -->
+        <!-- ============================================ -->
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
+            <h2 class="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                Step-by-Step Guided Solution
+            </h2>
+            <p class="text-slate-400 text-sm mb-6">Click each step to reveal the reasoning. Use the <span class="text-blue-400 font-semibold">Hint</span> buttons for extra guidance.</p>
+
+            <!-- Step 1: Decompose initial velocity -->
+            <div class="mb-4" id="step1">
+                <button onclick="revealStep(1)" id="step1Btn" class="step-btn w-full text-left px-5 py-3 rounded-lg transition font-semibold flex items-center gap-3">
+                    <span class="step-number w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold">1</span>
+                    <span>Decompose the Initial Velocity</span>
+                </button>
+                <div class="step-content ml-12 mt-3" id="step1Content">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-600 space-y-2">
+                        <p class="text-slate-200">
+                            The particle is projected at <strong>v₀ = 10 m/s</strong> at <strong>30° below</strong> the horizontal.
+                        </p>
+                        <div class="bg-slate-800 rounded-lg p-3 font-mono text-sm text-yellow-300">
+                            <p>v₀ₓ = v₀ cos 30° = 10 × (√3 / 2) = <strong>5√3 m/s ≈ 8.66 m/s</strong></p>
+                            <p>v₀ᵧ = v₀ sin 30° = 10 × (1/2) = <strong>5 m/s</strong> (downward)</p>
+                        </div>
+                        <p class="text-slate-400 text-sm">The horizontal component remains constant (no air resistance), while the vertical component accelerates downward due to gravity.</p>
+                    </div>
+                    <button onclick="toggleHint(1)" class="text-blue-400 hover:text-blue-300 text-sm mt-2 underline">Show Hint</button>
+                    <div class="hint-box" id="hint1">
+                        <div class="bg-blue-950 border border-blue-800 rounded-lg p-3 mt-1 text-sm text-blue-200">
+                            💡 Think of splitting the velocity vector into a horizontal (cos) and vertical (sin) component. The angle is measured below horizontal, so the vertical component points downward.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: P to Q — vertical motion -->
+            <div class="mb-4" id="step2">
+                <button onclick="revealStep(2)" id="step2Btn" class="step-btn w-full text-left px-5 py-3 rounded-lg transition font-semibold flex items-center gap-3">
+                    <span class="step-number w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold">2</span>
+                    <span>Find Vertical Velocity at Q (just before impact)</span>
+                </button>
+                <div class="step-content ml-12 mt-3" id="step2Content">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-600 space-y-2">
+                        <p class="text-slate-200">
+                            Use <span class="font-mono text-yellow-300">v² = u² + 2as</span> for the vertical motion from P (height 10 m) to the ground Q.
+                        </p>
+                        <div class="bg-slate-800 rounded-lg p-3 font-mono text-sm text-yellow-300">
+                            <p>u = 5 m/s (downward), a = g = 10 m/s², s = 10 m</p>
+                            <p>v² = 5² + 2 × 10 × 10 = 25 + 200 = 225</p>
+                            <p>v = <strong>15 m/s</strong> (downward)</p>
+                        </div>
+                        <p class="text-slate-200">
+                            Time from P to Q: <span class="font-mono text-yellow-300">v = u + at</span> → <strong>15 = 5 + 10t</strong> → <strong>t = 1 s</strong>
+                        </p>
+                    </div>
+                    <button onclick="toggleHint(2)" class="text-blue-400 hover:text-blue-300 text-sm mt-2 underline">Show Hint</button>
+                    <div class="hint-box" id="hint2">
+                        <div class="bg-blue-950 border border-blue-800 rounded-lg p-3 mt-1 text-sm text-blue-200">
+                            💡 The particle starts 10 m above the ground with a downward velocity of 5 m/s. Gravity accelerates it further. Use the kinematic equation that relates velocity, acceleration, and displacement.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Horizontal distance PQ -->
+            <div class="mb-4" id="step3">
+                <button onclick="revealStep(3)" id="step3Btn" class="step-btn w-full text-left px-5 py-3 rounded-lg transition font-semibold flex items-center gap-3">
+                    <span class="step-number w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold">3</span>
+                    <span>Find the Horizontal Distance from P to Q</span>
+                </button>
+                <div class="step-content ml-12 mt-3" id="step3Content">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-600 space-y-2">
+                        <p class="text-slate-200">
+                            Horizontal velocity is constant (smooth ground = no friction, no air resistance):
+                        </p>
+                        <div class="bg-slate-800 rounded-lg p-3 font-mono text-sm text-yellow-300">
+                            <p>PQ = v₀ₓ × t = 5√3 × 1 = <strong>5√3 m ≈ 8.66 m</strong></p>
+                        </div>
+                    </div>
+                    <button onclick="toggleHint(3)" class="text-blue-400 hover:text-blue-300 text-sm mt-2 underline">Show Hint</button>
+                    <div class="hint-box" id="hint3">
+                        <div class="bg-blue-950 border border-blue-800 rounded-lg p-3 mt-1 text-sm text-blue-200">
+                            💡 Horizontal motion has zero acceleration, so distance = velocity × time. We already know v₀ₓ and t from the previous steps.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Elastic collision -->
+            <div class="mb-4" id="step4">
+                <button onclick="revealStep(4)" id="step4Btn" class="step-btn w-full text-left px-5 py-3 rounded-lg transition font-semibold flex items-center gap-3">
+                    <span class="step-number w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold">4</span>
+                    <span>Analyze the Perfectly Elastic Collision at Q</span>
+                </button>
+                <div class="step-content ml-12 mt-3" id="step4Content">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-600 space-y-2">
+                        <p class="text-slate-200">
+                            <strong>Perfectly elastic</strong> + <strong>smooth ground</strong> means:
+                        </p>
+                        <ul class="list-disc list-inside text-slate-200 space-y-1">
+                            <li>Speed is preserved (kinetic energy conserved)</li>
+                            <li>Vertical component reverses direction (bounces upward)</li>
+                            <li>Horizontal component is unchanged (smooth ground → no friction)</li>
+                        </ul>
+                        <div class="bg-slate-800 rounded-lg p-3 font-mono text-sm text-yellow-300">
+                            <p>After collision at Q:</p>
+                            <p>vₓ = <strong>5√3 m/s</strong> (unchanged, horizontal)</p>
+                            <p>vᵧ = <strong>15 m/s</strong> (upward, reversed from 15 m/s downward)</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleHint(4)" class="text-blue-400 hover:text-blue-300 text-sm mt-2 underline">Show Hint</button>
+                    <div class="hint-box" id="hint4">
+                        <div class="bg-blue-950 border border-blue-800 rounded-lg p-3 mt-1 text-sm text-blue-200">
+                            💡 "Perfectly elastic" means no kinetic energy is lost, so the speed remains 15 m/s after the bounce. Since the floor is smooth (no friction), only the vertical velocity is affected — it reverses. The horizontal component stays the same.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Q to R motion -->
+            <div class="mb-4" id="step5">
+                <button onclick="revealStep(5)" id="step5Btn" class="step-btn w-full text-left px-5 py-3 rounded-lg transition font-semibold flex items-center gap-3">
+                    <span class="step-number w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold">5</span>
+                    <span>Find the Time from Q to R</span>
+                </button>
+                <div class="step-content ml-12 mt-3" id="step5Content">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-600 space-y-2">
+                        <p class="text-slate-200">
+                            The particle launches upward at 15 m/s vertically and returns to ground level at R.
+                            Using <span class="font-mono text-yellow-300">s = ut + ½at²</span> with s = 0 (back to ground):
+                        </p>
+                        <div class="bg-slate-800 rounded-lg p-3 font-mono text-sm text-yellow-300">
+                            <p>0 = 15t − ½(10)t²</p>
+                            <p>0 = 15t − 5t² = t(15 − 5t)</p>
+                            <p>t = 0 (at Q) or t = <strong>3 s</strong> (at R)</p>
+                        </div>
+                        <p class="text-slate-400 text-sm">Alternatively, time to reach max height = 15/10 = 1.5 s, then falls back = 1.5 s. Total = 3 s.</p>
+                    </div>
+                    <button onclick="toggleHint(5)" class="text-blue-400 hover:text-blue-300 text-sm mt-2 underline">Show Hint</button>
+                    <div class="hint-box" id="hint5">
+                        <div class="bg-blue-950 border border-blue-800 rounded-lg p-3 mt-1 text-sm text-blue-200">
+                            💡 When the particle returns to the same level it was launched from (ground), the displacement is zero. Factor out t to find the two solutions: t = 0 (launch) and t = the answer you need.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Final answer -->
+            <div class="mb-4" id="step6">
+                <button onclick="revealStep(6)" id="step6Btn" class="step-btn w-full text-left px-5 py-3 rounded-lg transition font-semibold flex items-center gap-3">
+                    <span class="step-number w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold">6</span>
+                    <span>Calculate the Horizontal Distance QR ✓</span>
+                </button>
+                <div class="step-content ml-12 mt-3" id="step6Content">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-600 space-y-2">
+                        <p class="text-slate-200">
+                            Horizontal velocity is constant at 5√3 m/s, and the time from Q to R is 3 s:
+                        </p>
+                        <div class="bg-slate-800 rounded-lg p-3 font-mono text-sm text-yellow-300">
+                            <p>QR = vₓ × t = 5√3 × 3 = <strong>15√3 m</strong></p>
+                            <p class="text-lg text-green-400 font-bold">QR ≈ 25.98 m ≈ 26.0 m</p>
+                        </div>
+                        <div class="bg-green-950 border border-green-700 rounded-lg p-4 mt-3 text-center">
+                            <p class="text-green-400 font-bold text-lg">Answer: C. 26.0 m</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleHint(6)" class="text-blue-400 hover:text-blue-300 text-sm mt-2 underline">Show Hint</button>
+                    <div class="hint-box" id="hint6">
+                        <div class="bg-blue-950 border border-blue-800 rounded-lg p-3 mt-1 text-sm text-blue-200">
+                            💡 √3 ≈ 1.732, so 15 × 1.732 = 25.98 ≈ 26.0 m. The key insight: horizontal speed never changes throughout the entire motion!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reveal all button -->
+            <div class="mt-6 text-center">
+                <button onclick="revealAllSteps()"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition text-sm">
+                    Reveal All Steps
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-slate-500 text-xs py-6 border-t border-slate-800">
+        Projectile Motion Interactive Teaching Page · HKAL 1987 · Generated for educational purposes
+    </footer>
+
+    <!-- ============================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================ -->
+    <script>
+        /* ======================================================
+         *  GLOBALS & CONSTANTS
+         * ====================================================== */
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const g = 10;                    // gravitational acceleration (m/s²)
+        const CORRECT_ANSWER = '26.0';   // correct option value
+
+        /* ======================================================
+         *  PROBLEM PARAMETERS (read from sliders)
+         * ====================================================== */
+        function getParams() {
+            return {
+                v0:     parseFloat(document.getElementById('speedSlider').value),
+                angle:  parseFloat(document.getElementById('angleSlider').value),
+                h:      parseFloat(document.getElementById('heightSlider').value)
+            };
+        }
+
+        /* ======================================================
+         *  UPDATE SIMULATION (called on slider change)
+         *  - Recomputes all derived quantities
+         *  - Redraws the static diagram
+         * ====================================================== */
+        function updateSimulation() {
+            // Update label text
+            const p = getParams();
+            document.getElementById('speedVal').textContent = p.v0;
+            document.getElementById('angleVal').textContent = p.angle;
+            document.getElementById('heightVal').textContent = p.h;
+
+            drawStaticDiagram(p);
+        }
+
+        /* ======================================================
+         *  DRAW STATIC DIAGRAM
+         *  - Draws the ground, point P at height h, the initial
+         *    velocity vector, and marks points Q and R based on
+         *    the computed trajectory.
+         * ====================================================== */
+        function drawStaticDiagram(p) {
+            const W = canvas.width;
+            const H = canvas.height;
+            const angleRad = p.angle * Math.PI / 180;
+
+            // Velocity components
+            const v0x = p.v0 * Math.cos(angleRad);
+            const v0y = p.v0 * Math.sin(angleRad);
+
+            // --- P → Q: time to reach ground ---
+            // s = v0y*t + 0.5*g*t²  →  0.5g t² + v0y t − h = 0
+            const disc1 = v0y * v0y + 2 * g * p.h;
+            const tPQ = (-v0y + Math.sqrt(disc1)) / g;  // positive root
+
+            // Vertical velocity just before impact
+            const vy_impact = v0y + g * tPQ;
+
+            // Horizontal distances
+            const dPQ = v0x * tPQ;
+
+            // --- Elastic collision: vy reverses ---
+            const vy_after = vy_impact;
+
+            // --- Q → R: time to return to ground ---
+            // 0 = vy_after * t − 0.5 * g * t²  →  t( vy_after − 0.5 g t) = 0
+            const tQR = 2 * vy_after / g;
+
+            const dQR = v0x * tQR;
+            const dTotal = dPQ + dQR;
+
+            // --- Coordinate mapping ---
+            // World x: 0 at P's x, y: 0 at ground, up is positive
+            // Canvas: x goes right, y goes down.  We'll map ground to canvas bottom margin.
+            const margin = { left: 60, right: 30, top: 40, bottom: 50 };
+            const drawW = W - margin.left - margin.right;
+            const drawH = H - margin.top - margin.bottom;
+
+            // Scale: total horizontal range maps to drawW, max height maps to drawH
+            const maxH = Math.max(p.h, p.h + 0.5 * vy_after * vy_after / g) * 1.15;
+            const scaleX = drawW / (dTotal * 1.15 || 1);
+            const scaleY = drawH / (maxH || 1);
+
+            // Helper: world → canvas
+            function toCanvas(wx, wy) {
+                return {
+                    x: margin.left + wx * scaleX,
+                    y: margin.top + drawH - wy * scaleY
+                };
+            }
+
+            // Clear
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, W, H);
+
+            // Ground line
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 4]);
+            const groundY = margin.top + drawH;
+            ctx.beginPath();
+            ctx.moveTo(margin.left - 10, groundY);
+            ctx.lineTo(W - margin.right + 10, groundY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Hatch marks on ground
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            for (let x = margin.left; x < W - margin.right; x += 15) {
+                ctx.beginPath();
+                ctx.moveTo(x, groundY);
+                ctx.lineTo(x - 8, groundY + 10);
+                ctx.stroke();
+            }
+
+            // Points P, Q, R in world coords
+            const P_world = { x: 0, y: p.h };
+            const Q_world = { x: dPQ, y: 0 };
+            const R_world = { x: dPQ + dQR, y: 0 };
+
+            const P = toCanvas(P_world.x, P_world.y);
+            const Q = toCanvas(Q_world.x, Q_world.y);
+            const R = toCanvas(R_world.x, R_world.y);
+
+            // --- Draw trajectory P→Q (parabolic arc, sampled) ---
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(P.x, P.y);
+            const steps = 80;
+            for (let i = 1; i <= steps; i++) {
+                const t = (tPQ / steps) * i;
+                const wx = v0x * t;
+                const wy = p.h - (v0y * t + 0.5 * g * t * t);
+                const cp = toCanvas(wx, wy);
+                ctx.lineTo(cp.x, cp.y);
+            }
+            ctx.stroke();
+
+            // --- Draw trajectory Q→R (parabolic arc) ---
+            ctx.strokeStyle = '#22d3ee';
+            ctx.beginPath();
+            ctx.moveTo(Q.x, Q.y);
+            for (let i = 1; i <= steps; i++) {
+                const t = (tQR / steps) * i;
+                const wx = dPQ + v0x * t;
+                const wy = vy_after * t - 0.5 * g * t * t;
+                const cp = toCanvas(wx, wy);
+                ctx.lineTo(cp.x, cp.y);
+            }
+            ctx.stroke();
+
+            // --- Initial velocity arrow at P ---
+            const arrowLen = 50;
+            const vx_arrow = arrowLen * Math.cos(angleRad);
+            const vy_arrow = arrowLen * Math.sin(angleRad);
+            drawArrow(ctx, P.x, P.y, P.x + vx_arrow, P.y + vy_arrow, '#f59e0b', 2);
+
+            // --- Bounce velocity arrow at Q (upward) ---
+            const bounceAngle = Math.atan2(vy_after, v0x);
+            const bLen = 40;
+            drawArrow(ctx, Q.x, Q.y, Q.x + bLen * Math.cos(bounceAngle), Q.y - bLen * Math.sin(bounceAngle), '#22d3ee', 2);
+
+            // --- Height annotation ---
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(P.x, P.y);
+            ctx.lineTo(P.x, groundY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '13px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.h + ' m', P.x - 28, (P.y + groundY) / 2);
+
+            // --- Distance annotations ---
+            // PQ
+            const midPQ = (P.x + Q.x) / 2;
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = '12px monospace';
+            ctx.fillText('PQ = ' + dPQ.toFixed(2) + ' m', midPQ, groundY + 28);
+            // QR
+            const midQR = (Q.x + R.x) / 2;
+            ctx.fillStyle = '#22d3ee';
+            ctx.fillText('QR = ' + dQR.toFixed(2) + ' m', midQR, groundY + 28);
+
+            // --- Points ---
+            drawPoint(ctx, P.x, P.y, '#f59e0b', 'P', -12, -14);
+            drawPoint(ctx, Q.x, Q.y, '#ef4444', 'Q', -4, 18);
+            drawPoint(ctx, R.x, R.y, '#22c55e', 'R', -4, 18);
+
+            // --- Speed annotations ---
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(p.v0 + ' m/s @ ' + p.angle + '°', P.x + vx_arrow + 6, P.y + vy_arrow - 4);
+            ctx.fillStyle = '#22d3ee';
+            ctx.fillText('vₓ=' + v0x.toFixed(1) + ' vᵧ=' + vy_after.toFixed(1), Q.x + bLen * Math.cos(bounceAngle) + 8, Q.y - bLen * Math.sin(bounceAngle));
+
+            // --- Legend ---
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(margin.left + 10, margin.top + 8, 14, 4);
+            ctx.fillText('P → Q (falling)', margin.left + 30, margin.top + 14);
+            ctx.fillStyle = '#22d3ee';
+            ctx.fillRect(margin.left + 10, margin.top + 24, 14, 4);
+            ctx.fillText('Q → R (projectile)', margin.left + 30, margin.top + 30);
+
+            // --- Display final result ---
+            document.getElementById('simInfo').innerHTML =
+                `<span class="text-slate-300">P→Q: <span class="text-yellow-300 font-mono">${dPQ.toFixed(2)} m</span> in <span class="text-yellow-300 font-mono">${tPQ.toFixed(2)} s</span></span>` +
+                ` &nbsp;|&nbsp; ` +
+                `<span class="text-slate-300">Q→R: <span class="text-cyan-300 font-mono">${dQR.toFixed(2)} m</span> in <span class="text-cyan-300 font-mono">${tQR.toFixed(2)} s</span></span>` +
+                ` &nbsp;|&nbsp; ` +
+                `<strong class="text-green-400">QR ≈ ${(15 * Math.sqrt(3)).toFixed(2)} m</strong>`;
+        }
+
+        /* ======================================================
+         *  DRAW HELPER: Arrow
+         * ====================================================== */
+        function drawArrow(ctx, x1, y1, x2, y2, color, width) {
+            const headLen = 10;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            // Arrowhead
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        /* ======================================================
+         *  DRAW HELPER: Point marker
+         * ====================================================== */
+        function drawPoint(ctx, x, y, color, label, offX, offY) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = color;
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + offX, y + offY);
+        }
+
+        /* ======================================================
+         *  ANIMATED SIMULATION
+         * ====================================================== */
+        let animFrame = null;
+        let animData = null;
+
+        function computeTrajectory(p) {
+            const angleRad = p.angle * Math.PI / 180;
+            const v0x = p.v0 * Math.cos(angleRad);
+            const v0y = p.v0 * Math.sin(angleRad);
+
+            const disc1 = v0y * v0y + 2 * g * p.h;
+            const tPQ = (-v0y + Math.sqrt(disc1)) / g;
+            const vy_impact = v0y + g * tPQ;
+            const dPQ = v0x * tPQ;
+            const vy_after = vy_impact;
+            const tQR = 2 * vy_after / g;
+            const dQR = v0x * tQR;
+
+            return { v0x, v0y, tPQ, vy_impact, dPQ, vy_after, tQR, dQR, dTotal: dPQ + dQR };
+        }
+
+        function playSimulation() {
+            if (animFrame) cancelAnimationFrame(animFrame);
+
+            const p = getParams();
+            const traj = computeTrajectory(p);
+
+            const W = canvas.width;
+            const H = canvas.height;
+            const margin = { left: 60, right: 30, top: 40, bottom: 50 };
+            const drawW = W - margin.left - margin.right;
+            const drawH = H - margin.top - margin.bottom;
+            const maxH = Math.max(p.h, p.h + 0.5 * traj.vy_after * traj.vy_after / g) * 1.15;
+            const scaleX = drawW / (traj.dTotal * 1.15 || 1);
+            const scaleY = drawH / (maxH || 1);
+
+            function toCanvas(wx, wy) {
+                return {
+                    x: margin.left + wx * scaleX,
+                    y: margin.top + drawH - wy * scaleY
+                };
+            }
+
+            const totalTime = traj.tPQ + traj.tQR;
+            const animDuration = 3000; // ms for full animation
+            const startTime = performance.now();
+
+            // Store trail points
+            let trailPQ = [];
+            let trailQR = [];
+            let particlePos = { x: 0, y: 0 };
+            let currentPhase = 'PQ'; // or 'QR'
+
+            function animate(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / animDuration, 1);
+
+                // --- Redraw static background ---
+                drawStaticDiagram(p);
+
+                // --- Determine current position ---
+                let tWorld; // world time
+                if (progress <= traj.tPQ / totalTime) {
+                    // Phase P→Q
+                    tWorld = (progress * totalTime);
+                    currentPhase = 'PQ';
+                    particlePos.x = traj.v0x * tWorld;
+                    particlePos.y = p.h - (p.v0 * Math.sin(p.angle * Math.PI / 180) * tWorld + 0.5 * g * tWorld * tWorld);
+                    trailPQ.push({ ...particlePos });
+                } else {
+                    // Phase Q→R
+                    tWorld = progress * totalTime - traj.tPQ;
+                    currentPhase = 'QR';
+                    particlePos.x = traj.dPQ + traj.v0x * tWorld;
+                    particlePos.y = traj.vy_after * tWorld - 0.5 * g * tWorld * tWorld;
+                    trailQR.push({ ...particlePos });
+                }
+
+                // --- Draw trails ---
+                if (trailPQ.length > 1) {
+                    ctx.strokeStyle = '#f59e0b';
+                    ctx.lineWidth = 3;
+                    ctx.globalAlpha = 0.6;
+                    ctx.beginPath();
+                    const first = toCanvas(trailPQ[0].x, trailPQ[0].y);
+                    ctx.moveTo(first.x, first.y);
+                    for (let i = 1; i < trailPQ.length; i++) {
+                        const cp = toCanvas(trailPQ[i].x, trailPQ[i].y);
+                        ctx.lineTo(cp.x, cp.y);
+                    }
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+                if (trailQR.length > 1) {
+                    ctx.strokeStyle = '#22d3ee';
+                    ctx.lineWidth = 3;
+                    ctx.globalAlpha = 0.6;
+                    ctx.beginPath();
+                    const first = toCanvas(trailQR[0].x, trailQR[0].y);
+                    ctx.moveTo(first.x, first.y);
+                    for (let i = 1; i < trailQR.length; i++) {
+                        const cp = toCanvas(trailQR[i].x, trailQR[i].y);
+                        ctx.lineTo(cp.x, cp.y);
+                    }
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+
+                // --- Draw particle ---
+                const pos = toCanvas(particlePos.x, Math.max(particlePos.y, 0));
+                // Glow
+                const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 16);
+                gradient.addColorStop(0, currentPhase === 'PQ' ? 'rgba(245,158,11,0.7)' : 'rgba(34,211,238,0.7)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2);
+                ctx.fill();
+                // Particle
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // --- Bounce flash at Q ---
+                if (currentPhase === 'QR' && trailQR.length < 5) {
+                    ctx.fillStyle = 'rgba(239,68,68,0.5)';
+                    const qPos = toCanvas(traj.dPQ, 0);
+                    ctx.beginPath();
+                    ctx.arc(qPos.x, qPos.y, 12 + trailQR.length * 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // --- Continue or finish ---
+                if (progress < 1) {
+                    animFrame = requestAnimationFrame(animate);
+                } else {
+                    document.getElementById('playBtn').innerHTML =
+                        '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play';
+                }
+            }
+
+            document.getElementById('playBtn').innerHTML =
+                '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Playing...';
+            animFrame = requestAnimationFrame(animate);
+        }
+
+        function resetSimulation() {
+            if (animFrame) cancelAnimationFrame(animFrame);
+            animFrame = null;
+            document.getElementById('playBtn').innerHTML =
+                '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play';
+            updateSimulation();
+        }
+
+        /* ======================================================
+         *  MULTIPLE CHOICE INTERACTION
+         * ====================================================== */
+        function selectOption(btn) {
+            const val = btn.getAttribute('data-value');
+            const fb = document.getElementById('feedbackMsg');
+            const allBtns = document.querySelectorAll('.option-btn');
+
+            // Reset all buttons
+            allBtns.forEach(b => {
+                b.classList.remove('correct', 'wrong');
+            });
+
+            if (val === CORRECT_ANSWER) {
+                btn.classList.add('correct');
+                fb.textContent = '✓ Correct! The horizontal distance QR is 26.0 m. Well done!';
+                fb.className = 'mt-3 text-sm font-medium text-green-400';
+                fb.classList.remove('hidden');
+            } else {
+                btn.classList.add('wrong');
+                fb.textContent = '✗ Not quite. Try again, or follow the step-by-step solution below!';
+                fb.className = 'mt-3 text-sm font-medium text-red-400';
+                fb.classList.remove('hidden');
+                // Remove wrong highlight after 1.5s
+                setTimeout(() => btn.classList.remove('wrong'), 1500);
+            }
+        }
+
+        /* ======================================================
+         *  STEP-BY-STEP GUIDE INTERACTION
+         * ====================================================== */
+        let revealedSteps = new Set();
+
+        function revealStep(n) {
+            const content = document.getElementById('step' + n + 'Content');
+            const btn = document.getElementById('step' + n + 'Btn');
+
+            if (revealedSteps.has(n)) {
+                // Toggle off
+                content.classList.remove('revealed');
+                btn.classList.remove('active', 'completed');
+                btn.classList.add('');
+                revealedSteps.delete(n);
+            } else {
+                // Reveal this step
+                content.classList.add('revealed');
+                btn.classList.add('active', 'completed');
+                btn.classList.remove('');
+                revealedSteps.add(n);
+            }
+        }
+
+        function revealAllSteps() {
+            for (let i = 1; i <= 6; i++) {
+                const content = document.getElementById('step' + i + 'Content');
+                const btn = document.getElementById('step' + i + 'Btn');
+                content.classList.add('revealed');
+                btn.classList.add('completed');
+                revealedSteps.add(i);
+            }
+        }
+
+        /* ======================================================
+         *  HINT TOGGLE
+         * ====================================================== */
+        function toggleHint(n) {
+            const hint = document.getElementById('hint' + n);
+            hint.classList.toggle('show');
+        }
+
+        /* ======================================================
+         *  INIT: draw the static diagram on page load
+         * ====================================================== */
+        window.addEventListener('load', () => {
+            updateSimulation();
+        });
+
+        // Handle canvas resize for responsiveness
+        window.addEventListener('resize', () => {
+            updateSimulation();
+        });
+    </script>
+</body>
+</html>

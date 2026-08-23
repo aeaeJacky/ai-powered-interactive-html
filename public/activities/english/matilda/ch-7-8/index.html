@@ -40,13 +40,6 @@
     .cell:hover, .cell:focus-visible { background: #f3f0df; outline: none; }
     .cell.selected { background: var(--yellow); }
     .cell.found { color: var(--ink); }
-    .cell.found-brain { background: #f3a6a6; }
-    .cell.found-sawdust { background: #a9d99a; }
-    .cell.found-bingo { background: #c6b5ee; }
-    .cell.found-garage { background: #f1cf68; }
-    .cell.found-oil { background: #9ed8e6; }
-    .cell.found-brain.found-sawdust { background: linear-gradient(135deg, #f3a6a6 0 50%, #a9d99a 50% 100%); }
-    .cell.found-brain.found-bingo { background: linear-gradient(135deg, #f3a6a6 0 50%, #c6b5ee 50% 100%); }
     .cell.preview { background: var(--blue); }
     .cell.found::after { content: ''; position: absolute; inset: 9%; border: 2px solid rgba(32, 53, 27, .42); border-radius: 50%; pointer-events: none; }
     .word-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
@@ -73,15 +66,15 @@
 <body>
   <main class="page">
     <nav class="chapter-nav" aria-label="Chapter selector">
-      <a href="index.html" class="current">Ch 1–2</a>
-      <a href="ch-3-4/index.html">Ch 3–4</a>
-      <a href="ch-5-6/index.html">Ch 5–6</a>
-      <a href="ch-7-8/index.html">Ch 7–8</a>
-      <a href="ch-9-10/index.html">Ch 9–10</a>
-      <a href="ch-11-12/index.html">Ch 11–12</a>
+      <a href="../index.html">Ch 1–2</a>
+      <a href="../ch-3-4/index.html">Ch 3–4</a>
+      <a href="../ch-5-6/index.html">Ch 5–6</a>
+      <a href="../ch-7-8/index.html" class="current">Ch 7–8</a>
+      <a href="../ch-9-10/index.html">Ch 9–10</a>
+      <a href="../ch-11-12/index.html">Ch 11–12</a>
     </nav>
     <header>
-      <p class="eyebrow">Chapter 1 and Chapter 2</p>
+      <p class="eyebrow">Chapter 7 and Chapter 8</p>
       <h1>What Can You Remember?</h1>
       <p class="subtitle">Matilda · Find the words</p>
     </header>
@@ -90,7 +83,7 @@
         <h2>Find the hidden words</h2>
         <p class="instruction">Click the first letter, then click the last letter. Words can go across or down.</p>
         <div class="grid-wrap"><div id="grid" class="grid" role="grid" aria-label="10 by 10 word-search grid"></div></div>
-        <p id="status" class="status" aria-live="polite"><strong>0 of 5</strong> words found</p>
+        <p id="status" class="status" aria-live="polite"><strong>0 of 6</strong> words found</p>
         <div id="complete" class="complete">Well done! You found every word.</div>
         <div class="actions"><button class="action" id="hintBtn" type="button">Give me a hint</button><button class="action" id="resetBtn" type="button">Start again</button></div>
         <div id="hint" class="hint" hidden></div>

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HKDSE 中文科 — 十二篇指定文言文小測試</title>
+<style>
+:root{--bg:#f5f0e8;--bg2:#fffdf7;--bg3:#ede7d9;--text:#2c1810;--text2:#5a3e2b;--accent:#8b2500;--accent2:#c0392b;--green:#1a6b3c;--green2:#27ae60;--blue:#1a5276;--blue2:#2980b9;--gold:#b8860b;--border:#c9b99a;--shadow:rgba(44,24,16,.1);--card:#fffdf7}
+[data-theme="dark"]{--bg:#1a1210;--bg2:#2a1f18;--bg3:#33261c;--text:#e8ddd0;--text2:#c4b5a0;--accent:#e74c3c;--accent2:#ff6b5a;--green:#2ecc71;--green2:#58d68d;--blue:#5dade2;--blue2:#85c1e9;--gold:#f4d03f;--border:#5a4a3a;--shadow:rgba(0,0,0,.3);--card:#2a1f18}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;background:var(--bg);color:var(--text);line-height:1.8;transition:background .3s,color .3s}
+::selection{background:var(--accent);color:#fff}
+header{background:linear-gradient(135deg,#8b2500,#5a1a00);color:#fff;padding:2rem 1rem;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px var(--shadow)}
+header h1{font-size:clamp(1.4rem,4vw,2.2rem);letter-spacing:.1em;margin-bottom:.3rem}
+header p{opacity:.85;font-size:.95rem}
+.topbar{display:flex;justify-content:center;gap:.8rem;margin-top:.8rem;flex-wrap:wrap}
+.topbar button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:.35rem 1rem;border-radius:20px;cursor:pointer;font-size:.85rem;transition:.2s}
+.topbar button:hover,.topbar button.active{background:rgba(255,255,255,.3)}
+.nav{background:var(--bg3);border-bottom:2px solid var(--border);padding:.5rem 1rem;overflow-x:auto;white-space:nowrap;position:sticky;top:0;z-index:99;display:flex;gap:.4rem}
+.nav a{display:inline-block;padding:.4rem .9rem;border-radius:16px;text-decoration:none;color:var(--text2);font-size:.82rem;border:1px solid transparent;transition:.2s}
+.nav a:hover,.nav a.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.container{max-width:960px;margin:0 auto;padding:1rem}
+.text-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:1.5rem 0;box-shadow:0 2px 8px var(--shadow);overflow:hidden;transition:.3s}
+.text-card:hover{box-shadow:0 4px 16px var(--shadow)}
+.card-header{background:linear-gradient(135deg,var(--accent),#5a1a00);color:#fff;padding:1.2rem 1.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.card-header h2{font-size:1.15rem;letter-spacing:.05em}
+.card-header .badge{background:rgba(255,255,255,.2);padding:.2rem .6rem;border-radius:10px;font-size:.75rem}
+.card-header .arrow{font-size:1.2rem;transition:transform .3s}
+.text-card.open .arrow{transform:rotate(180deg)}
+.card-body{display:none;padding:1.5rem}
+.text-card.open .card-body{display:block}
+.section{margin-bottom:1.5rem}
+.section-title{font-size:1rem;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:.3rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;cursor:pointer}
+.original-text{background:var(--bg3);padding:1rem 1.2rem;border-radius:8px;font-size:1.05rem;line-height:2;border-left:4px solid var(--accent)}
+.translation-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.translation-grid{grid-template-columns:1fr}}
+.trans-col{background:var(--bg3);padding:1rem;border-radius:8px}
+.trans-col h4{color:var(--blue);margin-bottom:.5rem;font-size:.9rem}
+.trans-col p{font-size:.92rem;line-height:1.9}
+.vocab-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.vocab-table th{background:var(--accent);color:#fff;padding:.5rem;text-align:left}
+.vocab-table td{padding:.5rem;border-bottom:1px solid var(--border)}
+.vocab-table tr:nth-child(even){background:var(--bg3)}
+.vocab-table tr:hover{background:var(--bg2)}
+.key-points{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:640px){.key-points{grid-template-columns:1fr}}
+.key-point{background:var(--bg3);padding:.8rem 1rem;border-radius:8px;border-left:3px solid var(--green)}
+.key-point h5{color:var(--green);margin-bottom:.3rem;font-size:.85rem}
+.key-point p{font-size:.85rem;color:var(--text2)}
+.quiz-section{background:var(--bg3);border-radius:8px;padding:1.2rem;margin-top:1rem}
+.quiz-section h4{color:var(--accent);margin-bottom:.8rem}
+.quiz-q{margin-bottom:1rem}
+.quiz-q p{font-weight:600;margin-bottom:.5rem;font-size:.92rem}
+.quiz-q label{display:block;padding:.4rem .8rem;margin:.2rem 0;border-radius:6px;cursor:pointer;font-size:.88rem;transition:.2s;border:1px solid var(--border);background:var(--card)}
+.quiz-q label:hover{border-color:var(--accent)}
+.quiz-q input[type="radio"]{margin-right:.5rem}
+.quiz-q label.correct{background:#d4edda;border-color:var(--green)}
+.quiz-q label.wrong{background:#f8d7da;border-color:var(--accent2)}
+.quiz-q .feedback{display:none;margin-top:.4rem;padding:.5rem;border-radius:6px;font-size:.85rem}
+.quiz-q .feedback.show{display:block}
+.quiz-q .feedback.correct-fb{background:#d4edda;color:var(--green)}
+.quiz-q .feedback.wrong-fb{background:#f8d7da;color:var(--accent2)}
+.quiz-btn{background:var(--accent);color:#fff;border:none;padding:.6rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.9rem;margin-top:.5rem;transition:.2s}
+.quiz-btn:hover{background:var(--accent2)}
+.score-bar{background:var(--bg);border-radius:20px;height:8px;margin-top:.5rem;overflow:hidden}
+.score-bar .fill{height:100%;background:var(--green2);transition:width .5s;border-radius:20px}
+.progress-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin:1rem 0}
+.progress-section h3{color:var(--accent);margin-bottom:.8rem;font-size:1rem}
+.progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:.5rem}
+.progress-dot{width:100%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:2px solid var(--border);color:var(--text2);transition:.3s;cursor:pointer;background:var(--bg3)}
+.progress-dot.read{background:var(--green2);border-color:var(--green);color:#fff}
+.progress-dot.quiz-done{background:var(--blue2);border-color:var(--blue);color:#fff}
+.summary-box{background:var(--bg3);padding:1rem 1.2rem;border-radius:8px;border:1px dashed var(--gold);margin:.8rem 0}
+.summary-box h5{color:var(--gold);margin-bottom:.4rem}
+.tab-row{display:flex;gap:0;margin-bottom:1rem;border-bottom:2px solid var(--border)}
+.tab-btn{flex:1;padding:.5rem;text-align:center;cursor:pointer;font-size:.85rem;border:none;background:transparent;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.tab-content{display:none}.tab-content.active{display:block}
+footer{text-align:center;padding:2rem 1rem;color:var(--text2);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
+.back-top{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;border:none;font-size:1.2rem;cursor:pointer;display:none;box-shadow:0 2px 8px var(--shadow);z-index:50}
+.back-top.show{display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<header>
+<h1>十二篇指定文言文 小測試</h1>
+<p>HKDSE 中文科 — 原文 · 語譯 · 詞解 · 重點 · 練習</p>
+<div class="topbar">
+<button onclick="toggleTheme()" id="themeBtn">🌙 暗色模式</button>
+<button onclick="scrollToProgress()">📊 學習進度</button>
+<button onclick="expandAll()">📖 全部展開</button>
+<button onclick="collapseAll()">📕 全部收起</button>
+</div>
+</header>
+<div class="nav" id="textNav">
+<a href="#t1">一·論語</a><a href="#t2">二·孟子</a><a href="#t3">三·莊子</a><a href="#t4">四·荀子</a>
+<a href="#t5">五·史記</a><a href="#t6">六·出師表</a><a href="#t7">七·始得西山</a><a href="#t8">八·師說</a>
+<a href="#t9">九·唐詩</a><a href="#t10">十·岳陽樓記</a><a href="#t11">十一·六國論</a><a href="#t12">十二·詞三首</a>
+</div>
+<div class="container">
+<div class="progress-section" id="progressSection">
+<h3>📊 學習進度 <span style="font-weight:400;font-size:.8rem;color:var(--text2)" id="progressText"></span></h3>
+<div class="progress-grid" id="progressGrid"></div>
+<div class="score-bar" style="margin-top:.8rem"><div class="fill" id="progressBar" style="width:0%"></div></div>
+</div>
+
+<!-- TEXT 1: 論語 -->
+<div class="text-card open" id="t1">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>一、《論語》選 — 論仁、論孝、論君子</h2>
+<span><span class="badge">先秦</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">《論語》是記錄孔子及其弟子言行的語錄體散文集。本選篇十六則語錄，集中論述「仁」「孝」與「君子」三大核心概念。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t1','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t1','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t1','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t1','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t1-orig"><div class="original-text">
+子曰：「巧言令色，鮮矣仁！」<br>子曰：「人而不仁，如禮何？人而不仁，如樂何？」<br>子曰：「朝聞道，夕死可矣。」<br>子曰：「士志於道，而恥惡衣惡食者，未足與議也。」<br>子曰：「參乎！吾道一以貫之。」曾子曰：「唯。」<br>子曰：「君子喻於義，小人喻於利。」<br>子曰：「見賢思齊焉，見不賢而內自省也。」<br>子曰：「父母在，不遠遊，遊必有方。」<br>子曰：「三年無改於父之道，可謂孝矣。」<br>子曰：「君子食無求飽，居無求安，敏於事而慎於言，就有道而正焉，可謂好學也已。」<br>子曰：「不患人之不己知，患不知人也。」<br>子曰：「君子不器。」<br>子曰：「君子坦蕩蕩，小人長戚戚。」<br>子曰：「質勝文則野，文勝質則史。文質彬彬，然後君子。」<br>子曰：「克己復禮為仁。一日克己復禮，天下歸仁焉。」<br>子曰：「仁遠乎哉？我欲仁，斯仁至矣。」
+</div></div>
+<div class="tab-content" id="t1-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>孔子說：「花言巧語、裝出和善臉色的人，仁德是很少的。」孔子說：「一個人如果不仁，禮制對他有什麼用？」孔子說：「早上得知真理，晚上死去也可以。」孔子說：「讀書人有志於追求真理，卻以穿破衣吃粗食為恥的人，不值得與他談論。」孔子說：「我的學說有一個貫穿的核心。」孔子說：「君子通曉的是義，小人通曉的是利。」孔子說：「見到賢人就想著向他看齊，見到不賢的人就反省自己。」孔子說：「父母在世時不去遠方遊歷，如果要去必須有明確方向。」孔子說：「父親去世後三年不改變父親生前的正道，可以說是孝了。」孔子說：「君子飲食不求飽足，居處不求安逸，做事勤敏說話謹慎，向有道之人請教端正自己。」孔子說：「不怕別人不知道自己，只怕自己不了解別人。」孔子說：「君子不像器具那樣只有單一用途。」孔子說：「君子心胸坦蕩，小人常常憂愁。」孔子說：「質樸超過文采就顯得粗野，文采超過質樸就顯得浮誇。文質兼備才是君子。」孔子說：「克制自己回歸禮制就是仁。一旦做到，天下人都會稱許你是仁人。」孔子說：「仁離我們遠嗎？我想要仁，仁就來了。」</p></div>
+<div class="trans-col"><h4>English</h4><p>Confucius said: "A person of clever words and pleasant countenance has little benevolence." "If one learns the Way in the morning, one may die content in the evening." "The gentleman understands what is right; the petty person understands what is profitable." "When you see a worthy person, think of emulating them." "While your parents are alive, do not travel far." "The gentleman is not a utensil — he is not limited to one use." "The gentleman is broad-minded; the petty person is always anxious." "When substance exceeds refinement, one is coarse; when refinement exceeds substance, one is superficial. Only when both are balanced is one a gentleman." "To restrain oneself and return to propriety — that is benevolence."</p></div></div></div>
+<div class="tab-content" id="t1-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>令色</td><td>lìng sè</td><td>裝出美好的臉色</td></tr>
+<tr><td>鮮</td><td>xiǎn</td><td>少</td></tr>
+<tr><td>喻</td><td>yù</td><td>明白、通曉</td></tr>
+<tr><td>齊</td><td>qí</td><td>看齊、向他學習</td></tr>
+<tr><td>器</td><td>qì</td><td>器具（比喻只有某種用途）</td></tr>
+<tr><td>坦蕩蕩</td><td>tǎn dàng dàng</td><td>心胸寬廣安詳</td></tr>
+<tr><td>質</td><td>zhì</td><td>質樸的本質</td></tr>
+<tr><td>文</td><td>wén</td><td>文采、修飾</td></tr>
+<tr><td>彬彬</td><td>bīn bīn</td><td>文質兼備的樣子</td></tr>
+<tr><td>克己</td><td>kè jǐ</td><td>約束自己</td></tr>
+<tr><td>歸仁</td><td>guī rén</td><td>稱許為仁人</td></tr>
+</table></div>
+<div class="tab-content" id="t1-keys">
+<div class="key-points">
+<div class="key-point"><h5>「仁」的内涵</h5><p>仁是孔子思想核心。巧言令色者缺少仁心；仁與禮樂密不可分；仁並非遙不可及。</p></div>
+<div class="key-point"><h5>「孝」的要求</h5><p>父母在世不遠遊；父親去世後三年不改其正道。</p></div>
+<div class="key-point"><h5>「君子」形象</h5><p>通曉道義、不拘一格、心胸坦蕩、文質彬彬、好學不倦。</p></div>
+<div class="key-point"><h5>寫作手法</h5><p>語錄體、對比（君子vs小人）、反問、層層遞進式說理。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">重點名句：「朝聞道，夕死可矣」「君子喻於義，小人喻於利」「克己復禮為仁」「文質彬彬，然後君子」。注意「鮮」「喻」「器」「克」等字的古今異義。</p></div>
+</div>
+</div>
+<div class="quiz-section" id="quiz-t1">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="1"><p>1. 「鮮矣仁」中「鮮」的意思是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q1_1" value="0">A. 新鮮</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q1_1" value="1">B. 少</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q1_1" value="2">C. 鮮美</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q1_1" value="3">D. 顯眼</label>
+<div class="feedback">「鮮」此處讀xiǎn，意為「少」。</div></div>
+<div class="quiz-q" data-answer="1"><p>2. 「君子不器」的含義是？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q1_2" value="0">A. 君子不用器具</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q1_2" value="1">B. 君子不應像器具只有單一用途</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q1_2" value="2">C. 君子看不起器具</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q1_2" value="3">D. 君子要使用各種器具</label>
+<div class="feedback">孔子認為君子應博學多能，不應局限于某一專長。</div></div>
+<div class="quiz-q" data-answer="2"><p>3. 下列哪句體現「孝」的思想？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q1_3" value="0">A. 朝聞道，夕死可矣</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q1_3" value="1">B. 君子喻於義</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q1_3" value="2">C. 父母在，不遠遊</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q1_3" value="3">D. 克己復禮為仁</label>
+<div class="feedback">「父母在，不遠遊，遊必有方」直接闡述孝道。</div></div>
+<button class="quiz-btn" onclick="showScore('t1',3)">查看分數</button>
+<div id="score-t1" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 2: 孟子 -->
+<div class="text-card" id="t2">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>二、《孟子》選 — 魚我所欲也</h2>
+<span><span class="badge">先秦</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">本篇以「魚與熊掌」為喻，論證「捨生取義」的道理。孟子善用比喻論證、排比反問，氣勢充沛。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t2','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t2','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t2','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t2','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t2-orig"><div class="original-text">
+魚，我所欲也；熊掌，亦我所欲也。二者不可得兼，捨魚而取熊掌者也。生，亦我所欲也；義，亦我所欲也。二者不可得兼，捨生而取義者也。生亦我所欲，所欲有甚於生者，故不為苟得也；死亦我所惡，所惡有甚於死者，故患有所不辟也。如使人之所欲莫甚於生，則凡可以得生者，何不用也？使人之所惡莫甚於死者，則凡可以辟患者，何不為也？由是則生而有不用也，由是則可以辟患而有不為也。是故所欲有甚於生者，所惡有甚於死者。非獨賢者有是心也，人皆有之，賢者能勿喪耳。一簞食，一豆羹，得之則生，弗得則死。呼爾而與之，行道之人弗受；蹴爾而與之，乞人不屑也。萬鍾則不辯禮義而受之，萬鍾於我何加焉！為宮室之美、妻妾之奉、所識窮乏者得我與？鄉為身死而不受，今為宮室之美為之；鄉為身死而不受，今為妻妾之奉為之；鄉為身死而不受，今為所識窮乏者得我而為之：是亦不可以已乎？此之謂失其本心。
+</div></div>
+<div class="tab-content" id="t2-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>魚是我想要的，熊掌也是我想要的。兩者不能兼得，就捨棄魚而選擇熊掌。生命是我想要的，正義也是我想要的。兩者不能兼得，就犧牲生命而選擇正義。生命是我想要的，但我想要的還有比生命更重要的，所以不做苟且偷生的事；死亡是我厭惡的，但我厭惡的還有比死亡更嚴重的，所以有些禍患不躲避。如果人想要的沒有比生命更重要的，那凡是可以求得生存的手段為什麼不用呢？如果人厭惡的沒有比死亡更嚴重的，那凡是可以避免禍患的事為什麼不做呢？用這樣的手段就能生存但有人不用，用這樣的方法就能避免禍患但有人不做。這是因為他們想要的有比生命更重要的，厭惡的有比死亡更嚴重的。不只是賢德的人有這種心，每個人都有，賢者只是不喪失它罷了。一簞飯一碗湯，得到了就能活，得不到就會死。吆喝著給人，路上的饑民也不接受；用腳踢給人，乞丐也不屑。如果為了一萬鍾的俸祿就不辨禮義地接受，那一萬鍾對我有什麼好處呢！難道是為了華美的住宅、妻妾的侍奉、讓窮人感激我嗎？從前寧死也不接受的，現在卻為了華美的住宅而接受了；從前寧死也不接受的，現在卻為了妻妾的侍奉而接受了；從前寧死也不接受的，現在卻為了讓窮人感激我而接受了：這些難道不該停止嗎？這就叫做喪失了人的本性。</p></div>
+<div class="trans-col"><h4>English</h4><p>Fish is what I desire; bear's paw is also what I desire. If I cannot have both, I give up fish and choose bear's paw. Life is what I desire; righteousness is also what I desire. If I cannot have both, I give up life and choose righteousness. There are things I desire more than life, so I will not engage in dishonorable survival. There are things I detest more than death, so there are calamities I will not avoid. Everyone has this heart; the worthy simply do not lose it. A basket of rice, a bowl of soup — given with a shout, a passerby will not accept; kicked at a beggar, even a beggar will disdain it. But for ten thousand measures of grain, some accept without regard to propriety — should this not be stopped? This is called losing one's original heart.</p></div></div></div>
+<div class="tab-content" id="t2-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>得兼</td><td>dé jiān</td><td>同時得到</td></tr>
+<tr><td>苟得</td><td>gǒu dé</td><td>苟且求得生存</td></tr>
+<tr><td>辟</td><td>bì</td><td>同「避」，躲避</td></tr>
+<tr><td>簞</td><td>dān</td><td>盛飯的圓形竹器</td></tr>
+<tr><td>蹴</td><td>cù</td><td>用腳踢</td></tr>
+<tr><td>萬鍾</td><td>wàn zhōng</td><td>萬鍾俸祿</td></tr>
+<tr><td>辯</td><td>biàn</td><td>同「辨」，辨別</td></tr>
+<tr><td>鄉</td><td>xiàng</td><td>同「向」，從前</td></tr>
+<tr><td>得我</td><td>dé wǒ</td><td>感激我（得通「德」）</td></tr>
+<tr><td>本心</td><td>běn xīn</td><td>人原本的善心、羞惡之心</td></tr>
+</table></div>
+<div class="tab-content" id="t2-keys">
+<div class="key-points">
+<div class="key-point"><h5>核心論點</h5><p>「捨生取義」——當生命與正義不可兼得時，應選擇正義。</p></div>
+<div class="key-point"><h5>比喻論證</h5><p>以「魚與熊掌」比喻「生與義」，化抽象為具體。</p></div>
+<div class="key-point"><h5>對比論證</h5><p>「嗟來之食」vs「萬鍾則不辯禮義而受之」，古今對比。</p></div>
+<div class="key-point"><h5>排比反問</h5><p>三組「鄉為……今為……」排比，增強批判力度。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">必背：「捨生取義」「呼爾而與之，行道之人弗受；蹴爾而與之，乞人不屑也」。通假字：辟=避、鄉=向、得=德。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t2">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="1"><p>1. 本文的核心論點是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q2_1" value="0">A. 生命比一切都重要</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q2_1" value="1">B. 捨生取義</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q2_1" value="2">C. 人應珍惜生命</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q2_1" value="3">D. 熊掌比魚更珍貴</label>
+<div class="feedback">「捨生取義」是全文核心論點。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「蹴爾而與之」中「蹴」的意思是？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q2_2" value="0">A. 手拿</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q2_2" value="1">B. 丟擲</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q2_2" value="2">C. 用腳踢</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q2_2" value="3">D. 彎腰撿</label>
+<div class="feedback">「蹴」意為用腳踢，形容對人的極大不尊重。</div></div>
+<div class="quiz-q" data-answer="0"><p>3. 「鄉為身死而不受」中「鄉」通什麼？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q2_3" value="0">A. 向（從前）</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q2_3" value="1">B. 鄉村</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q2_3" value="2">C. 方向</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q2_3" value="3">D. 響</label>
+<div class="feedback">「鄉」通「向」，意為從前、以往。</div></div>
+<button class="quiz-btn" onclick="showScore('t2',3)">查看分數</button>
+<div id="score-t2" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 3: 莊子 -->
+<div class="text-card" id="t3">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>三、《莊子》選 — 逍遙遊（節錄）</h2>
+<span><span class="badge">先秦</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">〈逍遙遊〉為《莊子》首篇，以大瓠和不龜手藥的寓言說明「無用之用」，追求精神自由的逍遙境界。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t3','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t3','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t3','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t3','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t3-orig"><div class="original-text">
+惠子謂莊子曰：「魏王貽我大瓠之種，我樹之成而實五石。以盛水漿，其堅不能自舉也。剖之以為瓢，則瓠落無所容。非不呺然大也，吾為其無用而掊之。」莊子曰：「夫子固拙於用大矣。宋人有善為不龜手之藥者，世世以洴澼絖為事。客聞之，請買其方百金。聚族而謀曰：『我世世為洴澼絖，不過數金；今一朝而鬻技百金，請與之。』客得之，以說吳王。越有難，吳王使之將，冬與越人水戰，大敗越人，裂地而封之。能不龜手一也，或以封，或不免於洴澼絖，則所用之異也。今子有五石之瓠，何不慮以為大樽而浮乎江湖，而憂其落無所容？則夫子猶有蓬之心也夫！」
+</div></div>
+<div class="tab-content" id="t3-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>惠子對莊子說：「魏王送我大葫蘆的種子，我種植後結出的果實能容納五石。用來盛水，堅固程度不夠；剖開做瓢，又太大沒地方放。它不是不夠大嗎？我因為它沒用而打碎了。」莊子說：「先生真是不善用大的東西啊。宋國有一個善於製作防凍裂藥的人，世世代代從事漂洗絲絮。有人出百金買他的藥方，全家商量後賣了。那人拿到藥方去游說吳王，冬天水戰大敗越軍，被封地賞賜。同一個藥方，有人因此封地，有人只能漂洗絲絮，這是使用方法不同。你有五石容量的葫蘆，為什麼不把它當腰舟浮在江湖上，反而擔心太大沒地方放呢？看來先生的心還是被蓬草堵塞了！」</p></div>
+<div class="trans-col"><h4>English</h4><p>Hui Zi said to Zhuangzi: "The King of Wei gave me giant gourd seeds. They bore fruit large enough to hold five shi, but too heavy to lift. Cut into ladles, they were too large for anything. I smashed them for being useless." Zhuangzi replied: "You are clumsy with large things! A Song family had a chilblain medicine — generations washed silk floss for meager pay. A visitor offered 100 gold for the recipe; they sold it. He used it to persuade the King of Wu, winning a naval battle and earning a fief. The same medicine — one gained a fief, others washed silk floss. The difference was in application. You have a five-shi gourd — why not tie it to your waist and float on rivers and lakes instead of worrying it holds nothing? Your mind is still clogged with weeds!"</p></div></div></div>
+<div class="tab-content" id="t3-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>貽</td><td>yí</td><td>贈送</td></tr>
+<tr><td>實</td><td>shí</td><td>容積</td></tr>
+<tr><td>呺然</td><td>hāo rán</td><td>巨大而空虛的樣子</td></tr>
+<tr><td>掊</td><td>póu</td><td>擊碎</td></tr>
+<tr><td>不龜手</td><td>bù jūn shǒu</td><td>使手不使手不凍裂（龜通「皸」）</td></tr>
+<tr><td>洴澼絖</td><td>píng pì kuàng</td><td>漂洗絲絮</td></tr>
+<tr><td>鬻</td><td>yù</td><td>賣</td></tr>
+<tr><td>大樽</td><td>dà zūn</td><td>腰舟（綁在腰間渡水的器物）</td></tr>
+<tr><td>蓬之心</td><td>péng zhī xīn</td><td>心被蓬草堵塞，比喻不通達</td></tr>
+</table></div>
+<div class="tab-content" id="t3-keys">
+<div class="key-points">
+<div class="key-point"><h5>「無用之用」</h5><p>大瓠看似無用，卻可當腰舟浮於江湖。批判功利主義價值觀。</p></div>
+<div class="key-point"><h5>寓言論證</h5><p>以大瓠、不龜手藥等寓言說理，想像奇特，體現莊子風格。</p></div>
+<div class="key-point"><h5>逍遙精神</h5><p>超越世俗功利束縛，追求精神自由逍遙。</p></div>
+<div class="key-point"><h5>對話體</h5><p>以莊子與惠子辯論推進，借惠子之「拙」反襯莊子之「巧」。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">重點詞：龜=皸、鬻=賣、蓬=不通達。同一事物因使用者不同而有不同價值。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t3">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="2"><p>1. 惠子把大瓠打碎的原因是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q3_1" value="0">A. 不夠大</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q3_1" value="1">B. 被蟲蛀了</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q3_1" value="2">C. 覺得沒有用處</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q3_1" value="3">D. 莊子叫他打碎</label>
+<div class="feedback">惠子認為大瓠「無用」而將其打碎。</div></div>
+<div class="quiz-q" data-answer="1"><p>2. 不龜手藥的故事說明什麼道理？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q3_2" value="0">A. 藥方很值錢</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q3_2" value="1">B. 同一事物因使用方式不同而有不同結果</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q3_2" value="2">C. 宋國人很笨</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q3_2" value="3">D. 吳王很有錢</label>
+<div class="feedback">同一藥方，用法不同結果迥異。</div></div>
+<div class="quiz-q" data-answer="3"><p>3. 莊子建議把大瓠當作什麼？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q3_3" value="0">A. 水缸</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q3_3" value="1">B. 瓢勺</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q3_3" value="2">C. 屋頂</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q3_3" value="3">D. 腰舟</label>
+<div class="feedback">莊子建議把它繫在腰間當腰舟漂浮江湖。</div></div>
+<button class="quiz-btn" onclick="showScore('t3',3)">查看分數</button>
+<div id="score-t3" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 4: 荀子 -->
+<div class="text-card" id="t4">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>四、《荀子》選 — 勸學（節錄）</h2>
+<span><span class="badge">先秦</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">〈勸學〉論證學習的重要性與正確方法，善用比喻和排比，層層推進，是古代論說文典範。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t4','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t4','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t4','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t4','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t4-orig"><div class="original-text">
+君子曰：學不可以已。青，取之於藍，而青於藍；冰，水為之，而寒於水。木直中繩，輮以為輪，其曲中規。雖有槁暴，不復挺者，輮使之然也。故木受繩則直，金就礪則利，君子博學而日參省乎己，則知明而行無過矣。<br>吾嘗終日而思矣，不如須臾之所學也；吾嘗跂而望矣，不如登高之博見也。登高而招，臂非加長也，而見者遠；順風而呼，聲非加疾也，而聞者彰。假輿馬者，非利足也，而致千里；假舟楫者，非能水也，而絕江河。君子生非異也，善假於物也。<br>積土成山，風雨興焉；積水成淵，蛟龍生焉；積善成德，而神明自得，聖心備焉。故不積跬步，無以至千里；不積小流，無以成江海。騏驥一躍，不能十步；駑馬十駕，鍥而不舍，鍥而舍之，朽木不折；鍥而不舍，金石可鏤。
+</div></div>
+<div class="tab-content" id="t4-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>君子說：學習不可以停止。青色從藍草中提取，但比藍草更青；冰由水凝結，但比水更冷。木材筆直合乎墨線，用火烤彎做成車輪，即使再曬也不會挺直。所以木材經墨線校正就能變直，刀劍在磨石上磨就會鋒利。君子廣泛學習並每天反省自己，就能智慧明達而行無過。我曾經整天思考，不如片刻學習的收穫大；踮腳遠望不如登上高處看得廣闊。登高招手手臂並沒加長但遠處可見；順風呼喊聲音沒加大但聽者更清楚。借助車馬不是腳快但能到千里；借助舟船不是會游泳但能渡江河。君子本性與人無異，只不過善於借助外物。堆土成山風雨興起；積水成淵蛟龍生長；積善成德聖心具備。不積半步無法到千里；不積小流無法成江海。駿馬一跳不能十步；劣馬走十天也能走很遠。雕刻不停，金石也能刻穿。</p></div>
+<div class="trans-col"><h4>English</h4><p>The gentleman says: Learning must never cease. Blue is extracted from indigo yet bluer than indigo; ice is made from water yet colder than water. Wood becomes straight under the plumb line; metal is sharpened on the whetstone. The gentleman learns broadly and examines himself daily, achieving clear wisdom and faultless conduct. I have thought all day, but a moment of study is more useful. Standing on tiptoe cannot match climbing high for a wide view. Those using chariots reach a thousand li; those using boats cross rivers — the gentleman is not different by nature; he is simply good at making use of external aids. Piling earth creates a mountain; accumulating water creates a deep pool. Without small steps, one cannot reach a thousand li. Without accumulating streams, one cannot form rivers and seas. A fine horse leaps but cannot cover ten steps; a tired horse travels ten days. If one carves without stopping, even metal and stone can be engraved.</p></div></div></div>
+<div class="tab-content" id="t4-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>已</td><td>yǐ</td><td>停止</td></tr>
+<tr><td>藍</td><td>lán</td><td>藍草（可提取青色染料）</td></tr>
+<tr><td>輮</td><td>róu</td><td>用火烤使彎曲</td></tr>
+<tr><td>槁暴</td><td>gǎo pù</td><td>乾曬曝曬</td></tr>
+<tr><td>參省</td><td>cān xǐng</td><td>檢驗反省</td></tr>
+<tr><td>跂</td><td>qì</td><td>踮起腳尖</td></tr>
+<tr><td>彰</td><td>zhāng</td><td>明顯清楚</td></tr>
+<tr><td>假</td><td>jiǎ</td><td>借助利用</td></tr>
+<tr><td>生</td><td>xìng</td><td>同「性」，天性</td></tr>
+<tr><td>跬步</td><td>kuǐ bù</td><td>半步與一步</td></tr>
+<tr><td>騏驥</td><td>qí jì</td><td>駿馬</td></tr>
+<tr><td>鍥</td><td>qiè</td><td>雕刻</td></tr>
+</table></div>
+<div class="tab-content" id="t4-keys">
+<div class="key-points">
+<div class="key-point"><h5>中心論點</h5><p>「學不可以已」——學習是終身不渝的事業。</p></div>
+<div class="key-point"><h5>比喻論證</h5><p>青出於藍、冰寒於水、登高招手、順風呼喊，大量比喻化深奧為淺顯。</p></div>
+<div class="key-point"><h5>積累與堅持</h5><p>積土成山、積水成淵、跬步千里、鍥而不舍。</p></div>
+<div class="key-point"><h5>善假於物</h5><p>借助車馬舟楫，比喻善於利用外部條件提升自己。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">名句：「青出於藍」「不積跬步，無以至千里」「鍥而不舍，金石可鏤」「君子生非異也，善假於物也」。通假字：輮、生=性、暴=曝、知=智。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t4">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="0"><p>1. 「學不可以已」中「已」的意思是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q4_1" value="0">A. 停止</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q4_1" value="1">B. 已經</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q4_1" value="2">C. 結束</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q4_1" value="3">D. 完成</label>
+<div class="feedback">「已」意為停止。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「君子生非異也」中「生」通什麼？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q4_2" value="0">A. 生命</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q4_2" value="1">B. 生活</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q4_2" value="2">C. 性（天性）</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q4_2" value="3">D. 姓</label>
+<div class="feedback">「生」通「性」，指天性。</div></div>
+<div class="quiz-q" data-answer="1"><p>3. 「鍥而不舍，金石可鏤」體現什麼精神？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q4_3" value="0">A. 速度</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q4_3" value="1">B. 堅持不懈</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q4_3" value="2">C. 天賦</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q4_3" value="3">D. 運氣</label>
+<div class="feedback">比喻持之以恆的精神。</div></div>
+<button class="quiz-btn" onclick="showScore('t4',3)">查看分數</button>
+<div id="score-t4" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 5: 史記 -->
+<div class="text-card" id="t5">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>五、《史記》選 — 廉頗藺相如列傳（節錄）</h2>
+<span><span class="badge">漢代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">本節錄講述「完璧歸趙」故事，塑造藺相如智勇雙全、臨危不懼的形象。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t5','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t5','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t5','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t5','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t5-orig"><div class="original-text">
+趙惠文王時，得楚和氏璧。秦昭王聞之，使人遺趙王書，願以十五城請易璧。趙王與大將軍廉頗諸大臣謀：欲予秦，秦城恐不可得，徒見欺；欲勿予，即患秦兵之來。計未定，求人可使報秦者，未得。宦者令繆賢曰：「臣舍人藺相如可使。」……相如視秦王無意償趙城，乃前曰：「璧有瑕，請指示王。」王授璧。相如因持璧卻立，倚柱，怒髮上衝冠，謂秦王曰：「大王欲得璧，使人發書至趙王，趙王悉召群臣議，皆曰：『秦貪，負其強，以空言求璧，償城恐不可得。』議不欲予秦璧，臣以為布衣之交尚不相欺，況大國乎？且以一璧之故逆強秦之歡，不可。於是趙王乃齋戒五日，使臣奉璧，拜送書於庭。何者？嚴大國之威以修敬也。今臣至，大王見臣於觀禮，禮節甚倨；得璧，傳之美人，以戲弄臣。臣觀大王無意償趙王城邑，故臣復取璧。大王必欲急臣，臣頭今與璧俱碎於柱矣！」相如持其璧睨柱，欲以擊柱。秦王恐其破璧，乃辭謝固請，召有司案圖，從此以往十五都予趙。相如度秦王特以詐詳為予趙城，實不可得，乃謂秦王曰：「和氏璧，天下所共傳寶也，趙王恐，不敢不獻。趙王送璧時，齋戒五日，今大王亦宜齋戒五日，設九賓於廷，臣乃敢上璧。」秦王度之，終不可強奪，遂許齋五日，舍相如廣成傳。相如度秦王雖齋，決負約不償城，乃使其從者衣褐，懷其璧，從徑道亡，歸璧於趙。
+</div></div>
+<div class="tab-content" id="t5-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>趙惠文王時，得到楚國和氏璧。秦昭王派人送信，願以十五城交換。趙王與廉頗等大臣商議：給秦國怕得不到城池白白被欺；不給又怕秦國出兵。想找人出使回覆秦國，找不到。繆賢說門客藺相如可出使。……藺相如看出秦王無意給趙城，上前說「璧有瑕，請指給大王看」。取回璧後退靠柱，怒髮衝冠對秦王說：「大王想要璧，趙王齋戒五日派我奉璧。現在大王在觀禮接見，禮節傲慢；得璧傳給姬妾戲弄。我看大王無意給城，所以取回璧。大王逼我，我的頭和璧一起碎在柱上！」持璧斜視柱子要撞。秦王怕碎璧，道歉看地圖給十五城。藺相如知秦王詐術，要求齋戒五日設九賓才獻璧。秦王答應後，藺相如派隨從穿粗布衣懷璧從小路逃回趙國。</p></div>
+<div class="trans-col"><h4>English</h4><p>King Huiwen of Zhao obtained the He Shi Bi jade disc. King Zhaoxiang of Qin offered fifteen cities in exchange. Ministers debated: give it and risk being cheated; refuse and risk attack. No envoy was found until Miao Xian recommended Lin Xiangru. Lin saw the King of Qin had no intention of giving cities and said: "This jade has a flaw." After retrieving it, he leaned against a pillar, furious, and declared: "Your Majesty receives me rudely, passes the jade to concubines to mock me. If you force me, my head and this jade shatter together!" He held the jade threatening to smash it. The King apologized, checked the map, and offered fifteen cities. Knowing it was a ruse, Lin demanded five days of fasting with a grand ceremony. After the King agreed, Lin sent a servant disguised in rough cloth to secretly carry the jade back to Zhao through a side path — "returning the jade intact to Zhao."</p></div></div></div>
+<div class="tab-content" id="t5-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>遺</td><td>wèi</td><td>送給</td></tr>
+<tr><td>易</td><td>yì</td><td>交換</td></tr>
+<tr><td>卻</td><td>què</td><td>後退</td></tr>
+<tr><td>睨</td><td>nì</td><td>斜視</td></tr>
+<tr><td>急</td><td>jí</td><td>逼迫</td></tr>
+<tr><td>倨</td><td>jù</td><td>傲慢</td></tr>
+<tr><td>齋戒</td><td>zhāi jiè</td><td>沐浴素食以示莊敬</td></tr>
+<tr><td>詳</td><td>xiáng</td><td>通「佯」，假裝</td></tr>
+<tr><td>衣褐</td><td>yì hè</td><td>穿粗布衣服</td></tr>
+<tr><td>徑道</td><td>jìng dào</td><td>小路</td></tr>
+</table></div>
+<div class="tab-content" id="t5-keys">
+<div class="key-points">
+<div class="key-point"><h5>人物形象</h5><p>藺相如：智勇雙全、能言善辯、臨危不懼、顧全大局。</p></div>
+<div class="key-point"><h5>三個故事</h5><p>完璧歸趙（智）、澠池之會（勇）、將相和（德）。</p></div>
+<div class="key-point"><h5>語言描寫</h5><p>「怒髮上衝冠」等生動描寫，以動作和語言刻畫人物。</p></div>
+<div class="key-point"><h5>歷史意義</h5><p>展現個人品質與國家利益統一，表達「以大局為重」的價值觀。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">「怒髮上衝冠」為誇張。「完璧歸趙」典故由此出。通假字：詳=佯。人物性格分析是DSE高頻題型。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t5">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="1"><p>1. 藺相如說「璧有瑕」的真正目的是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q5_1" value="0">A. 真的有瑕疵</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q5_1" value="1">B. 詐騙取回璧玉</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q5_1" value="2">C. 為秦王檢查</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q5_1" value="3">D. 想換一塊</label>
+<div class="feedback">巧妙的詐術，藉口指瑕取回璧玉。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「怒髮上衝冠」用了什麼修辭？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q5_2" value="0">A. 比喻</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q5_2" value="1">B. 對比</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q5_2" value="2">C. 誇張</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q5_2" value="3">D. 借代</label>
+<div class="feedback">頭髮豎起把帽子頂起是誇張寫法。</div></div>
+<div class="quiz-q" data-answer="3"><p>3. 藺相如最終如何處理和氏璧？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q5_3" value="0">A. 交給秦王</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q5_3" value="1">B. 留在秦國</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q5_3" value="2">C. 當場砸碎</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q5_3" value="3">D. 派人從小路送回趙國</label>
+<div class="feedback">派隨從從小路送回——完璧歸趙。</div></div>
+<button class="quiz-btn" onclick="showScore('t5',3)">查看分數</button>
+<div id="score-t5" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 6: 出師表 -->
+<div class="text-card" id="t6">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>六、《出師表》— 諸葛亮</h2>
+<span><span class="badge">三國</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">《出師表》是諸葛亮北伐前上給後主劉禪的奏章，懇切勸勉親賢遠佞、開張聖聽，表達「鞠躬盡瘁」的忠誠。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t6','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t6','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t6','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t6','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t6-orig"><div class="original-text">
+先帝創業未半而中道崩殂，今天下三分，益州疲弊，此誠危急存亡之秋也。然侍衛之臣不懈於內，忠志之士忘身於外者，蓋追先帝之殊遇，欲報之於陛下也。誠宜開張聖聽，以光先帝遺德，恢弘志士之氣，不宜妄自菲薄，引喻失義，以塞忠諫之路也。宮中府中，俱為一體，陟罰臧否，不宜異同。若有作姦犯科及為忠善者，宜付有司論其刑賞，以昭陛下平明之理，不宜偏私，使內外異法也。<br>親賢臣，遠小人，此先漢所以興隆也；親小人，遠賢臣，此後漢所以傾頹也。先帝在時，每與臣論此事，未嘗不歎息痛恨於桓、靈也。臣本布衣，躬耕於南陽，苟全性命於亂世，不求聞達於諸侯。先帝不以臣卑鄙，猥自枉屈，三顧臣於草廬之中，諮臣以當世之事，由是感激，遂許先帝以驅馳。後值傾覆，受任於敗軍之際，奉命於危難之間，爾來二十有一年矣。先帝知臣謹慎，故臨崩寄臣以大事也。受命以來，夙夜憂歎，恐託付不效，以傷先帝之明，故五月渡瀘，深入不毛。今南方已定，兵甲已足，當獎率三軍，北定中原，庶竭駑鈍，攘除姦凶，興復漢室，還於舊都。此臣所以報先帝而忠陛下之職分也。
+</div></div>
+<div class="tab-content" id="t6-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>先帝創立的統一大業未完成一半就中途去世了。如今天下分裂三國，蜀漢疲弱，是生死存亡的關頭。但侍衛不懈怠，將士捨身奮戰，都是追念先帝厚恩。陛下應廣泛聽取意見，發揚先帝美德，振奮士氣，不應妄自菲薄堵塞忠諫。宮廷和丞相府應一體，賞罰不應有差異。侍中郭攸之、費禕、董允都是忠實之人，宮中事大小都應諮詢他們。將軍向寵通曉軍事，軍營事應諮詢他。親賢臣遠小人是先漢興隆的原因；親小人遠賢臣是後漢傾頹的原因。我本是南陽平民，不求聞達，先帝三次到草廬拜訪我，我因此感激為其奔走效力。先帝臨終託付大事，我日夜憂愁，五月渡過瀘水深入不毛之地。如今南方已定，應率軍北定中原，這是我報先帝忠陛下的職責。</p></div>
+<div class="trans-col"><h4>English</h4><p>The late Emperor's great enterprise was not yet half completed when he passed away. Now the empire is divided into three and Yizhou is exhausted — a critical moment between survival and destruction. Yet ministers remain diligent and warriors forget themselves on the battlefield, repaying the late Emperor's favor. Your Majesty should open your ears to counsel, carry forward the legacy, and not belittle yourself or block honest remonstrance. The palace and prime minister's office should be treated as one body. Guo Youzhi, Fei Yi, and Dong Yun are all worthy — consult them on all matters. General Xiang Chong is well-versed in military affairs — consult him on camp matters. Drawing close to worthy ministers and distancing petty men is why the Former Han prospered. I was originally a commoner, seeking only to preserve my life, not fame. The late Emperor visited me three times at my cottage, and I pledged to serve him. He entrusted me with great matters on his deathbed. I crossed the Lu River into barren land. Now the south is pacified — it is time to lead the armies north. This is my duty to repay the late Emperor and serve Your Majesty.</p></div></div></div>
+<div class="tab-content" id="t6-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>崩殂</td><td>bēng cú</td><td>天子去世</td></tr>
+<tr><td>秋</td><td>qiū</td><td>時候時期</td></tr>
+<tr><td>開張聖聽</td><td>kāi zhāng</td><td>廣泛聽取意見</td></tr>
+<tr><td>菲薄</td><td>fěi bó</td><td>輕視看不起</td></tr>
+<tr><td>陟罰臧否</td><td>zhì fá zāng pǐ</td><td>獎懲功過</td></tr>
+<tr><td>卑鄙</td><td>bēi bǐ</td><td>地位低微見識淺陋</td></tr>
+<tr><td>猥自枉屈</td><td>wěi zì wǎng qū</td><td>降低身份委曲求見</td></tr>
+<tr><td>驅馳</td><td>qū chí</td><td>奔走效力</td></tr>
+<tr><td>夙夜</td><td>sù yè</td><td>早晚、日夜</td></tr>
+<tr><td>不毛</td><td>bù máo</td><td>不長草木的荒蕪之地</td></tr>
+<tr><td>駑鈍</td><td>nú dùn</td><td>才能平庸（謙辭）</td></tr>
+</table></div>
+<div class="tab-content" id="t6-keys">
+<div class="key-points">
+<div class="key-point"><h5>三大建議</h5><p>①開張聖聽 ②陟罰臧否不宜異同 ③親賢臣遠小人。</p></div>
+<div class="key-point"><h5>感恩報效</h5><p>「三顧茅廬」之恩、「受任敗軍之際」之恩，以死報國。</p></div>
+<div class="key-point"><h5>抒情方式</h5><p>以議論為主，寓情於理，情理兼備。</p></div>
+<div class="key-point"><h5>對比手法</h5><p>先漢與後漢對比、「布衣」與「受命」對比。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">名句：「受任於敗軍之際，奉命於危難之間」。表是臣子向君主上書的文體。古代「卑鄙」為中性詞。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t6">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="0"><p>1. 諸葛亮上《出師表》的對象是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q6_1" value="0">A. 後主劉禪</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q6_1" value="1">B. 先主劉備</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q6_1" value="2">C. 曹操</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q6_1" value="3">D. 孫權</label>
+<div class="feedback">上給後主劉禪的奏章。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「先帝不以臣卑鄙」中「卑鄙」的意思是？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q6_2" value="0">A. 品行惡劣</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q6_2" value="1">B. 見識淺陋</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q6_2" value="2">C. 地位低微見識淺陋</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q6_2" value="3">D. 卑鄙無恥</label>
+<div class="feedback">古代「卑鄙」指地位低微見識淺陋，中性詞。</div></div>
+<div class="quiz-q" data-answer="1"><p>3. 諸葛亮舉哪個反面例子？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q6_3" value="0">A. 秦始皇</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q6_3" value="1">B. 桓帝和靈帝</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q6_3" value="2">C. 商紂王</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q6_3" value="3">D. 周幽王</label>
+<div class="feedback">舉後漢桓帝、靈帝親小人遠賢臣為反面教訓。</div></div>
+<button class="quiz-btn" onclick="showScore('t6',3)">查看分數</button>
+<div id="score-t6" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 7: 始得西山宴遊記 -->
+<div class="text-card" id="t7">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>七、《始得西山宴遊記》— 柳宗元</h2>
+<span><span class="badge">唐代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">柳宗元被貶永州時所作，為「永州八記」之首，記述發現西山的經歷，寄託被貶後的超脫。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t7','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t7','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t7','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t7','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t7-orig"><div class="original-text">
+自餘為僇人，居是州，恆惴慄。其隟也，則施施而行，漫漫而遊。日與其徒上高山，入深林，窮回溪，幽泉怪石，無遠不到。到則披草而坐，傾壺而醉。醉則更相枕以臥，臥而夢。意有所極，夢亦同趣。覺而起，起而歸。以為凡是州之山水有異態者，皆我有也，而未始知西山之怪特。今年九月二十八日，因坐法華西亭，望西山，始指異之。遂命僕人過湘江，緣染溪，斫榛莽，焚茅茷，窮山之高而止。攀援而登，箕踞而遨，則凡數州之土壤，皆在衽席之下。其高下之勢，岈然窪然，若垤若穴，尺寸千里，攢蹙累積，莫得遜隱。縈青繚白，外與天際，四望如一。然後知是山之特立，不與培塿為類。悠悠乎與顥氣俱，而莫得其涯；洋洋乎與造物者遊，而不知其所窮。
+</div></div>
+<div class="tab-content" id="t7-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>自從我成為被貶之人，住在這裡常常恐懼不安。有了空閒就緩緩行走隨意漫遊。每天與同伴上高山、入深林、走到溪流盡頭，幽泉怪石無遠不到。到了就撥開草坐下，倒空酒壺喝醉，醉了互相枕著躺下做夢。醒了就起來回去。我以為這個州所有特殊山水都被我遊覽過了，卻從不知道西山的奇特。九月二十八日坐在法華寺西亭望見西山，才指著它覺得不一般。於是命僕人過湘江，沿染溪走，砍伐雜草焚燒茅草，直到山最高處。攀援登頂，箕踞眺望，幾個州的土地下方都在我的座席之下。青山白水縈繞，外與天邊相接。這才知道此山獨立超群，不與小丘為伍。悠悠然與天地大氣融為一體，看不到邊際。</p></div>
+<div class="trans-col"><h4>English</h4><p>Since becoming an exiled man, I have lived in constant anxiety. When free, I walked and wandered at will — climbing mountains, entering deep forests, reaching winding streams, no place too remote. I would push aside grass to sit, empty wine vessels to get drunk, then use each other as pillows to dream. I believed I had seen all unusual landscapes in this prefecture, yet I had never known West Mountain's magnificence. On the twenty-eighth day of the ninth month, sitting at Fahua's west pavilion, I gazed at West Mountain and found it remarkable. I led servants across the Xiang River, along Ran Stream, hacking through undergrowth to the summit. Sitting with legs spread, I gazed freely — several prefectures lay beneath my seat. Green ridges and white waters wound together, meeting the sky. Only then did I know this mountain stands alone, unmatched by any small hill, vast and boundless, merging with the great atmosphere.</p></div></div></div>
+<div class="tab-content" id="t7-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>僇人</td><td>lù rén</td><td>受刑辱的人（被貶者自稱）</td></tr>
+<tr><td>恆</td><td>héng</td><td>常常</td></tr>
+<tr><td>惴慄</td><td>zhuì lì</td><td>恐懼戰慄</td></tr>
+<tr><td>施施</td><td>yí yí</td><td>緩緩行走的樣子</td></tr>
+<tr><td>披草</td><td>pī cǎo</td><td>撥開草叢</td></tr>
+<tr><td>箕踞</td><td>jī jù</td><td>張開兩腿坐（不拘禮節）</td></tr>
+<tr><td>衽席</td><td>rèn xí</td><td>座席</td></tr>
+<tr><td>培塿</td><td>póu lóu</td><td>小土丘</td></tr>
+<tr><td>顥氣</td><td>hào qì</td><td>天地間的大氣</td></tr>
+</table></div>
+<div class="tab-content" id="t7-keys">
+<div class="key-points">
+<div class="key-point"><h5>借景抒情</h5><p>以西山「特立」象徵不與世俗同流合污的品格。</p></div>
+<div class="key-point"><h5>「始得」之妙</h5><p>此前遊覽皆非真正發現，西山才是靈魂寄託。先抑後揚。</p></div>
+<div class="key-point"><h5>山水描寫</h5><p>「尺寸千里」「縈青繚白」凝練描寫登高所見。</p></div>
+<div class="key-point"><h5>「遊」與「悟」</h5><p>從「恆惴慄」到「悠悠乎與顥氣俱」，心境從抑鬱到開闊。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">永州八記之首。抒情線索：憂→遊→醉→悟。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t7">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="1"><p>1. 柳宗元寫本文時的處境是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q7_1" value="0">A. 升官時</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q7_1" value="1">B. 被貶永州時</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q7_1" value="2">C. 退休後</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q7_1" value="3">D. 出征時</label>
+<div class="feedback">因永貞革新失敗被貶為永州司馬。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「僇人」的意思是？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q7_2" value="0">A. 殘忍的人</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q7_2" value="1">B. 被殺的人</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q7_2" value="2">C. 受刑辱的人</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q7_2" value="3">D. 殘暴的人</label>
+<div class="feedback">「僇」通「戮」，僇人指遭受刑辱的被貶者。</div></div>
+<div class="quiz-q" data-answer="0"><p>3. 本文的情感線索是？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q7_3" value="0">A. 憂懼→漫遊→醉夢→登高悟道</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q7_3" value="1">B. 高興→失望→憤怒→平靜</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q7_3" value="2">C. 悲傷→絕望→自殺→重生</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q7_3" value="3">D. 無聊→散步→睡覺→回家</label>
+<div class="feedback">恆惴慄→施施而行→傾壺而醉→悠悠乎與顥氣俱。</div></div>
+<button class="quiz-btn" onclick="showScore('t7',3)">查看分數</button>
+<div id="score-t7" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 8: 師說 -->
+<div class="text-card" id="t8">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>八、《師說》— 韓愈</h2>
+<span><span class="badge">唐代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">針對當時士大夫恥於從師的風氣，闡述從師學習的重要性。論證嚴密，對比鮮明。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t8','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t8','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t8','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t8','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t8-orig"><div class="original-text">
+古之學者必有師。師者，所以傳道受業解惑也。人非生而知之者，孰能無惑？惑而不從師，其為惑也，終不解矣。生乎吾前，其聞道也固先乎吾，吾從而師之；生乎吾後，其聞道也亦先乎吾，吾從而師之。吾師道也，夫庸知其年之先後生於吾乎？是故無貴無賤，無長無少，道之所存，師之所存也。<br>嗚呼！師道之不傳也久矣！欲人之無惑也難矣！古之聖人，其出人也遠矣，猶且從師而問焉；今之眾人，其下聖人也亦遠矣，而恥學於師。是故聖益聖，愚益愚。聖人之所以為聖，愚人之所以為愚，其皆出於此乎？愛其子，擇師而教之；於其身也，則恥師焉，惑矣。巫醫樂師百工之人，不恥相師。士大夫之族，曰師曰弟子云者，則群聚而笑之。問之，則曰：「彼與彼年相若也，道相似也。位卑則足羞，官盛則近諛。」嗚呼！師道之不復可知矣。聖人無常師。孔子師郯子、萇弘、師襄、老聃。郯子之徒，其賢不及孔子。孔子曰：「三人行，則必有我師。」是故弟子不必不如師，師不必賢於弟子，聞道有先後，術業有專攻，如是而已。
+</div></div>
+<div class="tab-content" id="t8-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>古代求學的人一定有老師。老師是傳授道理、講授學業、解答疑惑的人。人不是生下來就懂道理的，誰能沒有疑惑？有疑惑不跟老師學，疑惑始終不能解開。出生在我之前的人，懂得道理比我早，我跟隨他學習；出生在我之後的人，懂得道理也可能比我早，我也跟他學習。我學習的是道理，哪管年齡大小呢？所以無論貴賤長幼，道理存在的地方就是老師所在。唉！從師的風氣已經很久不傳了！古代聖人遠超一般人，尚且從師請教；現在一般人遠不如聖人，卻以從師為恥。所以聖人更聖明，愚人更愚昧。人們愛孩子選擇老師教他，自己卻以從師為恥，這太糊塗了。巫醫樂師百工不以互相學習為恥，士大夫卻嘲笑說「師」「弟子」之類的話。問他們為什麼，說年齡相近道行差不多。以地位低的人為師羞恥，以官位高的人為師又覺諂媚。唉！從師之風不能恢復了。聖人沒有固定的老師，孔子師郯子等人。孔子說幾人同行必有我師。所以學生不一定不如老師，老師不一定比學生賢能，聞道有先後，術業有專長。</p></div>
+<div class="trans-col"><h4>English</h4><p>In ancient times, those who sought learning surely had teachers — those who transmit the Way, teach skills, and resolve doubts. No one is born understanding — who can be without doubts? Those born before me surely learned the Way before me — I follow them. Those born after me may also have learned earlier — I follow them too. I learn the Way; why care about age? Wherever the Way exists, there is the teacher. Alas! The way of following teachers has long been lost! The ancient sages, far surpassing ordinary people, still sought teachers. The common people, far inferior to the sages, are ashamed to learn from teachers. People love their children and choose teachers for them, but for themselves are ashamed — how confused! Shamans, doctors, and craftsmen do not feel ashamed of learning from each other. But scholars laugh at the words "teacher" and "student." The sages had no fixed teacher. Confucius learned from Tanzi, Chang Hong, Shi Xiang, and Lao Dan. Confucius said: "When three walk together, there must be one who can be my teacher." Students need not be inferior to teachers; teachers need not be more talented than students. Some learn the Way earlier; others specialize in certain arts — nothing more.</p></div></div></div>
+<div class="tab-content" id="t8-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>學者</td><td>xué zhě</td><td>求學的人</td></tr>
+<tr><td>受</td><td>shòu</td><td>同「授」，傳授</td></tr>
+<tr><td>句讀</td><td>jù dòu</td><td>文章斷句</td></tr>
+<tr><td>不齒</td><td>bù chǐ</td><td>不屑與之同列</td></tr>
+<tr><td>師道</td><td>shī dào</td><td>從師學習的風氣</td></tr>
+<tr><td>相若</td><td>xiāng ruò</td><td>相近差不多</td></tr>
+<tr><td>諛</td><td>yú</td><td>諂媚奉承</td></tr>
+<tr><td>專攻</td><td>zhuān gōng</td><td>專門研究</td></tr>
+</table></div>
+<div class="tab-content" id="t8-keys">
+<div class="key-points">
+<div class="key-point"><h5>中心論點</h5><p>「古之學者必有師」——師者傳道受業解惑。</p></div>
+<div class="key-point"><h5>三組對比</h5><p>①古之聖人vs今之眾人 ②愛其子vs於其身 ③巫醫樂師vs士大夫。</p></div>
+<div class="key-point"><h5>師道精神</h5><p>「無貴無賤，無長無少，道之所存，師之所存」。</p></div>
+<div class="key-point"><h5>論證方法</h5><p>舉例論證（孔子師郯子等）、對比論證、引用論證。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">名句：「師者，所以傳道受業解惑也」「弟子不必不如師，師不必賢於弟子」「術業有專攻」。受=授。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t8">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="0"><p>1. 「受」通什麼？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q8_1" value="0">A. 授（傳授）</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q8_1" value="1">B. 收</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q8_1" value="2">C. 獸</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q8_1" value="3">D. 首</label>
+<div class="feedback">「受」通「授」，傳授。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 韓愈舉了誰來證明「聖人無常師」？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q8_2" value="0">A. 老子、莊子</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q8_2" value="1">B. 孟子、荀子</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q8_2" value="2">C. 郯子、萇弘、師襄、老聃</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q8_2" value="3">D. 屈原、宋玉</label>
+<div class="feedback">舉孔子師郯子等四人為例。</div></div>
+<div class="quiz-q" data-answer="1"><p>3. 「位卑則足羞，官盛則近諛」反映士大夫什麼心態？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q8_3" value="0">A. 好學</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q8_3" value="1">B. 以地位取人，恥於從師</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q8_3" value="2">C. 尊重知識</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q8_3" value="3">D. 熱愛教育</label>
+<div class="feedback">以地位論人，反映了勢利心態。</div></div>
+<button class="quiz-btn" onclick="showScore('t8',3)">查看分數</button>
+<div id="score-t8" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 9: 唐詩三首 -->
+<div class="text-card" id="t9">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>九、《唐詩三首》</h2>
+<span><span class="badge">唐代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">三首唐詩分別為王維〈山居秋暝〉、李白〈月下獨酌〉、杜甫〈登高〉，代表唐詩三種風格：山水田園清新淡雅、浪漫詩豪放飄逸、現實詩沉鬱頓挫。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t9','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t9','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t9','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t9','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t9-orig"><div class="original-text" style="font-size:1rem">
+<strong>一、山居秋暝　王維</strong><br>
+空山新雨後，天氣晚來秋。<br>明月松間照，清泉石上流。<br>竹喧歸浣女，蓮動下漁舟。<br>隨意春芳歇，王孫自可留。<br><br>
+<strong>二、月下獨酌　李白</strong><br>
+花間一壺酒，獨酌無相親。<br>舉杯邀明月，對影成三人。<br>月既不解飲，影徒隨我身。<br>暫伴月將影，行樂須及春。<br>我歌月徘徊，我舞影零亂。<br>醒時同交歡，醉後各分散。<br>永結無情遊，相期邈雲漢。<br><br>
+<strong>三、登高　杜甫</strong><br>
+風急天高猿嘯哀，渚清沙白鳥飛迴。<br>無邊落木蕭蕭下，不盡長江滾滾來。<br>萬里悲秋常作客，百年多病獨登臺。<br>艱難苦恨繁霜鬢，潦倒新停濁酒杯。
+</div></div>
+<div class="tab-content" id="t9-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p><strong>山居秋暝：</strong>空曠山林剛下過雨，傍晚帶秋天涼意。明月照松林，清泉在石上流。竹林喧鬧是浣衣女歸來，蓮葉搖動是漁船順流而下。春花雖謝，山中秋景值得留。<br><br><strong>月下獨酌：</strong>花間擺一壺酒，獨自飲沒親友相伴。舉杯邀明月，加上影子成三人。月不懂飲酒，影徒然隨身。暫時與月和影為伴，行樂要趁春天。我唱歌月徘徊，我跳舞影零亂。醒時共同歡樂，醉後各自分散。永遠結成超越世俗的友誼，相約在銀河相見。<br><br><strong>登高：</strong>風急天高猿猴悲嘯，渚清沙白鳥兒迴旋。無邊落葉蕭蕭飄下，不盡長江滾滾而來。萬里悲秋常漂泊作客，一生多病獨自登臺。艱難苦恨使白髮增多，潦倒之中剛停了濁酒。</p></div>
+<div class="trans-col"><h4>English</h4><p><strong>Autumn Twilight in the Mountains:</strong> After fresh rain in the empty mountains, autumn arrives in the evening air. Bright moonlight shines through the pines, clear spring flows over stones. Bamboo rustles as washerwomen return, lotus stirs as fishing boats descend. Though spring flowers fade, this mountain autumn scene is worth staying for.<br><br><strong>Drinking Alone Under the Moon:</strong> A pot of wine among the flowers, drinking alone with no companion. I raise my cup to invite the moon, and with my shadow we become three. The moon does not understand drinking, the shadow merely follows my body. I暂伴月和影行樂要趁春. I sing and the moon lingers; I dance and the shadow scatters. While sober we share joy; drunk we each disperse. Let us form an eternal bond beyond emotion, meeting again in the Milky Way.<br><br><strong>Climbing the Tower:</strong> Wind swift, sky high, apes wail mournfully; islet clear, sand white, birds circle back. Boundless leaves fall rustling down; endless Yangtze rolls on. Ten thousand li of sorrowful autumn, always a guest far from home; a hundred years of many illnesses, climbing this terrace alone. Hardship and bitter regret thicken frost on my temples; in destitution, I have just stopped the cup of turbid wine.</p></div></div></div>
+<div class="tab-content" id="t9-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>暝</td><td>míng</td><td>日落、天黑</td></tr>
+<tr><td>浣女</td><td>huàn nǚ</td><td>洗衣服的女子</td></tr>
+<tr><td>王孫</td><td>wáng sūn</td><td>原指貴族子弟，此處詩人自指</td></tr>
+<tr><td>酌</td><td>zhuó</td><td>倒酒、飲酒</td></tr>
+<tr><td>不解飲</td><td>bù jiě yǐn</td><td>不懂得飲酒</td></tr>
+<tr><td>無情遊</td><td>wú qíng yóu</td><td>超越世俗人情的交遊</td></tr>
+<tr><td>邈</td><td>miǎo</td><td>遙遠</td></tr>
+<tr><td>雲漢</td><td>yún hàn</td><td>銀河</td></tr>
+<tr><td>渚</td><td>zhǔ</td><td>水中小洲</td></tr>
+<tr><td>蕭蕭</td><td>xiāo xiāo</td><td>落葉聲</td></tr>
+<tr><td>臺</td><td>tái</td><td>高臺、高臺</td></tr>
+<tr><td>繁霜鬢</td><td>fán shuāng bìn</td><td>白髮增多如繁霜</td></tr>
+</table></div>
+<div class="tab-content" id="t9-keys">
+<div class="key-points">
+<div class="key-point"><h5>王維：以動襯靜</h5><p>「竹喧」「蓮動」以聲音和動作反襯山中的寧靜，體現「詩中有畫」的特點。</p></div>
+<div class="key-point"><h5>李白：擬人手法</h5><p>邀月對影，將月和影擬人化為伴侶，反襯孤獨中的浪漫超脫。</p></div>
+<div class="key-point"><h5>杜甫：沉鬱頓挫</h5><p>八句皆對，層層寫景轉入抒情。「萬里」「百年」對仗工整，感慨深沉。</p></div>
+<div class="key-point"><h5>三人風格比較</h5><p>王維清幽恬淡、李白豪放飄逸、杜甫沉鬱蒼涼。風格迥異，各領風騷。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">王維「詩中有畫」。李白善用擬人誇張。杜甫「無邊落木蕭蕭下，不盡長江滾滾來」為千古名對。注意三個詩人的風格特點和時代背景。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t9">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="0"><p>1. 「明月松間照，清泉石上流」運用了什麼手法？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q9_1" value="0">A. 以動襯靜</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q9_1" value="1">B. 大量誇張</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q9_1" value="2">C. 借古諷今</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q9_1" value="3">D. 直抒胸臆</label>
+<div class="feedback">以泉流之動襯山之寧靜。</div></div>
+<div class="quiz-q" data-answer="1"><p>2. 李白「舉杯邀明月，對影成三人」中的「三人」指？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q9_2" value="0">A. 李白和兩個朋友</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q9_2" value="1">B. 李白、月亮、影子</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q9_2" value="2">C. 三個詩人</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q9_2" value="3">D. 三杯酒</label>
+<div class="feedback">「三人」是詩人自己、月亮和影子。</div></div>
+<div class="quiz-q" data-answer="2"><p>3. 杜甫《登高》被譽為「古今七律第一」，其特點是？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q9_3" value="0">A. 全篇白描</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q9_3" value="1">B. 用典豐富</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q9_3" value="2">C. 八句皆對，沉鬱頓挫</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q9_3" value="3">D. 通篇比興</label>
+<div class="feedback">八句皆對仗，風格沉鬱頓挫。</div></div>
+<button class="quiz-btn" onclick="showScore('t9',3)">查看分數</button>
+<div id="score-t9" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 10: 岳陽樓記 -->
+<div class="text-card" id="t10">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>十、《岳陽樓記》— 范仲淹</h2>
+<span><span class="badge">宋代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">范仲淹應好友滕子京之請而作，以洞庭湖兩種景色對比，表達「先天下之憂而憂，後天下之樂而樂」的政治理想。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t10','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t10','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t10','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t10','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t10-orig"><div class="original-text">
+慶曆四年春，滕子京謫守巴陵郡。越明年，政通人和，百廢具興。乃重修岳陽樓，增其舊制，刻唐賢今人詩賦於其上。屬予作文以記之。<br>予觀夫巴陵勝狀，在洞庭一湖。銜遠山，吞長江，浩浩湯湯，橫無際涯；朝暉夕陰，氣象萬千。此則岳陽樓之大觀也，前人之述備矣。然則北通巫峽，南極瀟湘，遷客騷人，多會於此，覽物之情，得無異乎？<br>若夫淫雨霏霏，連月不開，陰風怒號，濁浪排空；日星隱曜，山岳潛形；商旅不行，檣傾楫摧；薄暮冥冥，虎嘯猿啼。登斯樓也，則有去國懷鄉，憂讒畏譏，滿目蕭然，感極而悲者矣。<br>至若春和景明，波瀾不驚，上下天光，一碧萬頃；沙鷗翔集，錦鱗游泳；岸芷汀蘭，鬱鬱青青。而或長煙一空，皓月千里，浮光躍金，靜影沉璧，漁歌互答，此樂何極！登斯樓也，則有心曠神怡，寵辱偕忘，把酒臨風，其喜洋洋者矣。<br>嗟夫！予嘗求古仁人之心，或異二者之為，何哉？不以物喜，不以己悲；居廟堂之高則憂其民；處江湖之遠則憂其君。是進亦憂，退亦憂。然則何時而樂耶？其必曰「先天下之憂而憂，後天下之樂而樂」乎。噫！微斯人，吾誰與歸？
+</div></div>
+<div class="tab-content" id="t10-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>慶曆四年春，滕子京被貶為巴陵郡太守。第二年，政務順利百姓和樂，各項荒廢的事都興辦了。於是重修岳陽樓，擴大規模，刻上唐宋賢人的詩賦，囑託我寫文章記述。我看巴陵美景集中在洞庭湖。它銜接遠山，吞納長江，浩浩蕩蕩，無邊無際。早晚陰晴變化，氣象萬千。洞庭湖以北通巫峽，以南到瀟湘，貶謫的官員和詩人多在此聚會，觀覽景物的心情怎能相同呢？連綿陰雨幾月不開，狂風怒號，濁浪排空，日月隱沒，山形消失；商人旅客不能通行，船桅傾倒。暮色蒼茫，虎嘯猿啼。這時登樓就會懷念故國思念家鄉，擔心讒言害怕譏諷，滿目淒涼，悲傷到極點。春天和暖陽光明媚，湖面平靜，水天一色碧綠萬頃；沙鷗飛翔，魚兒遊泳，岸邊香草鬱鬱蔥蔥。有時大霧消散，明月照千里，水面浮光如金跳躍，水中月影像玉璧沉靜。漁歌互答，快樂無盡！這時登樓就會心曠神怡，榮辱都忘，臨風把酒，喜氣洋洋。唉！我曾探求古代仁人的心境，或者與上述兩種表現不同，為什麼呢？不因外物好壞和自己得失而或喜或悲。在朝廷做官就擔心百姓，處在偏遠之地就擔心君主。這樣進也憂退也憂。那什麼時候才快樂呢？大概一定說「在天下人憂愁之前先憂愁，在天下人快樂之後才快樂」吧！唉！如果沒有這種人，我與誰同道呢？</p></div>
+<div class="trans-col"><h4>English</h4><p>In the fourth year of Qingli, Teng Zijing was demoted to be prefect of Baling. By the next year, governance was smooth and the people were at peace. He restored Yueyang Tower and asked me to write a record. I observe that Baling's scenic beauty centers on Dongting Lake — embracing distant mountains, swallowing the Yangtze, vast and boundless, with morning sun and evening clouds creating myriad changes. When the north wind howls and dark waves crash to the sky; when sun and stars hide, mountains disappear; when merchant boats cannot sail and masts topple — ascending this tower, one feels homesick and fearful of slander, overwhelmed by desolation. But when spring warmth brings bright skies, waves calm, water and sky merge in endless green; when gulls soar and fish swim; when mist clears and bright moon shines a thousand li, light dancing on water like gold, still reflections like jade — ascending this tower, one feels elated, forgetting both favor and disgrace. I once sought the heart of the ancient sages, perhaps different from these two responses: not delighted by external gains, not saddened by personal losses. In high office, one worries about the people; in remote exile, one worries about the ruler. So one worries both in advancement and retreat. Then when does one find joy? Perhaps in being "first to worry before the world worries, last to enjoy after the world enjoys." Without such people, who would I walk with?</p></div></div></div>
+<div class="tab-content" id="t10-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>謫</td><td>zhé</td><td>被貶官</td></tr>
+<tr><td>勝狀</td><td>shèng zhuàng</td><td>美景</td></tr>
+<tr><td>浩浩湯湯</td><td>hào hào shāng shāng</td><td>水勢浩大</td></tr>
+<tr><td>遷客</td><td>qiān kè</td><td>被貶謫的官員</td></tr>
+<tr><td>騷人</td><td>sāo rén</td><td>詩人</td></tr>
+<tr><td>霏霏</td><td>fēi fēi</td><td>雨雪紛飛的樣子</td></tr>
+<tr><td>薄暮</td><td>bó mù</td><td>傍晚、日暮</td></tr>
+<tr><td>景</td><td>jǐng</td><td>同「影」，日光</td></tr>
+<tr><td>寵辱偕忘</td><td>chǒng rǔ xié wàng</td><td>榮辱都忘記</td></tr>
+<tr><td>廟堂</td><td>miào táng</td><td>朝廷</td></tr>
+<tr><td>微</td><td>wēi</td><td>如果沒有</td></tr>
+</table></div>
+<div class="tab-content" id="t10-keys">
+<div class="key-points">
+<div class="key-point"><h5>核心名句</h5><p>「先天下之憂而憂，後天下之樂而樂」——以天下為己任的政治抱負。</p></div>
+<div class="key-point"><h5>對比結構</h5><p>陰雨悲景vs晴明樂景，引出「古仁人」超然物外的境界。</p></div>
+<div class="key-point"><h5>不以物喜不以己悲</h5><p>不因外物和自身得失而或喜或悲，是理想人格的體現。</p></div>
+<div class="key-point"><h5>寫景特色</h5><p>駢散結合，四字句為主，節奏明快，音韻和諧。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">必背名句：「先天下之憂而憂，後天下之樂而樂」「不以物喜，不以己悲」。注意「景=影」通假字。「屬=囑」。記是古代一種文體。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t10">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="1"><p>1. 《岳陽樓記》的核心思想是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q10_1" value="0">A. 描寫洞庭湖美景</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q10_1" value="1">B. 先天下之憂而憂</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q10_1" value="2">C. 慶祝岳陽樓建成</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q10_1" value="3">D. 懷念朋友滕子京</label>
+<div class="feedback">「先天下之憂而憂，後天下之樂而樂」是核心思想。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「春和景明」中「景」的意思是？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q10_2" value="0">A. 景色</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q10_2" value="1">B. 風景</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q10_2" value="2">C. 同「影」，日光</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q10_2" value="3">D. 景象</label>
+<div class="feedback">「景」通「影」，此處指日光。</div></div>
+<div class="quiz-q" data-answer="0"><p>3. 文中「遷客騷人」指什麼人？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q10_3" value="0">A. 被貶的官員和詩人</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q10_3" value="1">B. 商人和旅客</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q10_3" value="2">C. 漁夫和樵夫</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q10_3" value="3">D. 將軍和士兵</label>
+<div class="feedback">「遷客」指被貶謫的官員，「騷人」指詩人。</div></div>
+<button class="quiz-btn" onclick="showScore('t10',3)">查看分數</button>
+<div id="score-t10" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 11: 六國論 -->
+<div class="text-card" id="t11">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>十一、《六國論》— 蘇洵</h2>
+<span><span class="badge">宋代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">蘇洵論述六國滅亡的原因是「以地事秦」，借古諷今，警告北宋不要重蹈覆轍。論證嚴密，多用對比。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t11','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t11','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t11','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t11','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t11-orig"><div class="original-text">
+六國破滅，非兵不利，戰不善，弊在賂秦。賂秦而力虧，破滅之道也。或曰：六國互喪，率賂秦耶？曰：不賂者以賂者喪，蓋失強援，不能獨完。故曰弊在賂秦也。秦以攻取之外，小則獲邑，大則得城。較秦之所得，與戰勝而得者，其實百倍；諸侯之所亡，與戰敗而亡者，其實亦百倍。則秦之所大欲，諸侯之所大患，固不在戰矣。思厥先祖父，暴霜露，斬荊棘，以有尺寸之地。子孫視之不甚惜，舉以予人，如棄草芥。今日割五城，明日割十城，然後得一夕安寢。起視四境，而秦兵又至矣。然則諸侯之地有限，暴秦之欲無厭，奉之彌繁，侵之愈急。故不戰而強弱勝負已判矣。至於顛覆，理固宜然。古人云：「以地事秦，猶抱薪救火，薪不盡，火不滅。」此言得之。
+</div></div>
+<div class="tab-content" id="t11-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p>六國滅亡，不是武器不鋒利，仗打不好，弊病在於賄賂秦國。賄賂秦國就會實力虧損，這是滅亡的道路。有人說六國接連滅亡，都是因為賄賂秦國嗎？回答是：不賄賂的因為賄賂的而滅亡，因為失去了強有力的援助，不能獨自保全。所以說弊病在於賄賂秦國。秦國除了用戰爭奪取之外，小的得到邑鎮，大的得到城池。比較秦國所得到的與戰勝所得的，實際上多百倍；諸侯所失去的與戰敗而失去的，實際上也多百倍。可見秦國最大的慾望，諸侯最大的禍患，本來就不在於戰爭。想他們的祖輩，冒著風霜雨露，披荊斬棘，才得到一點點土地。子孫們卻不珍惜，拿來送給別人，如同丟棄小草。今天割五城，明天割十城，換得一夜安睡。起來一看四周，秦兵又到了。然而諸侯的土地有限，暴秦的慾望沒有滿足，送得越多侵略越急。所以不用開戰，強弱勝負已經分明了。至於滅亡，理當如此。古人說：「拿土地侍奉秦國，就像抱著柴火救火，柴燒不完火就不會滅。」這話說對了。</p></div>
+<div class="trans-col"><h4>English</h4><p>The fall of the six states was not due to poor weapons or ineffective warfare — the fault lay in bribing Qin. Bribery depleted their strength, which is the path to destruction. One might ask: did all six states perish because of bribery? Those that did not bribe perished because of those that did — they lost their powerful allies and could not stand alone. Qin gained not only through war but through bribery: small towns and large cities. Comparing what Qin gained from bribery with what it won from battle — the former was a hundred times more. The greatest desire of Qin and the greatest danger to the states were never about warfare. Think of their ancestors, braving frost and thorns to gain each inch of land. Their descendants, treating it carelessly, gave it away like discarding grass. Cede five cities today, ten tomorrow, and enjoy one night's peace. But by dawn, Qin's armies are at the border again. Yet the states' land is finite while Qin's appetite is insatiable. The more they surrendered, the more aggressively Qin pressed. Without a single battle, the outcome was already decided. As the ancients said: "Offering land to Qin is like hugging firewood to extinguish a fire — as long as the wood lasts, the fire will not go out." This is exactly right.</p></div></div></div>
+<div class="tab-content" id="t11-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>賂</td><td>lù</td><td>賄賂、割地求和</td></tr>
+<tr><td>互喪</td><td>hù sàng</td><td>接連滅亡</td></tr>
+<tr><td>率</td><td>shuài</td><td>全都</td></tr>
+<tr><td>完</td><td>wán</td><td>保全</td></tr>
+<tr><td>厥</td><td>jué</td><td>他們的</td></tr>
+<tr><td>暴霜露</td><td>pù shuāng lù</td><td>冒著風霜雨露</td></tr>
+<tr><td>荊棘</td><td>jīng jí</td><td>帶刺的灌木</td></tr>
+<tr><td>厭</td><td>yàn</td><td>滿足</td></tr>
+<tr><td>彌</td><td>mí</td><td>更加</td></tr>
+<tr><td>顛覆</td><td>diān fù</td><td>滅亡</td></tr>
+</table></div>
+<div class="tab-content" id="t11-keys">
+<div class="key-points">
+<div class="key-point"><h5>中心論點</h5><p>「六國破滅，弊在賂秦」——以地事秦是滅亡的根本原因。</p></div>
+<div class="key-point"><h5>比喻論證</h5><p>「抱薪救火」形象說明以地事秦的危害。</p></div>
+<div class="key-point"><h5>借古諷今</h5><p>表面論六國，實質警告北宋不要以幣帛賄賂遼和西夏。</p></div>
+<div class="key-point"><h5>對比論證</h5><p>祖輩艱難開創vs子孫輕易割讓，形成強烈對比。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">名句：「以地事秦，猶抱薪救火」。注意論證結構和借古諷今的寫作意圖。蘇洵為蘇軾之父。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t11">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="0"><p>1. 蘇洵認為六國滅亡的根本原因是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q11_1" value="0">A. 弊在賂秦</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q11_1" value="1">B. 武器不鋒利</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q11_1" value="2">C. 將領無能</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q11_1" value="3">D. 天災人禍</label>
+<div class="feedback">「弊在賂秦」是中心論點。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 「抱薪救火」比喻什麼？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q11_2" value="0">A. 勇敢行為</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q11_2" value="1">B. 正確方法</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q11_2" value="2">C. 以地事秦只會助長秦國貪慾</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q11_2" value="3">D. 火災很危險</label>
+<div class="feedback">比喻以土地賄賂秦國就像抱柴救火，只會讓秦國貪得無厭。</div></div>
+<div class="quiz-q" data-answer="1"><p>3. 本文的寫作意圖是？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q11_3" value="0">A. 歷史分析</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q11_3" value="1">B. 借古諷今，警告北宋</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q11_3" value="2">C. 歌頌秦國</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q11_3" value="3">D. 紀念六國</label>
+<div class="feedback">表面論六國，實質警告北宋不要以幣帛賄賂外敵。</div></div>
+<button class="quiz-btn" onclick="showScore('t11',3)">查看分數</button>
+<div id="score-t11" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+<!-- TEXT 12: 詞三首 -->
+<div class="text-card" id="t12">
+<div class="card-header" onclick="toggleCard(this)">
+<h2>十二、《詞三首》</h2>
+<span><span class="badge">宋代</span> <span class="arrow">▼</span></span>
+</div>
+<div class="card-body">
+<div class="section"><div class="section-title">📌 背景簡介</div>
+<p style="font-size:.9rem;color:var(--text2)">三首宋詞分別為蘇軾〈念奴嬌·赤壁懷古〉、李清照〈聲聲慢〉、辛棄疾〈青玉案·元夕〉，代表宋詞豪放與婉約兩大風格。</p></div>
+<div class="section">
+<div class="tab-row">
+<button class="tab-btn active" onclick="switchTab(this,'t12','orig')">原文</button>
+<button class="tab-btn" onclick="switchTab(this,'t12','trans')">語譯</button>
+<button class="tab-btn" onclick="switchTab(this,'t12','vocab')">詞解</button>
+<button class="tab-btn" onclick="switchTab(this,'t12','keys')">重點</button>
+</div>
+<div class="tab-content active" id="t12-orig"><div class="original-text" style="font-size:.98rem">
+<strong>一、念奴嬌·赤壁懷古　蘇軾</strong><br>
+大江東去，浪淘盡，千古風流人物。故壘西邊，人道是，三國周郎赤壁。亂石穿空，驚濤拍岸，捲起千堆雪。江山如畫，一時多少豪傑。<br>遙想公瑾當年，小喬初嫁了，雄姿英發。羽扇綸巾，談笑間，檣櫓灰飛煙滅。故國神遊，多情應笑我，早生華髮。人生如夢，一尊還酹江月。<br><br>
+<strong>二、聲聲慢　李清照</strong><br>
+尋尋覓覓，冷冷清清，淒淒慘慘戚戚。乍暖還寒時候，最難將息。三杯兩盞淡酒，怎敵他、晚來風急！雁過也，正傷心，卻是舊時相識。<br>滿地黃花堆積，憔悴損，如今有誰堪摘？守著窗兒，獨自怎生得黑！梧桐更兼細雨，到黃昏、點點滴滴。這次第，怎一個愁字了得！<br><br>
+<strong>三、青玉案·元夕　辛棄疾</strong><br>
+東風夜放花千樹，更吹落、星如雨。寶馬雕車香滿路。鳳簫聲動，玉壺光轉，一夜魚龍舞。<br>蛾兒雪柳黃金縷，笑語盈盈暗香去。眾裡尋他千百度，驀然回首，那人卻在，燈火闌珊處。
+</div></div>
+<div class="tab-content" id="t12-trans"><div class="translation-grid"><div class="trans-col"><h4>白話文</h4><p><strong>念奴嬌·赤壁懷古：</strong>長江向東流去，波浪淘盡了千古以來的風流人物。舊營壘西邊，人們說那就是三國周瑜的赤壁。亂石刺穿天空，驚濤拍打江岸，捲起千堆雪。江山如畫，一時間涌現多少豪傑。遙想當年周瑜，小喬剛嫁給他，英姿勃發。手搖羽扇頭戴綸巾，談笑之間，曹操的戰船灰飛煙滅。神遊故國，可笑我多情善感，過早生出白髮。人生如同一場夢，且灑一杯酒祭奠江月。<br><br><strong>聲聲慢：</strong>尋尋覓覓，冷冷清清，淒淒慘慘戚戚。忽暖忽寒的天氣最難調養。幾杯淡酒怎能抵擋傍晚的急風！大雁飛過，正傷心，卻是以前的舊相識。滿地菊花堆積，憔悴凋零，如今有誰願摘？守著窗兒，獨自怎麼熬到天黑！梧桐更兼細雨，到黃昏點點滴滴。這種情景，怎能一個「愁」字概括得了！<br><br><strong>青玉案·元夕：</strong>春風一夜吹開千樹花燈，又吹落了如雨的星光。華麗車馬滿路飄香。鳳簫聲起，玉壺燈光流轉，一夜魚龍燈舞個不停。頭戴蛾兒雪柳金絲綢，笑語盈盈帶著暗香離去。在人群中尋找他千百次，猛然回頭，那人卻在燈火稀落的地方。</p></div>
+<div class="trans-col"><h4>English</h4><p><strong>Nian Nu Jiao: Red Cliff:</strong> The great river flows east, its waves washing away the brilliant figures of a thousand ages. At the old fortress west, they say this is Red Cliff of Zhou Yu in the Three Kingdoms. Jagged rocks pierce the sky, fierce waves crash upon the shore, rolling up a thousand drifts of snow. The landscape is like a painting — how many heroes gathered in those days. Thinking of Zhou Yu, when Xiao Qiao had just married him, in his prime. With feather fan and silk kerchief, between talk and laughter, the enemy's ships turned to ash. My spirit wanders these ancient lands — forgive my sentimentality in growing white-haired so early. Life is like a dream — let me pour a cup of wine to the river and moon.<br><br><strong>Sheng Sheng Man:</strong> Seeking, seeking, searching, searching — cold, cold, clear, clear — sad, sad, wretched, wretched, miserable, miserable. In this season of sudden warmth and sudden cold, it is hardest to find rest. A few cups of thin wine — how can they withstand the evening's fierce wind? Wild geese pass overhead — I am already heartbroken, yet they are old acquaintances. Yellow chrysanthemums pile on the ground, withered and ruined — who would pick them now? Sitting by the window alone, how can one endure until dark? The parasol trees are further lashed by drizzle, drop by drop until dusk. This scene — how can a single word "sorrow" encompass it all?<br><br><strong>Qing Yu An: Lantern Festival:</strong> The east wind at night opens a thousand trees of flowers, then blows down stars like rain. Fine horses and carved carriages fill the roads with fragrance. Phoenix flutes sound, jade lanterns turn — a night of dancing fish and dragon lanterns. Women with moth and willow ornaments, golden threads, laughing and murmuring, depart with hidden fragrance. A thousand times I searched for her in the crowd — suddenly turning my head, there she stands, in the fading lamplight.</p></div></div></div>
+<div class="tab-content" id="t12-vocab"><table class="vocab-table">
+<tr><th>字詞</th><th>讀音</th><th>釋義</th></tr>
+<tr><td>風流人物</td><td>fēng liú rén wù</td><td>傑出的英雄人物</td></tr>
+<tr><td>羽扇綸巾</td><td>yǔ shàn guān jīn</td><td>手搖羽扇頭戴綸巾（儒將裝束）</td></tr>
+<tr><td>將息</td><td>jiāng xī</td><td>調養休息</td></tr>
+<tr><td>怎生</td><td>zěn shēng</td><td>怎麼、如何</td></tr>
+<tr><td>這次第</td><td>zhè cì dì</td><td>這種情景、這種光景</td></tr>
+<tr><td>了得</td><td>liǎo de</td><td>概括得了</td></tr>
+<tr><td>蛾兒雪柳</td><td>é ér xuě liǔ</td><td>古代元宵節女子頭上的飾物</td></tr>
+<tr><td>闌珊</td><td>lán shān</td><td>將盡、稀落</td></tr>
+<tr><td>觥</td><td>gōng</td><td>酒杯</td></tr>
+<tr><td>酹</td><td>lèi</td><td>把酒灑在地上祭奠</td></tr>
+</table></div>
+<div class="tab-content" id="t12-keys">
+<div class="key-points">
+<div class="key-point"><h5>蘇軾：豪放曠達</h5><p>以赤壁古戰場引發懷古之情，感慨功業未成、人生如夢，但結尾曠達超脫。</p></div>
+<div class="key-point"><h5>李清照：婉約深沉</h5><p>開頭十組疊字「尋尋覓覓……」為千古絕唱，表達家國之思和孤獨愁苦。</p></div>
+<div class="key-point"><h5>辛棄疾：含蓄蘊藉</h5><p>「眾裡尋他千百度，驀然回首，那人卻在燈火闌珊處」寄託不同流俗的高潔品格。</p></div>
+<div class="key-point"><h5>豪放vs婉約</h5><p>蘇軾辛棄疾為豪放派代表，李清照為婉約派代表，風格迥異各有千秋。</p></div>
+</div>
+<div class="summary-box" style="margin-top:1rem"><h5>⚡ 考試要點</h5><p style="font-size:.88rem">蘇軾「大江東去」為豪放詞代表。李清照疊字運用為千古絕唱。辛棄疾「眾裡尋他千百度」為名句。注意詞是合樂文學。</p></div>
+</div></div>
+<div class="quiz-section" id="quiz-t12">
+<h4>📝 隨堂測驗</h4>
+<div class="quiz-q" data-answer="0"><p>1. 蘇軾〈念奴嬌〉懷念的歷史人物是？</p>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q12_1" value="0">A. 周瑜</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q12_1" value="1">B. 諸葛亮</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q12_1" value="2">C. 曹操</label>
+<label onclick="checkQuiz(this,1)"><input type="radio" name="q12_1" value="3">D. 呂布</label>
+<div class="feedback">「遙想公瑾當年」——周瑜字公瑾。</div></div>
+<div class="quiz-q" data-answer="2"><p>2. 李清照〈聲聲慢〉開頭的疊字有何效果？</p>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q12_2" value="0">A. 增加字數湊數</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q12_2" value="1">B. 模仿兒歌</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q12_2" value="2">C. 強化愁緒層層加深的效果</label>
+<label onclick="checkQuiz(this,2)"><input type="radio" name="q12_2" value="3">D. 描寫節奏</label>
+<div class="feedback">十組疊字層層加深，從動作到感受再到心境，極致表達愁苦。</div></div>
+<div class="quiz-q" data-answer="1"><p>3. 「眾裡尋他千百度」中的「那人」象徵什麼？</p>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q12_3" value="0">A. 愛人</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q12_3" value="1">B. 不與世俗同流合污的高潔之人</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q12_3" value="2">C. 朋友</label>
+<label onclick="checkQuiz(this,3)"><input type="radio" name="q12_3" value="3">D. 女兒</label>
+<div class="feedback">「那人」在燈火闌珊處，象徵不隨波逐流的高潔品格。</div></div>
+<button class="quiz-btn" onclick="showScore('t12',3)">查看分數</button>
+<div id="score-t12" style="margin-top:.5rem;font-weight:700;color:var(--accent)"></div>
+</div></div></div>
+
+</div><!-- container -->
+
+<footer>
+<p>HKDSE 中文科 十二篇指定文言文學習指南 | 本學習指南僅供參考，請以官方教材為準</p>
+<p style="margin-top:.3rem">涵蓋：原文 · 白話語譯 · 英文翻譯 · 詞解 · 重點分析 · 隨堂測驗</p>
+</footer>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===== THEME TOGGLE =====
+function toggleTheme(){
+  const t=document.documentElement.getAttribute('data-theme')==='dark'?'':'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('themeBtn').textContent=t==='dark'?'☀️ 日間模式':'🌙 暗色模式';
+  localStorage.setItem('dse_theme',t);
+}
+(function(){const s=localStorage.getItem('dse_theme');if(s)document.documentElement.setAttribute('data-theme',s);if(s==='dark')document.getElementById('themeBtn').textContent='☀️ 日間模式';})();
+
+// ===== CARD TOGGLE =====
+function toggleCard(h){h.closest('.text-card').classList.toggle('open');}
+
+// ===== EXPAND/COLLAPSE ALL =====
+function expandAll(){document.querySelectorAll('.text-card').forEach(c=>c.classList.add('open'));}
+function collapseAll(){document.querySelectorAll('.text-card').forEach(c=>c.classList.remove('open'));}
+
+// ===== TABS =====
+function switchTab(btn,cardId,type){
+  const card=document.getElementById(cardId);
+  card.querySelectorAll('.tab-row .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  card.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById(cardId+'-'+type).classList.add('active');
+}
+
+// ===== QUIZ =====
+function checkQuiz(label,qNum){
+  const q=label.closest('.quiz-q');
+  const correct=parseInt(q.dataset.answer);
+  const selected=parseInt(label.querySelector('input').value);
+  q.querySelectorAll('label').forEach(l=>{l.classList.remove('correct','wrong');l.style.pointerEvents='none';});
+  label.classList.add(selected===correct?'correct':'wrong');
+  q.querySelectorAll('label')[correct].classList.add('correct');
+  const fb=q.querySelector('.feedback');
+  fb.classList.add('show',selected===correct?'correct-fb':'wrong-fb');
+}
+
+function showScore(cardId,total){
+  const section=document.getElementById('quiz-'+cardId);
+  const qs=section.querySelectorAll('.quiz-q');
+  let correct=0;
+  qs.forEach(q=>{
+    const labels=q.querySelectorAll('label');
+    labels.forEach(l=>{if(l.classList.contains('correct')&&!l.classList.contains('wrong')&&l.querySelector('input').checked)correct++;});
+    // Also check if the user selected the correct one
+    const checked=q.querySelector('input:checked');
+    if(checked&&parseInt(checked.value)===parseInt(q.dataset.answer))correct++;
+  });
+  // Deduct double counts
+  let counted=0;
+  qs.forEach(q=>{
+    const checked=q.querySelector('input:checked');
+    if(checked&&parseInt(checked.value)===parseInt(q.dataset.answer))counted++;
+  });
+  const pct=Math.round((counted/total)*100);
+  document.getElementById('score-'+cardId).innerHTML=
+    `得分：${counted}/${total}（${pct}%）`+(pct===100?' 🎉 全對！':'');
+  updateProgress();
+}
+
+// ===== PROGRESS =====
+const state={read:new Set(),quiz:new Set()};
+function markRead(i){state.read.add(i);updateProgress();}
+
+function initProgress(){
+  const g=document.getElementById('progressGrid');
+  g.innerHTML='';
+  for(let i=0;i<12;i++){
+    const d=document.createElement('div');
+    d.className='progress-dot';
+    d.textContent=['語','孟','莊','荀','史','表','柳','韓','詩','岳','六','詞'][i];
+    d.title=['論語','孟子','莊子','荀子','史記','出師表','始得西山','師說','唐詩','岳陽樓記','六國論','詞三首'][i];
+    d.onclick=()=>{document.getElementById('t'+(i+1)).scrollIntoView({behavior:'smooth',block:'start'});};
+    g.appendChild(d);
+  }
+}
+
+function updateProgress(){
+  const dots=document.querySelectorAll('.progress-dot');
+  // Check quiz completion by checking if any radio is selected in each quiz
+  for(let i=0;i<12;i++){
+    const quiz=document.getElementById('quiz-t'+(i+1));
+    if(quiz){
+      const checked=quiz.querySelector('input:checked');
+      if(checked)state.quiz.add(i);
+    }
+  }
+  let done=0;
+  dots.forEach((d,i)=>{
+    d.classList.remove('read','quiz-done');
+    if(state.quiz.has(i)){d.classList.add('quiz-done');done++;}
+    else if(state.read.has(i)){d.classList.add('read');done++;}
+  });
+  const pct=Math.round((done/12)*100);
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressText').textContent=`已完成 ${done}/12 篇（${pct}%）`;
+}
+
+// ===== BACK TO TOP =====
+window.addEventListener('scroll',()=>{
+  document.getElementById('backTop').classList.toggle('show',window.scrollY>400);
+});
+
+// ===== SCROLL TO PROGRESS =====
+function scrollToProgress(){
+  document.getElementById('progressSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ===== NAV ACTIVE STATE =====
+const navLinks=document.querySelectorAll('.nav a');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const link=document.querySelector(`.nav a[href="#${id}"]`);
+      if(link)link.classList.add('active');
+    }
+  });
+},{threshold:0.3,rootMargin:'-80px 0px -60% 0px'});
+for(let i=1;i<=12;i++){
+  const el=document.getElementById('t'+i);
+  if(el)observer.observe(el);
+}
+
+// ===== INIT =====
+initProgress();
+updateProgress();
+</script>
+</body>
+</html>

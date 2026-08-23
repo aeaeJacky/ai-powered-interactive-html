@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>♻️ Plastic Recycling Sorter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-top:#0b1628;--bg-bot:#162544;
+  --pet:#2196F3;--hdpe:#4CAF50;--pvc:#9E9E9E;--ldpe:#8BC34A;
+  --pp:#FFC107;--ps:#FF9800;--other:#F44336;
+  --glow-correct:rgba(76,175,80,.7);--glow-wrong:rgba(244,67,54,.7);
+  --font-display:'Fredoka One',cursive;--font-body:'Nunito',sans-serif;
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font-body);
+  background:linear-gradient(180deg,var(--bg-top),var(--bg-bot));color:#fff;
+  touch-action:none;user-select:none;-webkit-user-select:none}
+body{display:flex;flex-direction:column;position:relative}
+
+/* ========== SCREENS ========== */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:100;transition:opacity .5s,visibility .5s}
+.screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.screen h1{font-family:var(--font-display);font-size:clamp(2rem,6vw,4rem);
+  background:linear-gradient(135deg,#00e5ff,#76ff03,#ffea00,#ff6d00,#d500f9);
+  background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;animation:gradShift 4s ease infinite;text-align:center}
+.screen p{font-size:clamp(.9rem,2.5vw,1.3rem);max-width:520px;text-align:center;
+  margin:1rem 0;color:#b0bec5;line-height:1.5}
+@keyframes gradShift{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+
+.btn{font-family:var(--font-display);font-size:1.3rem;padding:.85rem 2.8rem;
+  border:none;border-radius:50px;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,#00e5ff,#1de9b6);
+  box-shadow:0 4px 24px rgba(0,229,255,.35);transition:transform .15s,box-shadow .15s;
+  letter-spacing:1px;text-transform:uppercase}
+.btn:hover{transform:scale(1.06);box-shadow:0 6px 32px rgba(0,229,255,.55)}
+.btn:active{transform:scale(.97)}
+
+.start-sub{display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;justify-content:center}
+.start-sub .btn{font-size:1rem;padding:.65rem 2rem}
+
+/* ========== HUD ========== */
+#hud{position:relative;z-index:10;display:flex;align-items:center;
+  justify-content:space-between;padding:.6rem 1.2rem;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.08)}
+#hud>div{display:flex;align-items:center;gap:.5rem}
+.hud-label{font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:#78909c}
+.hud-val{font-family:var(--font-display);font-size:1.5rem}
+#scoreVal{color:#76ff03;transition:transform .15s}
+#scoreVal.bump{transform:scale(1.3)}
+#timerVal{color:#ffea00}
+#comboVal{color:#ff6d00}
+#levelVal{color:#00e5ff}
+
+.timer-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(255,255,255,.1)}
+.timer-bar{height:100%;background:linear-gradient(90deg,#f44336,#ffea00,#76ff03);
+  transition:width 1s linear;width:100%}
+
+/* ========== GAME AREA ========== */
+#gameArea{flex:1;position:relative;overflow:hidden;cursor:default;
+  background:radial-gradient(ellipse at 50% 120%,rgba(0,100,180,.12),transparent 70%)}
+#gameArea::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(244,67,54,.3),transparent);
+  pointer-events:none;z-index:5;opacity:0;transition:opacity .5s}
+#gameArea.danger::after{opacity:1}
+
+/* floating background particles */
+.bg-particle{position:absolute;border-radius:50%;pointer-events:none;
+  background:rgba(255,255,255,.04);animation:floatUp linear infinite}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0}
+  10%{opacity:1}90%{opacity:1}100%{transform:translateY(-110vh) rotate(360deg);opacity:0}}
+
+/* ========== FALLING ITEMS ========== */
+.falling-item{
+  position:absolute;width:80px;height:80px;cursor:grab;z-index:20;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:18px;transition:box-shadow .2s;
+  background:rgba(255,255,255,.08);backdrop-filter:blur(4px);
+  border:2px solid rgba(255,255,255,.15);
+  animation:gentleBob 2s ease-in-out infinite}
+.falling-item.dragging{cursor:grabbing;z-index:50;
+  box-shadow:0 0 36px rgba(0,229,255,.6),0 0 60px rgba(0,229,255,.25),0 12px 40px rgba(0,0,0,.5) !important;
+  border-color:rgba(0,229,255,.7) !important;animation:none;transform:scale(1.15);
+  background:rgba(0,229,255,.12)}
+.falling-item .item-icon{font-size:2.6rem;line-height:1}
+.falling-item .item-label{position:absolute;bottom:-18px;font-size:.6rem;font-weight:700;
+  color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap;text-align:center}
+.falling-item .item-img{width:60px;height:60px;object-fit:contain;pointer-events:none;
+  border-radius:10px;display:none}
+.falling-item .item-img.loaded{display:block}
+.falling-item .item-icon.no-img{display:flex}
+.falling-item .item-icon.img-loaded{display:none}
+@keyframes gentleBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ========== BINS ========== */
+#binsRow{position:relative;z-index:10;display:flex;
+  padding:.5rem .3rem .7rem;gap:.35rem;
+  background:linear-gradient(0deg,rgba(0,0,0,.6),rgba(0,0,0,.2));
+  backdrop-filter:blur(6px);border-top:1px solid rgba(255,255,255,.1);
+  transition:background .3s}
+#binsRow.active-drop{background:linear-gradient(0deg,rgba(0,229,255,.12),rgba(0,229,255,.03));
+  border-top-color:rgba(0,229,255,.3)}
+.bin{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;
+  padding:.4rem .15rem;border-radius:14px 14px 8px 8px;cursor:pointer;
+  border:2px solid rgba(255,255,255,.12);position:relative;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+  background:rgba(255,255,255,.05)}
+.bin:hover{transform:translateY(-3px)}
+.bin.highlight{border-color:rgba(255,255,255,.5);
+  box-shadow:0 0 20px rgba(255,255,255,.2);transform:translateY(-6px)}
+.bin-img{width:48px;height:48px;object-fit:contain;border-radius:8px;
+  pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));display:none}
+.bin-img.loaded{display:block}
+.bin-num{font-family:var(--font-display);font-size:1.6rem;line-height:1;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);display:flex}
+.bin-num.img-loaded{display:none}
+.bin-name{font-size:.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+  margin-top:2px;color:rgba(255,255,255,.85);text-align:center;line-height:1.1}
+.bin::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:3px;
+  border-radius:2px;background:var(--c);opacity:.6}
+
+/* bin pulse animations */
+@keyframes binCorrect{0%{box-shadow:0 0 0 0 var(--glow-correct)}70%{box-shadow:0 0 0 18px rgba(76,175,80,0)}
+  100%{box-shadow:0 0 0 0 rgba(76,175,80,0)}}
+@keyframes binWrong{0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.bin.correct-anim{animation:binCorrect .6s ease-out}
+.bin.wrong-anim{animation:binWrong .4s ease;border-color:var(--glow-wrong)}
+
+/* ========== SCORE POPUPS ========== */
+.score-popup{position:absolute;z-index:60;font-family:var(--font-display);
+  font-size:1.6rem;pointer-events:none;
+  animation:popUp .9s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+@keyframes popUp{0%{opacity:1;transform:translateY(0) scale(1)}
+  50%{transform:translateY(-30px) scale(1.3);opacity:1}
+  100%{opacity:0;transform:translateY(-60px) scale(.9)}}
+
+/* ========== EDUCATIONAL CARD ========== */
+#eduCard{position:fixed;z-index:200;inset:0;display:flex;align-items:center;
+  justify-content:center;padding:1rem;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+#eduCard.show{opacity:1;visibility:visible}
+.edu-inner{background:linear-gradient(145deg,#1a2744,#0d1b30);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:1.8rem;max-width:420px;width:100%;position:relative;
+  box-shadow:0 12px 48px rgba(0,0,0,.5);animation:cardIn .35s ease}
+@keyframes cardIn{0%{transform:scale(.85) translateY(20px);opacity:0}
+  100%{transform:scale(1) translateY(0);opacity:1}}
+.edu-header{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.edu-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:1.8rem}
+.edu-title{font-family:var(--font-display);font-size:1.3rem;line-height:1.2}
+.edu-subtitle{font-size:.8rem;color:#78909c;margin-top:2px}
+.edu-section{margin-bottom:.8rem}
+.edu-section h4{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#546e7a;margin-bottom:.3rem}
+.edu-section p{font-size:.85rem;color:#cfd8dc;line-height:1.45}
+.edu-badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.7rem;
+  font-weight:700;margin-right:.3rem;margin-bottom:.3rem}
+.edu-close{position:absolute;top:10px;right:14px;background:none;border:none;color:#546e7a;
+  font-size:1.4rem;cursor:pointer;transition:color .2s}
+.edu-close:hover{color:#fff}
+
+/* ========== GAME OVER ========== */
+.go-stat{font-family:var(--font-display);font-size:2.5rem;margin:.5rem 0}
+.go-detail{color:#78909c;font-size:.95rem}
+
+/* ========== SCREEN SHAKE ========== */
+@keyframes screenShake{0%,100%{transform:translate(0)}
+  10%{transform:translate(-4px,2px)}30%{transform:translate(4px,-2px)}
+  50%{transform:translate(-2px,4px)}70%{transform:translate(2px,-4px)}
+  90%{transform:translate(-4px,0)}}
+body.shake{animation:screenShake .3s ease}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:600px){
+  .bin{padding:.3rem .1rem;border-radius:10px 10px 6px 6px}
+  .bin-num{font-size:1.2rem}
+  .bin-img{width:36px;height:36px}
+  .bin-name{font-size:.45rem}
+  .falling-item{width:64px;height:64px;border-radius:14px}
+  .falling-item .item-icon{font-size:2rem}
+  .falling-item .item-label{font-size:.5rem}
+  #hud{padding:.4rem .6rem}
+  .hud-val{font-size:1.1rem}
+  .edu-inner{padding:1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== START SCREEN ========== -->
+<div id="startScreen" class="screen">
+  <h1>♻️ Recycling Sorter</h1>
+  <p>Drag falling plastic items into the correct recycling bin!<br>Learn about the 7 plastic recycling codes while saving the planet.</p>
+  <button class="btn" onclick="startGame()">Play</button>
+  <div class="start-sub">
+    <span style="font-size:.8rem;color:#546e7a;margin-top:1rem">⏱ 60 seconds &bull; 🎯 7 bins &bull; 📚 Learn while you play</span>
+  </div>
+</div>
+
+<!-- ========== GAME OVER SCREEN ========== -->
+<div id="overScreen" class="screen hidden">
+  <h1>Time's Up!</h1>
+  <div class="go-stat" id="finalScore" style="color:#76ff03">0</div>
+  <div class="go-detail">points scored</div>
+  <div style="margin-top:.8rem;display:flex;gap:1.5rem">
+    <div class="go-detail">✅ Correct: <strong id="goCorrect" style="color:#76ff03">0</strong></div>
+    <div class="go-detail">❌ Wrong: <strong id="goWrong" style="color:#f44336">0</strong></div>
+  </div>
+  <div style="margin-top:.3rem" class="go-detail">🔥 Best Combo: <strong id="goCombo" style="color:#ff6d00">0</strong></div>
+  <button class="btn" onclick="startGame()" style="margin-top:1.5rem">Play Again</button>
+</div>
+
+<!-- ========== HUD ========== -->
+<div id="hud" style="display:none">
+  <div><span class="hud-label">Score</span><span class="hud-val" id="scoreVal">0</span></div>
+  <div><span class="hud-label">Combo</span><span class="hud-val" id="comboVal">×1</span></div>
+  <div style="flex-direction:column;align-items:flex-end">
+    <div style="display:flex;align-items:center;gap:.4rem">
+      <span class="hud-label">Time</span><span class="hud-val" id="timerVal">60</span>
+    </div>
+  </div>
+  <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
+</div>
+
+<!-- ========== GAME AREA ========== -->
+<div id="gameArea" style="display:none"></div>
+
+<!-- ========== BINS ROW ========== -->
+<div id="binsRow" style="display:none"></div>
+
+<!-- ========== EDUCATIONAL CARD ========== -->
+<div id="eduCard">
+  <div class="edu-inner">
+    <button class="edu-close" onclick="closeEdu()">✕</button>
+    <div class="edu-header">
+      <div class="edu-icon" id="eduIcon"></div>
+      <div><div class="edu-title" id="eduTitle"></div><div class="edu-subtitle" id="eduSubtitle"></div></div>
+    </div>
+    <div class="edu-section"><h4>What is it?</h4><p id="eduWhat"></p></div>
+    <div class="edu-section"><h4>🔥 Heat Resistance</h4><p id="eduHeat"></p></div>
+    <div class="edu-section"><h4>⚠️ Safety &amp; Toxicity</h4><p id="eduSafety"></p></div>
+    <div class="edu-section"><h4>♻️ Recycling Info</h4><p id="eduRecycle"></p></div>
+    <div id="eduBadges"></div>
+    <div style="text-align:center;margin-top:1rem;font-size:.75rem;color:#546e7a;
+      animation:pulse 1.5s ease-in-out infinite">Tap anywhere to continue</div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA ====================
+const BIN_COLORS = ['#2196F3','#4CAF50','#9E9E9E','#8BC34A','#FFC107','#FF9800','#F44336'];
+const BIN_BG = ['rgba(33,150,243,.15)','rgba(76,175,80,.15)','rgba(158,158,158,.15)',
+  'rgba(139,195,74,.15)','rgba(255,193,7,.15)','rgba(255,152,0,.15)','rgba(244,67,54,.15)'];
+
+const PROMPTS = {
+  bins:[
+    'cute blue recycling bin with number 1 PET label, 3D cartoon style, vibrant, game asset, clean background',
+    'cute green recycling bin with number 2 HDPE label, 3D cartoon style, vibrant, game asset, clean background',
+    'cute white recycling bin with number 3 PVC label, 3D cartoon style, vibrant, game asset, clean background',
+    'cute lime green recycling bin with number 4 LDPE label, 3D cartoon style, vibrant, game asset, clean background',
+    'cute yellow recycling bin with number 5 PP label, 3D cartoon style, vibrant, game asset, clean background',
+    'cute orange recycling bin with number 6 PS label, 3D cartoon style, vibrant, game asset, clean background',
+    'cute red recycling bin with number 7 OTHER label, 3D cartoon style, vibrant, game asset, clean background'
+  ],
+  items:[
+    'clear plastic water bottle, cartoon illustration, vibrant colors, game item, clean background',
+    'white plastic milk jug, cartoon illustration, vibrant colors, game item, clean background',
+    'transparent food cling wrap stretched over a bowl of cooked food, PVC film, cartoon illustration, vibrant colors, game item, clean background',
+    'white plastic grocery shopping bag, cartoon illustration, vibrant colors, game item, clean background',
+    'plastic microwave food container with lid, cartoon illustration, vibrant colors, game item, clean background',
+    'styrofoam takeout box, cartoon illustration, vibrant colors, game item, clean background',
+    'colorful plastic toy dinosaur, cartoon illustration, vibrant colors, game item, clean background'
+  ]
+};
+
+const ITEMS = [
+  {name:'Water Bottle',code:0,icon:'💧',imgIdx:0,
+    full:'Polyethylene Terephthalate (PET/PETE)',
+    what:'Found in water bottles, soda bottles, juice containers, food jars, and polyester clothing fibers. The most commonly used plastic worldwide.',
+    heat:'Low heat resistance (melts ~70°C). Should NOT be heated or reused repeatedly — chemicals like antimony and phthalates can leach into liquids, especially in sunlight or heat.',
+    safety:'Single-use only. Reusing PET bottles can increase bacterial growth and chemical leaching. Avoid exposing to heat (cars, microwaves). Considered safe for initial food contact.',
+    recycle:'Widely recycled (check local code #1). Turns into carpet, fleece jackets, new bottles, and tote bags. One of the most successfully recycled plastics.',
+    badges:['Single-Use','Widely Recycled','Food-Safe (new)']},
+  {name:'Milk Jug',code:1,icon:'🥛',imgIdx:1,
+    full:'High-Density Polyethylene (HDPE)',
+    what:'Used in milk jugs, detergent bottles, shampoo bottles, plastic bags, and playground equipment. An opaque, sturdy plastic.',
+    heat:'Good heat resistance (~120°C). Does not leach significant chemicals. Considered one of the safest plastics for food and beverage contact.',
+    safety:'Very safe — minimal chemical leaching. FDA approved for food contact. Does not contain BPA or phthalates. Safe for reuse with proper cleaning.',
+    recycle:'Widely recycled (code #2). One of the easiest plastics to recycle. Turns into pens, lumber, benches, trash cans, and new containers.',
+    badges:['Very Safe','Widely Recycled','BPA-Free']},
+  {name:'Food Cling Wrap',code:2,icon:'🥩',imgIdx:2,
+    full:'Polyvinyl Chloride (PVC/V)',
+    what:'Traditional household cling wrap — the clear, thin, very sticky film you use to cover leftovers or wrap food — is made of PVC. Deli, butchery and canteen wrap are often PVC too.',
+    heat:'⚠️ NEVER HEAT IT. Heating PVC releases toxic chemicals — phthalates leach into hot or fatty food, and overheating or burning gives off dioxins and hydrogen chloride gas. Do NOT put it in the microwave or use it to cover hot food.',
+    safety:'⚠️ TOXIC WHEN HEATED — PVC contains phthalates as plasticizers. Fine for cold food, but becomes toxic once heated. Cover only cool food and keep it away from the microwave, oven and hot dishes.',
+    recycle:'Rarely recycled (code #3). Soft PVC film is hard to process and contaminates recycling. Throw it away — it is not accepted in curbside recycling.',
+    badges:['⚠️ Toxic When Heated','Never Microwave','Rarely Recycled']},
+  {name:'Plastic Grocery Bag',code:3,icon:'🛍️',imgIdx:3,
+    full:'Low-Density Polyethylene (LDPE)',
+    what:'Used in plastic grocery and shopping bags, produce bags, squeeze bottles and thin flexible film. Flexible, slightly stretchy and translucent.',
+    heat:'Low heat resistance (~100°C). Melts easily. Should not be used around hot food or in a microwave.',
+    safety:'Generally safe for food contact. Low chemical leaching risk. Reuse bags for shopping and trash to cut single-use waste.',
+    recycle:'Not accepted in the curbside bin (code #4) — take clean bags and film back to participating grocery-store drop-off collections. Recycles into floor tiles, lumber and compost bins.',
+    badges:['Food-Safe','Reuse It','Grocery Drop-Off Only']},
+  {name:'Food Container',code:4,icon:'🍱',imgIdx:4,accept:[0,4],
+    full:'Polypropylene (PP)',
+    what:'Used in food containers, yogurt cups, bottle caps, straws, syrup bottles, and microwave-safe containers.',
+    heat:'High heat resistance (~130°C). Microwave-safe.',
+    safety:'One of the safest plastics. Does not leach chemicals easily.',
+    recycle:'Increasingly recycled (code #5). Turns into signal lights, battery cables, brooms, and auto parts.',
+    badges:['PET or PP Both OK','Very Safe','Heat Resistant']},
+  {name:'Styrofoam Box',code:5,icon:'📦',imgIdx:5,
+    full:'Polystyrene (PS)',
+    what:'Used in Styrofoam cups, takeout containers, disposable plates, packing peanuts, and CD cases. Lightweight foam or rigid form.',
+    heat:'Low heat resistance. Leaches styrene (a possible carcinogen) when heated, especially with acidic or fatty foods. Dissolves with hot liquids.',
+    safety:'⚠️ HEALTH RISK — Styrene is classified as "reasonably anticipated to be a human carcinogen." Avoid hot food contact. Microplastics from PS are persistent in the environment.',
+    recycle:'Rarely recycled (code #6). Specialized drop-off only. Difficult and uneconomical to recycle. Major contributor to ocean plastic pollution.',
+    badges:['⚠️ Possible Carcinogen','Rarely Recycled','Avoid Hot Food']},
+  {name:'Plastic Toy',code:6,icon:'🧸',imgIdx:6,
+    full:'Other Plastics (PC, Mixed, Bio-based)',
+    what:'A catch-all category for polycarbonate, polylactide (PLA), nylon, acrylic, and mixed plastics. Includes sports equipment, LED light bulbs, and some food containers.',
+    heat:'Varies wildly by material. Polycarbonate can handle heat but leaches BPA. PLA is compostable only at industrial temperatures. Always check the specific plastic.',
+    safety:'⚠️ Varies — Polycarbonate may contain BPA (endocrine disruptor). Mixed plastics are unpredictable. When in doubt, avoid food contact. Not enough research on long-term effects of many #7 plastics.',
+    recycle:'Rarely recycled (code #7). Most facilities cannot process mixed plastics. PLA is compostable but contaminates conventional recycling streams.',
+    badges:['Varies','Rarely Recycled','Check Specific Type']}
+];
+
+// ==================== IMAGE URLS ====================
+function imgUrl(prompt, w, h) {
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&nologo=true&seed=42`;
+}
+const BIN_IMG_URLS = PROMPTS.bins.map(p => imgUrl(p, 200, 200));
+const ITEM_IMG_URLS = PROMPTS.items.map(p => imgUrl(p, 160, 160));
+
+// ==================== STATE ====================
+let state = {};
+let animId = null;
+let spawnTimer = null;
+let eduTimer = null;
+const bins = [];
+const fallingItems = [];
+
+// ==================== DOM ====================
+const $ = id => document.getElementById(id);
+const gameArea = $('gameArea');
+const binsRow = $('binsRow');
+const hud = $('hud');
+
+// ==================== AUDIO (Web Audio API) ====================
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playTone(freq, dur, type='sine', vol=0.15) {
+  ensureAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + dur);
+}
+function sfxCorrect() { playTone(523,.08); setTimeout(()=>playTone(659,.08),80); setTimeout(()=>playTone(784,.15),160); }
+function sfxWrong() { playTone(200,.15,'sawtooth',.12); setTimeout(()=>playTone(150,.2,'sawtooth',.12),120); }
+function sfxSpawn() { playTone(880,.05,'sine',.06); }
+function sfxGameOver() { [523,466,392,330,262].forEach((f,i)=>setTimeout(()=>playTone(f,.3,'sine',.1),i*200)); }
+
+// ==================== INIT BINS ====================
+function buildBins() {
+  binsRow.innerHTML = '';
+  bins.length = 0;
+  for (let i = 0; i < 7; i++) {
+    const bin = document.createElement('div');
+    bin.className = 'bin';
+    bin.style.setProperty('--c', BIN_COLORS[i]);
+    bin.style.background = BIN_BG[i];
+    bin.dataset.code = i;
+
+    const img = document.createElement('img');
+    img.className = 'bin-img';
+    img.src = BIN_IMG_URLS[i];
+    img.alt = `Bin ${i+1}`;
+    img.onload = () => img.classList.add('loaded');
+    bin.appendChild(img);
+
+    const num = document.createElement('div');
+    num.className = 'bin-num';
+    num.textContent = i + 1;
+    num.style.color = BIN_COLORS[i];
+    bin.appendChild(num);
+
+    const name = document.createElement('div');
+    name.className = 'bin-name';
+    name.textContent = ['PET','HDPE','PVC','LDPE','PP','PS','OTHER'][i];
+    bin.appendChild(name);
+
+    bin.addEventListener('pointerenter', () => {
+      if (state.dragging !== null) bin.classList.add('highlight');
+    });
+    bin.addEventListener('pointerleave', () => {
+      bin.classList.remove('highlight');
+    });
+
+    binsRow.appendChild(bin);
+    bins.push(bin);
+  }
+}
+
+// ==================== SPAWN ITEM ====================
+function spawnItem() {
+  if (state.paused) return;
+  const codeIdx = Math.floor(Math.random() * 7);
+  const item = ITEMS[codeIdx];
+  const area = gameArea.getBoundingClientRect();
+  const x = 40 + Math.random() * (area.width - 120);
+  const el = document.createElement('div');
+  el.className = 'falling-item';
+  el.style.borderColor = BIN_COLORS[codeIdx] + '55';
+  el.style.boxShadow = `0 0 12px ${BIN_COLORS[codeIdx]}33, inset 0 0 20px ${BIN_COLORS[codeIdx]}11`;
+  el.innerHTML = `
+    <div class="item-icon">${item.icon}</div>
+    <div class="item-label">${item.name}</div>`;
+
+  const img = document.createElement('img');
+  img.className = 'item-img';
+  img.src = ITEM_IMG_URLS[item.imgIdx];
+  img.onload = () => { img.classList.add('loaded'); el.querySelector('.item-icon').classList.add('img-loaded'); };
+  el.insertBefore(img, el.firstChild);
+
+  el.style.left = x + 'px';
+  el.style.top = '-90px';
+
+  const itemObj = {
+    el, codeIdx, x,
+    accept: item.accept,
+    y: -90,
+    speed: state.fallSpeed + Math.random() * 0.5,
+    width: 80,
+    height: 80,
+    id: state.nextId++,
+    bobOffset: Math.random() * Math.PI * 2
+  };
+  el.dataset.itemId = itemObj.id;
+
+  el.addEventListener('pointerdown', (e) => onItemGrab(e, itemObj));
+  el.addEventListener('touchstart', (e) => onItemGrab(e, itemObj), {passive:false});
+
+  gameArea.appendChild(el);
+  fallingItems.push(itemObj);
+  sfxSpawn();
+}
+
+// ==================== DRAG & DROP ====================
+function onItemGrab(e, itemObj) {
+  e.preventDefault();
+  if (state.dragging !== null || state.paused) return;
+  ensureAudio();
+  state.dragging = itemObj;
+  state.dragOffsetX = 0;
+  state.dragOffsetY = 0;
+  itemObj.el.classList.add('dragging');
+
+  const rect = itemObj.el.getBoundingClientRect();
+  const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+  const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+  state.dragOffsetX = cx - rect.left - rect.width / 2;
+  state.dragOffsetY = cy - rect.top - rect.height / 2;
+
+  highlightBins(true);
+}
+
+function onPointerMove(e) {
+  if (state.dragging === null) return;
+  e.preventDefault();
+  const area = gameArea.getBoundingClientRect();
+  const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+  const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+  let nx = clientX - area.left - state.dragOffsetX;
+  let ny = clientY - area.top - state.dragOffsetY;
+  nx = Math.max(-30, Math.min(area.width - 50, nx));
+  ny = Math.max(-30, Math.min(area.height - 50, ny));
+  state.dragging.x = nx;
+  state.dragging.y = ny;
+  state.dragging.el.style.left = nx + 'px';
+  state.dragging.el.style.top = ny + 'px';
+
+  // Highlight nearest bin
+  const binsRect = binsRow.getBoundingClientRect();
+  const itemCY = ny + 40;
+  const nearBin = itemCY > area.height - 80;
+  bins.forEach(b => {
+    if (nearBin) {
+      const br = b.getBoundingClientRect();
+      if (clientX > br.left && clientX < br.right) {
+        b.classList.add('highlight');
+      } else {
+        b.classList.remove('highlight');
+      }
+    } else {
+      b.classList.remove('highlight');
+    }
+  });
+}
+
+function onPointerUp(e) {
+  if (state.dragging === null) return;
+  e.preventDefault();
+  const itemObj = state.dragging;
+  state.dragging = null;
+  itemObj.el.classList.remove('dragging');
+  highlightBins(false);
+
+  // Check if dropped on a bin
+  const area = gameArea.getBoundingClientRect();
+  const binsRect = binsRow.getBoundingClientRect();
+  const itemCY = itemObj.y + 40;
+  let dropped = false;
+
+  if (itemCY > area.height - 100) {
+    const clientX = e.clientX ?? e.changedTouches?.[0]?.clientX ?? 0;
+    for (let i = 0; i < bins.length; i++) {
+      const br = bins[i].getBoundingClientRect();
+      if (clientX > br.left && clientX < br.right) {
+        processDrop(itemObj, i);
+        dropped = true;
+        break;
+      }
+    }
+  }
+
+  if (!dropped) {
+    // Return item to falling
+    itemObj.el.style.left = itemObj.x + 'px';
+  }
+}
+
+function highlightBins(on) {
+  if (!on) {
+    bins.forEach(b => b.classList.remove('highlight'));
+    binsRow.classList.remove('active-drop');
+  } else {
+    binsRow.classList.add('active-drop');
+  }
+}
+
+// ==================== DROP PROCESSING ====================
+function processDrop(itemObj, binIdx) {
+  const correct = (itemObj.accept || [itemObj.codeIdx]).includes(binIdx);
+  const item = ITEMS[itemObj.codeIdx];
+  const area = gameArea.getBoundingClientRect();
+  const br = bins[binIdx].getBoundingClientRect();
+  const popupX = br.left + br.width / 2 - area.left;
+  const popupY = br.top - area.top - 10;
+
+  // Remove item
+  removeItem(itemObj);
+
+  if (correct) {
+    state.combo++;
+    if (state.combo > state.bestCombo) state.bestCombo = state.combo;
+    const points = 20 * Math.min(state.combo, 5);
+    state.score += points;
+    state.correctCount++;
+    sfxCorrect();
+    bins[binIdx].classList.remove('correct-anim');
+    void bins[binIdx].offsetWidth;
+    bins[binIdx].classList.add('correct-anim');
+    showPopup(popupX, popupY, `+${points}`, '#76ff03');
+    spawnParticles(br.left + br.width / 2, br.top, '#76ff03');
+  } else {
+    state.combo = 0;
+    state.score = Math.max(0, state.score - 5);
+    state.wrongCount++;
+    sfxWrong();
+    bins[binIdx].classList.remove('wrong-anim');
+    void bins[binIdx].offsetWidth;
+    bins[binIdx].classList.add('wrong-anim');
+    document.body.classList.remove('shake');
+    void document.body.offsetWidth;
+    document.body.classList.add('shake');
+    showPopup(popupX, popupY, '-5', '#f44336');
+    spawnParticles(br.left + br.width / 2, br.top, '#f44336');
+  }
+
+  updateHUD();
+  showEduCard(itemObj.codeIdx);
+}
+
+function removeItem(itemObj) {
+  const idx = fallingItems.indexOf(itemObj);
+  if (idx > -1) fallingItems.splice(idx, 1);
+  if (itemObj.el.parentNode) itemObj.el.parentNode.removeChild(itemObj.el);
+}
+
+// ==================== EFFECTS ====================
+function showPopup(x, y, text, color) {
+  const el = document.createElement('div');
+  el.className = 'score-popup';
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.color = color;
+  gameArea.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+function spawnParticles(cx, cy, color) {
+  const area = gameArea.getBoundingClientRect();
+  const rx = cx - area.left;
+  const ry = cy - area.top;
+  for (let i = 0; i < 10; i++) {
+    const p = document.createElement('div');
+    p.style.cssText = `position:absolute;width:6px;height:6px;border-radius:50%;background:${color};
+      left:${rx}px;top:${ry}px;pointer-events:none;z-index:60;
+      transition:all .5s ease;opacity:1;`;
+    gameArea.appendChild(p);
+    const angle = (Math.PI * 2 * i) / 10;
+    const dist = 30 + Math.random() * 40;
+    requestAnimationFrame(() => {
+      p.style.left = (rx + Math.cos(angle) * dist) + 'px';
+      p.style.top = (ry + Math.sin(angle) * dist - 40) + 'px';
+      p.style.opacity = '0';
+      p.style.transform = 'scale(0)';
+    });
+    setTimeout(() => p.remove(), 600);
+  }
+}
+
+// ==================== EDUCATIONAL CARD ====================
+function showEduCard(codeIdx) {
+  const item = ITEMS[codeIdx];
+  const color = BIN_COLORS[codeIdx];
+  const card = $('eduCard');
+  $('eduIcon').style.background = color + '33';
+  $('eduIcon').style.color = color;
+  $('eduIcon').textContent = ITEMS[codeIdx].icon;
+  $('eduTitle').textContent = `Code #${codeIdx + 1}: ${item.name}`;
+  $('eduSubtitle').textContent = item.full;
+  $('eduWhat').textContent = item.what;
+  $('eduHeat').textContent = item.heat;
+  $('eduSafety').textContent = item.safety;
+  $('eduRecycle').textContent = item.recycle;
+  const badges = $('eduBadges');
+  badges.innerHTML = item.badges.map(b =>
+    `<span class="edu-badge" style="background:${color}33;color:${color};border:1px solid ${color}66">${b}</span>`
+  ).join('');
+  card.classList.add('show');
+  state.paused = true;
+  clearTimeout(eduTimer);
+}
+
+function closeEdu() {
+  $('eduCard').classList.remove('show');
+  state.paused = false;
+}
+$('eduCard').addEventListener('click', (e) => {
+  if (e.target === $('eduCard')) closeEdu();
+});
+
+// ==================== HUD ====================
+function updateHUD() {
+  const sv = $('scoreVal');
+  const prev = parseInt(sv.textContent) || 0;
+  sv.textContent = state.score;
+  if (state.score !== prev) {
+    sv.classList.remove('bump');
+    void sv.offsetWidth;
+    sv.classList.add('bump');
+    setTimeout(() => sv.classList.remove('bump'), 200);
+  }
+  $('comboVal').textContent = state.combo > 1 ? `×${Math.min(state.combo,5)}` : '×1';
+  $('comboVal').style.color = state.combo >= 3 ? '#ff6d00' : (state.combo >= 2 ? '#ffea00' : '#ff6d00');
+}
+
+function updateTimer() {
+  $('timerVal').textContent = state.timeLeft;
+  $('timerBar').style.width = (state.timeLeft / 60 * 100) + '%';
+  if (state.timeLeft <= 10) $('timerVal').style.color = '#f44336';
+  else if (state.timeLeft <= 20) $('timerVal').style.color = '#ff9800';
+}
+
+// ==================== GAME LOOP ====================
+function gameLoop(ts) {
+  if (!state.running) return;
+  const delta = ts - state.lastFrame;
+  state.lastFrame = ts;
+
+  if (!state.paused) {
+    const area = gameArea.getBoundingClientRect();
+    let hasNearBottom = false;
+    for (let i = fallingItems.length - 1; i >= 0; i--) {
+      const item = fallingItems[i];
+      if (item === state.dragging) continue;
+      item.y += item.speed * (delta / 16);
+      const bob = Math.sin(ts / 800 + item.bobOffset) * 2;
+      item.el.style.top = (item.y + bob) + 'px';
+      item.el.style.left = item.x + 'px';
+      if (item.y > area.height - 120) hasNearBottom = true;
+      if (item.y > area.height + 20) {
+        removeItem(item);
+      }
+    }
+    gameArea.classList.toggle('danger', hasNearBottom);
+  }
+
+  animId = requestAnimationFrame(gameLoop);
+}
+
+// ==================== TIMER ====================
+function startTimer() {
+  state.timeLeft = 60;
+  state.timerInterval = setInterval(() => {
+    if (state.paused) return;
+    state.timeLeft--;
+    updateTimer();
+    if (state.timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
+}
+
+// ==================== GAME CONTROL ====================
+function startGame() {
+  // Clear
+  if (animId) cancelAnimationFrame(animId);
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  if (spawnTimer) clearTimeout(spawnTimer);
+  fallingItems.forEach(item => { if (item.el.parentNode) item.el.parentNode.removeChild(item.el); });
+  fallingItems.length = 0;
+  $('startScreen').classList.add('hidden');
+  $('overScreen').classList.add('hidden');
+  closeEdu();
+
+  // Reset state
+  state = {
+    score: 0, combo: 0, bestCombo: 0,
+    correctCount: 0, wrongCount: 0,
+    timeLeft: 60, running: true, paused: false,
+    dragging: null, dragOffsetX: 0, dragOffsetY: 0,
+    fallSpeed: 1.2,
+    nextId: 0, lastFrame: performance.now(),
+    timerInterval: null, spawnInterval: null
+  };
+
+  buildBins();
+  hud.style.display = 'flex';
+  gameArea.style.display = 'block';
+  binsRow.style.display = 'flex';
+  updateHUD();
+  updateTimer();
+  startTimer();
+
+  // Spawn loop with increasing difficulty
+  function scheduleSpawn() {
+    if (!state.running) return;
+    spawnItem();
+    // Gradually increase speed
+    const elapsed = 60 - state.timeLeft;
+    state.fallSpeed = 1.2 + elapsed * 0.025;
+    const interval = Math.max(600, 2000 - elapsed * 18);
+    spawnTimer = setTimeout(scheduleSpawn, interval);
+  }
+  scheduleSpawn();
+
+  animId = requestAnimationFrame(gameLoop);
+}
+
+function endGame() {
+  state.running = false;
+  clearInterval(state.timerInterval);
+  clearTimeout(spawnTimer);
+  if (animId) cancelAnimationFrame(animId);
+  sfxGameOver();
+
+  $('finalScore').textContent = state.score;
+  $('goCorrect').textContent = state.correctCount;
+  $('goWrong').textContent = state.wrongCount;
+  $('goCombo').textContent = state.bestCombo;
+
+  setTimeout(() => {
+    $('overScreen').classList.remove('hidden');
+  }, 800);
+}
+
+// ==================== BACKGROUND PARTICLES ====================
+function initBgParticles() {
+  const area = document.body;
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'bg-particle';
+    const size = 4 + Math.random() * 12;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top = 100 + Math.random() * 20 + '%';
+    p.style.animationDuration = (15 + Math.random() * 20) + 's';
+    p.style.animationDelay = (-Math.random() * 30) + 's';
+    area.appendChild(p);
+  }
+}
+
+// ==================== GLOBAL EVENT LISTENERS ====================
+document.addEventListener('pointermove', onPointerMove, {passive:false});
+document.addEventListener('pointerup', onPointerUp, {passive:false});
+document.addEventListener('touchmove', (e) => {
+  if (state.dragging !== null) {
+    e.preventDefault();
+    const fakeE = {clientX: e.touches[0].clientX, clientY: e.touches[0].clientY, preventDefault: ()=>{}};
+    onPointerMove(fakeE);
+  }
+}, {passive:false});
+document.addEventListener('touchend', (e) => {
+  if (state.dragging !== null) {
+    e.preventDefault();
+    const fakeE = {clientX: e.changedTouches?.[0]?.clientX ?? 0, clientY: e.changedTouches?.[0]?.clientY ?? 0, preventDefault: ()=>{}};
+    onPointerUp(fakeE);
+  }
+}, {passive:false});
+
+// ==================== BOOT ====================
+initBgParticles();
+buildBins();
+</script>
+</body>
+</html>

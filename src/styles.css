@@ -144,3 +144,14 @@ button { cursor: pointer; }
 .activity-main-content { min-width: 0; overflow: auto; }
 .activity-main-content .matrix-activity-page { min-height: 100vh; }
 .activity-main-content .matrix-activity-back { margin-top: 18px; }
+
+/* Magic gate — subject lock screen */
+.magic-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 24px; max-width: 420px; margin: 0 auto; }
+.magic-lock-icon { width: 64px; height: 64px; border-radius: 50%; background: #fef0e6; color: #c97a3a; display: grid; place-items: center; margin-bottom: 20px; }
+.magic-gate h2 { font-size: 1.2rem; font-weight: 700; margin: 0 0 8px; }
+.magic-gate > p { color: #607089; font-size: .92rem; margin: 0 0 24px; }
+.magic-input-row { display: flex; gap: 10px; width: 100%; max-width: 300px; }
+.magic-input { flex: 1; padding: 10px 14px; border: 1.5px solid #c9d7e8; border-radius: 10px; font-size: 1rem; text-align: center; outline: none; transition: border-color .2s; }
+.magic-input:focus { border-color: #3979b9; }
+.magic-error { color: #c0392b; font-size: .85rem; font-weight: 500; margin-top: 14px; }
+.magic-gate .button-primary { white-space: nowrap; }
