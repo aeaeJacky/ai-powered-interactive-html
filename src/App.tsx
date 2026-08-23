@@ -70,7 +70,7 @@ const subjects: Subject[] = [
   { name: "BAFS (企業、會計與財務概論)", slug: "bafs", short: "BA", color: "#9a7b57", soft: "#f6f0e9" },
   { name: "THS (旅遊與款待)", slug: "ths", short: "TH", color: "#bd718c", soft: "#faedf2" },
   { name: "ICT (資訊及通訊科技)", slug: "ict", short: "</>", color: "#3979b9", soft: "#eaf3fc" },
-  { name: "DAT (設計與應用科技)", slug: "dat", short: "🔨", color: "#8277b8", soft: "#efedfa" },
+  { name: "DAT (設計與應用科技)", slug: "dat", short: "DA", color: "#8277b8", soft: "#efedfa" },
   { name: "VA (視覺藝術)", slug: "va", short: "VA", color: "#cb7660", soft: "#fbedeb" },
   { name: "Music (音樂)", slug: "music", short: "♫", color: "#a477ad", soft: "#f4edf7" },
   { name: "Citizenship, Economics and Society (公民、經濟與社會科)", slug: "ces", short: "CE", color: "#7c9a86", soft: "#e9f3ee" },
