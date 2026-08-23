@@ -170,10 +170,15 @@ const subjectExamples: Record<string, Activity[]> = {
     description: "學生把下墜的塑膠物品拖到正確的回收膠箱，認識 PET、HDPE、PVC、LDPE、PP、PS 與 OTHER 七種塑膠回收碼，每一次分類都附耐熱、安全性與回收資訊的解說卡，寓教於樂。",
     format: "拖放分類遊戲 + 科普解說卡",
     url: "/activities/dat/plastic-classification/index.html",
-  }], va: [], music: [], "chinese-history": [{
+  }], va: [{
+    title: "Art Elements & Principles 視覺元素與設計原理",
+    description: "中英配對遊戲 ── 掌握 HKDSE 視覺藝術科必考的 12 組視覺元素與設計原理，包括線條、形狀、色彩、質感、空間、形體、平衡、對比、節奏、比例、統一與強調。每張卡附定義與例子，適合自學與課堂熱身。",
+    format: "配對卡牌遊戲",
+    url: "/activities/va/art-elements-principles/index.html",
+  }], music: [], "chinese-history": [{
     title: "漢武帝新經濟政策 猜謎遊戲",
     description: "以 8 道謎題重溫漢武帝的新經濟政策：鹽鐵官營、均輸平準、算緡告緡與統一貨幣，每題附詳細解說並統計得分。",
-    format: "互動猜謎遊戲",
+    format: "猜謎遊戲",
     url: "/activities/chinese-history/han-wudi-economy/index.html",
   }], ces: [], putonghua: [], pe: [], he: [],
 };
